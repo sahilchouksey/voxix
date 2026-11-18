@@ -1,0 +1,41 @@
+{
+  "name": "@voxix/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for the voxix speech service protocol v1 (streams + REST).",
+  "type": "module",
+  "sideEffects": false,
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./web": {
+      "types": "./dist/web/index.d.ts",
+      "default": "./dist/web/index.js"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "default": "./dist/node/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.web.json && tsc --noEmit -p tsconfig.examples.json && tsc --noEmit -p tsconfig.examples.web.json",
+    "build": "bun -e \"await import('node:fs').then(fs => fs.rmSync('dist', { recursive: true, force: true }))\" && tsc -p tsconfig.json && tsc -p tsconfig.web.json",
+    "test": "bun test test/",
+    "lint": "eslint src examples"
+  },
+  "private": true
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.web.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "sourceMap": false,
+    "rootDir": "."
+  },
+  "include": ["examples/web-capture.ts"]
+}

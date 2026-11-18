@@ -31,7 +31,61 @@ Coverage at a glance:
 
 ## Installing
 
-There are no published binary releases yet. Install from source:
+Binary releases are built on every release in GitHub Actions for macOS (Apple Silicon and Intel), Linux (x86_64 and arm64 — deb, rpm, AppImage), and Windows (x64 and arm64). Downloads are attached to the releases page: <https://github.com/sahilchouksey/voxix/releases>
+
+| Platform | Downloads |
+| --- | --- |
+| macOS (Apple Silicon) | `.dmg` |
+| macOS (Intel) | `.dmg` |
+| Linux x86_64 | `.deb`, `.rpm`, `.AppImage` |
+| Linux arm64 | `.deb`, `.rpm`, `.AppImage` |
+| Windows x64 | `.msi`, NSIS `.exe` |
+| Windows arm64 | `.msi`, NSIS `.exe` |
+
+v0.1.0 is the first release built after the repository went public.
+
+### Verifying the downloads
+
+Every release attaches a `SHA256SUMS` file with the checksums of all artifacts. Download it alongside the artifact, then verify from the directory containing the files:
+
+```bash
+# macOS
+shasum -a 256 -c SHA256SUMS
+# Linux
+sha256sum -c SHA256SUMS
+```
+
+To check a single file instead of the whole list: `grep <filename> SHA256SUMS | sha256sum -c`.
+
+Every artifact is also signed with the author's minisign key. The public key is at [`packaging/minisign.pub`](packaging/minisign.pub) in this repository. Verify an artifact with:
+
+```bash
+minisign -Vm <file> -p packaging/minisign.pub
+```
+
+GitHub also records a build-provenance attestation for each artifact. With `gh` >= 2.49:
+
+```bash
+gh attestation verify <file> --repo sahilchouksey/voxix
+```
+
+This proves the artifact was produced by the repository's release workflow. It is a statement about build provenance, not about OS-level trust — Gatekeeper and SmartScreen behave the same either way (see below).
+
+### macOS
+
+The builds are ad-hoc signed, not signed with an Apple Developer ID, and not notarized. On first launch Gatekeeper will refuse to open voxix. Either right-click the app and choose **Open**, or remove the quarantine flag:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/voxix.app
+```
+
+### Windows
+
+The Windows artifacts are unsigned in 0.1.0, so SmartScreen will warn on first run. Click **More info**, then **Run anyway**. Signing via SignPath is pending; there is no date for it yet.
+
+### Install from source
+
+If you prefer to build voxix yourself:
 
 ```bash
 git clone https://github.com/sahilchouksey/voxix.git

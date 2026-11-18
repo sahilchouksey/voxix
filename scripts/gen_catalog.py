@@ -1,0 +1,375 @@
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["huggingface_hub", "fsspec"]
+# ///
+"""
+voxix model catalog generator.
+
+Merges three sources into one catalog.json:
+  1. HF card `transcribe_cpp` block  -> capabilities + benchmarks (canonical)
+  2. a tiny GGUF header range-read    -> display labels only
+  3. local CURATION (this file)       -> recommended set, editorial descriptions
+
+Emits catalog.json to be committed and `include_str!`'d into the Rust binary.
+Run:  HF_TOKEN=$(hf auth token) uv run gen_catalog.py [out_path] [--check]
+
+With `--check` the generated catalog is compared value-for-value against the
+shipped one (ignoring `generated_at`) and nothing is written; exit 1 on any
+difference. The source org and mirrors are read from the shipped catalog (or
+overridden via the CATALOG_SOURCE_ORG / CATALOG_MIRRORS environment
+variables), so the generator itself holds no remote identities.
+"""
+import json, os, re, sys, math, struct, datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from huggingface_hub import HfApi, HfFileSystem
+
+CATALOG_VERSION = 2
+
+def _committed_catalog_path():
+    """The catalog that ships inside the app bundle."""
+    return os.path.abspath(os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        os.pardir, "core", "src", "catalog", "catalog.json",
+    ))
+
+def load_catalog(path):
+    """Read a committed catalog. The generator's remote identities (source
+    org, mirrors) live in this data, not in code, so regeneration reproduces
+    exactly what the app ships."""
+    with open(path) as f:
+        return json.load(f)
+
+def source_org(source_path):
+    """Model source org: the CATALOG_SOURCE_ORG environment variable when set,
+    otherwise the single `{org}/...` prefix shared by the committed entries."""
+    env = os.environ.get("CATALOG_SOURCE_ORG")
+    if env:
+        return env
+    prefixes = {m["id"].split("/")[0] for m in load_catalog(source_path)["models"]}
+    if len(prefixes) != 1:
+        raise SystemExit(
+            "CATALOG_SOURCE_ORG unset and the source catalog carries multiple "
+            f"orgs: {', '.join(sorted(prefixes))}")
+    return prefixes.pop()
+
+def mirrors(source_path):
+    """Download sources tried in order after Hugging Face itself. Each entry
+    is a base URL; the full file URL is `{mirror}/{repo_id}/{revision}/{filename}`
+    (the same three values that form the HF resolve URL, so a mirror is a plain
+    static file host). Mirrors are untrusted: every download is verified against
+    the per-file `sha256`, so listing one only affects availability. Values
+    come from the source catalog, or CATALOG_MIRRORS (comma-separated) when set."""
+    env = os.environ.get("CATALOG_MIRRORS")
+    if env is not None:
+        return [u.strip() for u in env.split(",") if u.strip()]
+    return load_catalog(source_path).get("mirrors", [])
+
+# ───────────────────────── scoring (one constant each) ──────────────────────
+SPEED_SCALE = 8.0    # speed = 100·(1 − e^(−rtf/8))     grows toward 100
+ACC_SCALE   = 15.0   # accuracy = 100·e^(−wer/15)        decays from 100
+SPEED_FLOOR = 10     # no reference-machine rtf (too heavy to benchmark) → floor, it's slow
+def speed_from_rtf(rtf):
+    return SPEED_FLOOR if not rtf or rtf <= 0 else round(100 * (1 - math.exp(-rtf / SPEED_SCALE)))
+def acc_from_wer(wer):
+    return None if wer is None else round(100 * math.exp(-wer / ACC_SCALE))
+
+# ───────────────────── curation (owner-maintained; editorial, not derivable) ──
+# slug -> {rank?, rec?, desc?, use_case?, default_quant?, hidden?}.  All optional.
+# desc is hand-written UI copy; models without one use factual generated summaries.
+# rank = editorial sort position (broad ordering). rec = the small "Recommended"
+# badge / onboarding subset — independent of rank, so a model can rank high
+# without carrying the recommended tag.
+CURATION = {
+    "parakeet-unified-en-0.6b":        {"rank": 1, "rec": True, "desc": "Fast, accurate live English transcription"},
+    "nemotron-3.5-asr-streaming-0.6b": {"rank": 2, "rec": True, "desc": "Live multilingual transcription across 28 languages"},
+    "canary-180m-flash":               {"rank": 3, "rec": True, "desc": "Tiny and instant, runs well on any hardware"},
+    "cohere-transcribe-03-2026":       {"rank": 4, "rec": True, "desc": "Highest accuracy, 14 languages, slower"},
+    "whisper-medium":                  {"rank": 5, "rec": True, "desc": "Broadest language, but may run a bit slow"},
+    # ranked (sorted high) but NOT tagged recommended
+    "Voxtral-Mini-4B-Realtime-2602":   {"rank": 6, "desc": "Live multilingual, excellent on powerful machines"},
+    "parakeet-tdt-0.6b-v3":            {"rank": 7, "desc": "Fast and accurate. Supports 25 European languages"},
+    "parakeet-tdt-0.6b-v2":            {"rank": 8, "desc": "English only. The best model for English speakers"},
+    "Qwen3-ASR-0.6B":                  {"rank": 9, "desc": "Excellent multilingual model"},
+    "Fun-ASR-MLT-Nano-2512":           {"rank": 10, "desc": "A tiny multilingual model"},
+    # description-only (unranked, not recommended) — carried over from the legacy .bin entry
+    "Breeze-ASR-25":                   {"desc": "Optimized for Taiwanese Mandarin. Code-switching support."},
+    # hidden until the pinned transcribe-cpp ships their arch (has no `moss`/`sortformer`
+    # under src/arch/) — the app would offer a download it cannot load
+    "moss-transcribe-diarize":            {"hidden": True},
+    "diar_streaming_sortformer_4spk-v2.1": {"hidden": True},
+}
+# temporary capability corrections pending a card re-push (remove once cards fixed)
+OVERRIDES = {
+    "granite-4.0-1b-speech": {"timestamps": "none"},
+    "granite-speech-4.1-2b": {"timestamps": "none"},
+}
+
+# ───────────────────────── helpers ──────────────────────────────────────────
+ARCH = ["whisper","moonshine-streaming","moonshine","parakeet","canary-qwen","canary","voxtral",
+        "granite-speech","granite","qwen3","gigaam","sensevoice","cohere","fun-asr","nemotron","medasr"]
+ACR = {"asr":"ASR","ctc":"CTC","rnnt":"RNNT","tdt":"TDT","nar":"NAR","mlt":"MLT"}
+SCALAR = {0:("<B",1),1:("<b",1),2:("<H",2),3:("<h",2),4:("<I",4),5:("<i",4),
+          6:("<f",4),7:("<?",1),10:("<Q",8),11:("<q",8),12:("<d",8)}
+
+def slug(repo): return repo.split("/")[1].replace("-gguf", "")
+def family(s, tags):
+    for f in ARCH:
+        if f in s.lower(): return "moonshine" if f.startswith("moonshine") else f.split("-")[0]
+    for t in tags or []:
+        if t in ("whisper","moonshine","parakeet","canary","voxtral","granite","qwen3","gigaam","sensevoice","cohere"):
+            return t
+    return "other"
+def pretty(s):
+    return " ".join(ACR.get(p.lower(), p if (p.isupper() or any(c.isdigit() for c in p)) else p.capitalize())
+                    for p in s.split("-"))
+def quant_of(fn):
+    m = re.search(r"-(F32|F16|BF16|Q\d[\w_]*?)\.gguf$", fn);  return m.group(1) if m else "?"
+def parse_params(size_label):
+    """`general.size_label` ("0.6B" / "1.7B" / "62M") -> count in billions, or None."""
+    m = re.match(r"([\d.]+)\s*([BM])", str(size_label or "").strip(), re.I)
+    if not m: return None
+    v = float(m.group(1));  return v if m.group(2).upper() == "B" else v / 1000
+def pick_wer(b):
+    if "wer_librispeech_test_clean" in b: return "librispeech", b["wer_librispeech_test_clean"]
+    if "wer_fleurs_en" in b: return "fleurs_en", b["wer_fleurs_en"]
+    fl = [k for k in b if k.startswith("wer_fleurs")]
+    return (fl[0].replace("wer_", ""), b[fl[0]]) if fl else (None, {})
+def headline_wer(d):
+    for q in ("q8_0","f16","q5_k_m","q6_k","q4_k_m","f32","bf16"):
+        if isinstance(d, dict) and q in d: return d[q], q
+    return None, None
+LANG_NAMES = {"en":"English","ar":"Arabic","ja":"Japanese","ko":"Korean","ru":"Russian",
+              "uk":"Ukrainian","vi":"Vietnamese","zh":"Chinese"}
+def auto_desc(langs, caps):
+    feats = []
+    if caps["translate"]:   feats.append("translation")
+    if caps["lang_detect"]: feats.append("auto language detection")
+    if caps["streaming"]:   feats.append("streaming")
+    if caps["timestamps"] != "none": feats.append(f"{caps['timestamps']}-level timestamps")
+    if len(langs) > 1:
+        base = f"{len(langs)}-language speech-to-text"
+    else:
+        # unknown code falls back to the raw code so it's caught in diff review
+        lang = LANG_NAMES.get(langs[0], langs[0]) if langs else "English"
+        base = f"{lang} speech-to-text"
+    return base + (" with " + ", ".join(feats) + "." if feats else ".")
+
+api = HfApi(token=os.environ.get("HF_TOKEN"))
+fs  = HfFileSystem(token=os.environ.get("HF_TOKEN"))
+
+GGUF_WANT = {"general.architecture", "general.name", "general.basename", "general.size_label"}
+def probe_header(repo, filename, nbytes=65536):
+    """Range-read only friendly general.* labels (no tensors, no capabilities).
+
+    Capabilities come from HF card data here and from Rust's GGUF probe at
+    runtime. Keep this as a narrow display-label reader so the catalog generator
+    does not become a second source of truth for model behavior.
+    """
+    out = {}
+    try:
+        with fs.open(f"{repo}/{filename}", "rb", block_size=nbytes) as f:
+            buf = f.read(nbytes)
+    except Exception:
+        return out
+    if buf[:4] != b"GGUF": return out
+    u32 = lambda o: struct.unpack_from("<I", buf, o)[0]
+    u64 = lambda o: struct.unpack_from("<Q", buf, o)[0]
+    def rstr(o): n = u64(o); return buf[o+8:o+8+n].decode("utf-8","replace"), o+8+n
+    def skip(o, vt):
+        if vt in SCALAR: return o + SCALAR[vt][1]
+        if vt == 8: return o + 8 + u64(o)
+        if vt == 9:
+            et = u32(o); cnt = u64(o+4); o += 12
+            if et in SCALAR: return o + SCALAR[et][1]*cnt
+            if et == 8:
+                for _ in range(cnt): o += 8 + u64(o)
+                return o
+        raise ValueError
+    off = 24                      # magic+ver+n_tensors+n_kv
+    n_kv = u64(16)
+    try:
+        for _ in range(n_kv):
+            key, off = rstr(off); vt = u32(off); off += 4
+            if key in GGUF_WANT and vt == 8:
+                out[key], off = rstr(off)
+            elif key in GGUF_WANT and vt in SCALAR:
+                fmt, sz = SCALAR[vt]; out[key] = struct.unpack_from(fmt, buf, off)[0]; off += sz
+            else:
+                off = skip(off, vt)
+            if GGUF_WANT.issubset(out): break
+    except Exception:
+        pass                      # ran past the buffer (hit tokenizer) — keep what we got
+    return out
+
+def lfs_sha256(x):
+    """Content sha256 from the sibling's LFS/Xet info (dataclass or dict by hub version)."""
+    lfs = getattr(x, "lfs", None)
+    if lfs is None: return None
+    return getattr(lfs, "sha256", None) or (lfs.get("sha256") if isinstance(lfs, dict) else None)
+
+def gguf_files(repo, siblings):
+    """Return GGUF files with mandatory size + sha256 metadata.
+
+    `QuantFile.size_bytes` is a non-null `u64` in Rust. Failing generation here
+    keeps a transient/malformed HF listing from producing a catalog that panics
+    at app startup when deserialized by `include_str!("catalog.json")`.
+
+    `sha256` is the trust anchor for downloads (HF or mirror alike), so it is
+    equally mandatory. Every GGUF is LFS/Xet-tracked; a missing hash means the
+    listing is broken, not that the file is small.
+    """
+    files = []
+    invalid = []
+    for x in siblings:
+        if not x.rfilename.endswith(".gguf"):
+            continue
+        sha = lfs_sha256(x)
+        if type(x.size) is not int or x.size <= 0 or not sha:
+            invalid.append(x.rfilename)
+            continue
+        files.append({
+            "filename": x.rfilename,
+            "quant": quant_of(x.rfilename),
+            "size_bytes": x.size,
+            "sha256": sha,
+        })
+    if invalid:
+        raise ValueError(f"{repo}: missing/invalid size or sha256 metadata for {', '.join(invalid)}")
+    return sorted(files, key=lambda f: f["size_bytes"])
+
+def build(repo):
+    info = api.model_info(repo, files_metadata=True)
+    if not info.sha:
+        raise ValueError(f"{repo}: listing has no commit sha to pin")
+    cd = info.card_data.to_dict() if info.card_data else {}
+    s = slug(repo)
+    cur = CURATION.get(s, {})
+    b = dict(cd.get("transcribe_cpp") or {});  b.update(OVERRIDES.get(s, {}))
+    langs = cd.get("language") or []
+
+    files = gguf_files(repo, info.siblings)
+    q8 = next((f for f in files if "Q8" in f["quant"]), files[-1] if files else None)
+    gg = probe_header(repo, q8["filename"]) if q8 else {}
+
+    caps = {"streaming": bool(b.get("streaming")), "translate": bool(b.get("translate")),
+            "lang_detect": bool(b.get("lang_detect")), "timestamps": b.get("timestamps", "none")}
+    ryz = b.get("rtf_ryzen_4750u") or {};  rtf = ryz.get("vulkan", ryz.get("cpu"))
+    eval_set, werd = pick_wer(b);  hw, hwq = headline_wer(werd)
+
+    # Default-quant policy by model size (params from general.size_label):
+    #   >=1B  -> Q5_K_M   (large models tolerate it; ~30% less download/RAM)
+    #   <1B   -> Q8_0     (already small; keep reference quality)
+    # A per-model CURATION `default_quant` overrides the policy. If the policy
+    # quant is absent for a model, fall back: Q8_0 → any Q8 → Q5_K_M → smallest.
+    params = parse_params(gg.get("general.size_label"))
+    policy = "Q5_K_M" if (params is not None and params >= 1.0) else "Q8_0"
+    have = lambda q: next((f["quant"] for f in files if f["quant"] == q), None)
+    default_quant = (cur.get("default_quant")
+                     or have(policy)
+                     or have("Q8_0")
+                     or next((f["quant"] for f in files if "Q8" in f["quant"]), None)
+                     or have("Q5_K_M")
+                     or (files[0]["quant"] if files else None))
+
+    return {
+        "id": repo,
+        # Pinned commit: downloads fetch `resolve/{revision}/{file}` so the bytes
+        # provably match the hashes below even if the repo moves on. Identity
+        # stays repo+filename; the pin only scopes acquisition.
+        "revision": info.sha,
+        "slug": s,
+        "name": gg.get("general.name") or pretty(s),         # friendly name (from GGUF)
+        "architecture": gg.get("general.architecture"),
+        "family": family(s, info.tags),
+        "parameters": gg.get("general.size_label"),          # "0.6B" / "1.7B" / "62M"
+        "description": cur.get("desc") or auto_desc(langs, caps),
+        "base_model": cd.get("base_model"),
+        "license": cd.get("license"),
+        "language_count": len(langs),
+        "languages": langs,
+        "capabilities": caps,
+        "speed_score": speed_from_rtf(rtf),
+        "accuracy_score": acc_from_wer(hw),
+        "files": files,
+        "default_quant": default_quant,
+        "recommended": bool(cur.get("rec")),         # small badge/onboarding subset
+        "recommended_rank": cur.get("rank"),          # editorial sort position (independent)
+    }
+
+def catalogs_equivalent(text, shipped_path):
+    """True when the generated text matches the shipped catalog value-for-value,
+    ignoring `generated_at`. Prints each divergence to stderr."""
+    shipped = load_catalog(shipped_path)
+    fresh = json.loads(text)
+    without_stamp = lambda d: {k: v for k, v in d.items() if k != "generated_at"}
+    if without_stamp(fresh) == without_stamp(shipped):
+        return True
+    print(f"generated {len(fresh.get('models', []))} models, "
+          f"shipped {len(shipped.get('models', []))}", file=sys.stderr)
+    for key in ("catalog_version", "mirrors"):
+        if fresh.get(key) != shipped.get(key):
+            print(f"  {key} differs: shipped {shipped.get(key)!r}, "
+                  f"generated {fresh.get(key)!r}", file=sys.stderr)
+    fresh_by_slug = {m.get("slug"): m for m in fresh.get("models", [])}
+    for m in shipped.get("models", []):
+        other = fresh_by_slug.get(m.get("slug"))
+        if other is None:
+            print(f"  missing: {m.get('slug')}", file=sys.stderr)
+        elif other != m:
+            print(f"  differs: {m.get('slug')}", file=sys.stderr)
+    print(f"catalog mismatch vs {shipped_path}", file=sys.stderr)
+    return False
+
+def main():
+    args = [a for a in sys.argv[1:] if a != "--check"]
+    if len(args) > 1:
+        raise SystemExit("usage: gen_catalog.py [out_path] [--check]")
+    check = len(args) != len(sys.argv) - 1
+    # Identity and (in check mode) comparison target: an explicit out_path,
+    # otherwise the shipped app catalog. Without --check an unqualified run
+    # writes the same scratch default as before; the shipped file is updated
+    # only when it is named explicitly.
+    repos_arg = args[0] if args else _committed_catalog_path()
+    out = args[0] if args else os.path.join(os.path.dirname(__file__), "catalog.json")
+    repos = [m.id for m in api.list_models(author=source_org(repos_arg), limit=500)]
+    models = []
+    failures = []
+    with ThreadPoolExecutor(max_workers=10) as ex:
+        futs = {ex.submit(build, r): r for r in repos}
+        for f in as_completed(futs):
+            try:
+                m = f.result()
+                if not CURATION.get(m["slug"], {}).get("hidden"): models.append(m)
+            except Exception as e:
+                failures.append((futs[f], e))
+                print(f"!! {futs[f]}: {e}", file=sys.stderr)
+    if failures:
+        print(f"catalog generation failed for {len(failures)} repo(s)", file=sys.stderr)
+        raise SystemExit(1)
+    models.sort(key=lambda m: (not m["recommended"], m["recommended_rank"] or 1e9,
+                               m["family"], -(m["speed_score"] or 0), m["slug"]))
+    catalog = {
+        "catalog_version": CATALOG_VERSION,
+        "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        "mirrors": mirrors(repos_arg),
+        "models": models,
+    }
+    text = json.dumps(catalog, indent=2, ensure_ascii=False)
+    # print each `languages` array on a single line for readability
+    text = re.sub(r'"languages": \[(.*?)\]',
+                  lambda m: '"languages": [' + ", ".join(re.findall(r'"[^"]*"', m.group(1))) + ']',
+                  text, flags=re.S)
+    # one line per `files[]` entry: a file is one diff line, so schema additions
+    # and hash changes don't cascade into per-key comma churn
+    text = re.sub(r'\{\s+("filename":.*?"sha256": "[0-9a-f]{64}")\s+\}',
+                  lambda m: "{" + re.sub(r",\s+", ", ", m.group(1)) + "}",
+                  text, flags=re.S)
+    if check:
+        ok = catalogs_equivalent(text, repos_arg)
+        print(f"check {out}: {'OK' if ok else 'MISMATCH'}", file=sys.stderr)
+        raise SystemExit(0 if ok else 1)
+    open(out, "w").write(text)
+    print(f"wrote {out}: {len(models)} models, {os.path.getsize(out)/1024:.1f} KB", file=sys.stderr)
+
+if __name__ == "__main__":
+    main()

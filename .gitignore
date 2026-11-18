@@ -1,0 +1,49 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+package-lock.json
+
+node_modules
+dist
+dist-ssr
+*.local
+*.local.*
+
+# Editor directories and files
+/.vscode/
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+.claude/
+
+/target/
+core/target/
+core/transcribe-libs/
+recording_*
+.crush/
+
+.direnv
+.envrc
+
+# Python bytecode (scripts/)
+__pycache__/
+
+# Local tooling
+.serena/
+temp/
+
+# Local-only engineering notes (kept on disk, not tracked in the repo)
+docs/
+AGENTS.md
+CLAUDE.md

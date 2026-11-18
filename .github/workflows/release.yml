@@ -81,3 +81,70 @@ jobs:
       # stale cached native lib can never be linked into a shipped artifact.
       no-cache: true
     secrets: inherit
+
+  verify:
+    needs: publish-tauri
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Resolve tag
+        id: tag
+        run: |
+          VERSION=$(grep -o '"version": "[^"]*"' core/tauri.conf.json | cut -d'"' -f4)
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Download all release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p assets
+          gh release download "${{ steps.tag.outputs.tag }}" \
+            --repo "${{ github.repository }}" --dir assets
+          ls -la assets
+
+      - name: Generate SHA256SUMS
+        working-directory: assets
+        run: sha256sum * | tee SHA256SUMS
+
+      - name: Install minisign
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y minisign
+
+      - name: Sign artifacts with minisign
+        env:
+          MINISIGN_SECRET_KEY: ${{ secrets.MINISIGN_SECRET_KEY }}
+        working-directory: assets
+        run: |
+          echo "$MINISIGN_SECRET_KEY" > "$RUNNER_TEMP/voxix.sec"
+          chmod 600 "$RUNNER_TEMP/voxix.sec"
+          for f in *; do
+            case "$f" in
+              SHA256SUMS*|*.minisig) continue ;;
+            esac
+            minisign -Sm "$f" -s "$RUNNER_TEMP/voxix.sec"
+          done
+
+      - name: Upload SHA256SUMS and signatures
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: assets
+        run: |
+          gh release upload "${{ steps.tag.outputs.tag }}" \
+            --repo "${{ github.repository }}" \
+            SHA256SUMS *.minisig --clobber
+
+      # Attestations require a public repository on a free plan; keep this
+      # non-blocking so the verify job stays green before going public.
+      - name: Attest build provenance
+        continue-on-error: true
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: assets/*
+

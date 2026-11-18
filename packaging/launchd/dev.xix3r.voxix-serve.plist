@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  voxix transcription service — macOS launchd user agent (headless daemon)
+
+  SDK plan §12 M5. ProcessType=Interactive keeps the agent out of background/
+  eco scheduling classes (§15 G8/G22) — never mark it Background.
+
+  Placeholders:
+    __VOXIX_BIN__  absolute path of the voxix binary
+                   (e.g. /Applications/voxix.app/Contents/MacOS/voxix)
+    __LOG_DIR__    directory for the agent's stdout/stderr logs
+                   (e.g. ~/Library/Logs — created by you, owned by you)
+
+  Install:
+    1. Replace the placeholders.
+    2. cp dev.xix3r.voxix-serve.plist ~/Library/LaunchAgents/
+    3. launchctl load -w ~/Library/LaunchAgents/dev.xix3r.voxix-serve.plist
+    4. launchctl list | grep voxix     # expect a pid and exit status 0
+    5. Uninstall: launchctl unload -w ~/Library/LaunchAgents/dev.xix3r.voxix-serve.plist
+
+  The daemon needs no display, tray, mic, or accessibility prompt. Successful
+  exit keeps the agent unloaded (KeepAlive only after failures), mirroring
+  Restart=on-failure in the systemd unit.
+
+  Logs: __LOG_DIR__/voxix-serve.out.log and voxix-serve.err.log
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>dev.xix3r.voxix-serve</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__VOXIX_BIN__</string>
+    <string>serve</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+  </dict>
+  <key>ThrottleInterval</key>
+  <integer>5</integer>
+  <key>ProcessType</key>
+  <string>Interactive</string>
+  <key>StandardOutPath</key>
+  <string>__LOG_DIR__/voxix-serve.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>__LOG_DIR__/voxix-serve.err.log</string>
+</dict>
+</plist>

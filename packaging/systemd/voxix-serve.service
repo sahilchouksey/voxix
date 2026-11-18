@@ -1,0 +1,38 @@
+# voxix transcription service — systemd user unit (headless daemon)
+#
+# SDK plan §12 M5 / §15 G8: Type=notify (+ Restart=on-failure). The daemon
+# sends READY=1 on $NOTIFY_SOCKET once the listener is bound, the discovery
+# document is published, and /alive answers — systemd holds dependents until
+# then. It sends STOPPING=1 when the shutdown ladder begins.
+#
+# Install:
+#   1. Replace __VOXIX_BIN__ with the absolute path of the voxix binary
+#      (e.g. the path where your package manager installed it, or
+#      ~/.cargo/bin/voxix).
+#   2. cp voxix-serve.service ~/.config/systemd/user/
+#   3. systemctl --user daemon-reload
+#   4. systemctl --user enable --now voxix-serve.service
+#   5. systemctl --user status voxix-serve.service   # should show active (running)
+#
+# The daemon needs no display, tray, GPU, mic, or accessibility prompt; it
+# serves REST + the v1 protocol and is safe for WantedBy=default.target.
+# Deliberately NOT bound to graphical-session.target: no-display health
+# checks must pass at boot.
+#
+# The first start prints the service token once to stderr/stdout (see
+# `voxix serve --help`). Plaintext never lands in this unit or on disk.
+#
+# Logs: journalctl --user -u voxix-serve.service
+
+[Unit]
+Description=voxix transcription service (headless daemon)
+# No PartOf=graphical-session.target on purpose (headless).
+
+[Service]
+Type=notify
+ExecStart=__VOXIX_BIN__ serve
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

@@ -423,41 +423,45 @@ jobs:
       # onnxruntime.dll into transcribe-libs/, which tauri.windows.conf.json bundles
       # beside voxix.exe. ARM64 is excluded (all modern CPUs; keeps its static
       # ORT posture).
-      # NOTE: Microsoft's GitHub release assets vanished; ORT is now sourced
-      # from the PyPI wheels (MIT).
-      - name: Install ONNX Runtime (Windows x64)
-        if: contains(inputs.platform, 'windows') && !contains(inputs.target, 'aarch64')
+      - name: Install ONNX Runtime (Windows)
+        if: contains(inputs.platform, 'windows')
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          # Microsoft's GitHub releases for ORT vanished; source the wheel
-          # from PyPI (MIT, still publicly downloadable).
-          $ORT_VERSION = "1.23.2"
-          $url = "https://files.pythonhosted.org/packages/4a/93/aba75358133b3a941d736816dd392f687e7eab77215a6e429879080b76b6/onnxruntime-1.23.2-cp313-cp313-win_amd64.whl"
-          $want = "1f9cc0a55349c584f083c1c076e611a7c35d5b867d5d6e6d6c823bf821978088"
+          $target = "${{ inputs.target }}"
+          # Microsoft's GitHub releases for ORT vanished; source the wheels
+          # from PyPI (MIT, still publicly downloadable). ARM64 wheels only
+          # exist at 1.24.x; x64 is fine on 1.23.2.
+          if ($target -like "aarch64*") {
+            $ORT_VERSION = "1.24.4"
+            $url = "https://files.pythonhosted.org/packages/ad/04/ae2479e9841b64bd2eb44f8a64756c62593f896514369a11243b1b86ca5c/onnxruntime-1.24.4-cp313-cp313-win_arm64.whl"
+            $want = "71d6a5c1821d6e8586a024000ece458db8f2fc0ecd050435d45794827ce81e19"
+            $machine = "ARM64"
+          } else {
+            $ORT_VERSION = "1.23.2"
+            $url = "https://files.pythonhosted.org/packages/4a/93/aba75358133b3a941d736816dd392f687e7eab77215a6e429879080b76b6/onnxruntime-1.23.2-cp313-cp313-win_amd64.whl"
+            $want = "1f9cc0a55349c584f083c1c076e611a7c35d5b867d5d6e6d6c823bf821978088"
+            $machine = "X64"
+          }
           Invoke-WebRequest -Uri $url -OutFile ort.whl
           if ((Get-FileHash ort.whl -Algorithm SHA256).Hash.ToLower() -ne $want) { throw "sha256 mismatch" }
           python -c "import zipfile; zipfile.ZipFile('ort.whl').extractall('ort-dist')"
-          $ortLib = (Resolve-Path "ort-dist/onnxruntime/capi").Path
-          Write-Host "ORT_LIB_LOCATION=$ortLib"
-          Add-Content -Path $env:GITHUB_ENV -Value "ORT_LIB_LOCATION=$ortLib"
-          Add-Content -Path $env:GITHUB_ENV -Value "ORT_PREFER_DYNAMIC_LINK=1"
-
-      # ARM64's static ORT also came from Microsoft's vanished GitHub release
-      # page (ort-sys download-binaries). Fetch the PyPI ARM64 wheel and
-      # force dynamic link — static DLLs linked ahead of time are gone for
-      # everyone now.
-      - name: Install ONNX Runtime (Windows ARM64)
-        if: contains(inputs.platform, 'windows') && contains(inputs.target, 'aarch64')
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $ORT_VERSION = "1.24.4"   # only line with win_arm64 wheels available
-          $url = "https://files.pythonhosted.org/packages/ad/04/ae2479e9841b64bd2eb44f8a64756c62593f896514369a11243b1b86ca5c/onnxruntime-1.24.4-cp313-cp313-win_arm64.whl"
-          $want = "71d6a5c1821d6e8586a024000ece458db8f2fc0ecd050435d45794827ce81e19"
-          Invoke-WebRequest -Uri $url -OutFile ort.whl
-          if ((Get-FileHash ort.whl -Algorithm SHA256).Hash.ToLower() -ne $want) { throw "sha256 mismatch" }
-          python -c "import zipfile; zipfile.ZipFile('ort.whl').extractall('ort-dist')"
+          # The PyPI wheels ship only the DLL; ort-sys (dynamic-link mode)
+          # link-binds against onnxruntime.lib, so synthesize an import
+          # library from the DLL exports.
+          $tools = Get-ChildItem "$env:ProgramFiles\Microsoft Visual Studio\*\*\VC\Tools\MSVC\*\bin\Hostx64\x64\lib.exe" -ErrorAction SilentlyContinue | Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $tools) { $tools = Get-ChildItem "${env:ProgramFiles(x86)}\Microsoft Visual Studio\*\*\VC\Tools\MSVC\*\bin\Hostx64\x64\lib.exe" -ErrorAction Stop | Sort-Object FullName -Descending | Select-Object -First 1 }
+          $toolDir = $tools.Directory.FullName
+          $dll = (Resolve-Path "ort-dist\onnxruntime\capi\onnxruntime.dll").Path
+          $exports = & "$toolDir\dumpbin.exe" /exports $dll
+          $def = "LIBRARY onnxruntime.dll`r`nEXPORTS`r`n"
+          foreach ($line in $exports) {
+            if ($line -match '^\s+[0-9]+\s+[0-9A-Fa-f]+\s+[0-9A-Fa-f]+\s+([^\s]+)(\s+\(.*)?$') {
+              $def += "    $($matches[1])`r`n"
+            }
+          }
+          $def | Set-Content onnxruntime.def -Encoding ASCII -NoNewline
+          & "$toolDir\lib.exe" /DEF:onnxruntime.def /MACHINE:$machine /OUT:ort-dist\onnxruntime\capi\onnxruntime.lib
           $ortLib = (Resolve-Path "ort-dist/onnxruntime/capi").Path
           Write-Host "ORT_LIB_LOCATION=$ortLib"
           Add-Content -Path $env:GITHUB_ENV -Value "ORT_LIB_LOCATION=$ortLib"

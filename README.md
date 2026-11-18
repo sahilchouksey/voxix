@@ -6,6 +6,7 @@
 <p align="center">
   <em>Local speech-to-text. Press a shortcut, speak, and your words appear — nothing leaves your machine.</em>
 </p>
+<p align="center"><strong>local-first speech-to-text. Voice capture, on-device transcription, paste to anywhere. (vox = voice, xix = xix3r)</strong></p>
 
 voxix is a cross-platform desktop speech-to-text application. Press a keyboard shortcut, speak, and your words appear in whatever text field you are focused on — transcribed entirely on your own computer. No audio leaves the machine, and nothing is sent to a cloud service.
 

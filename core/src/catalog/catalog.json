@@ -1,0 +1,3797 @@
+{
+  "catalog_version": 2,
+  "generated_at": "2026-07-23T10:15:59+00:00",
+  "mirrors": [
+    "https://huggingface.co"
+  ],
+  "models": [
+    {
+      "id": "xix3r/voxix-parakeet-unified-en-0.6b-gguf",
+      "revision": "0d6f5f440b4b8598986aa5651fdc80b2d1262379",
+      "slug": "parakeet-unified-en-0.6b",
+      "name": "Parakeet Unified EN 0.6B",
+      "architecture": "parakeet",
+      "family": "parakeet",
+      "parameters": "0.6B",
+      "description": "Fast, accurate live English transcription",
+      "base_model": "nvidia/parakeet-unified-en-0.6b",
+      "license": "cc-by-4.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": true,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 79,
+      "accuracy_score": 90,
+      "files": [
+        {
+          "filename": "parakeet-unified-en-0.6b-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 731357568,
+          "sha256": "4b50b6dd862bf6e346929aaf4f5eaacec003bfa3f56462d6c874b41ef2f38795"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": true,
+      "recommended_rank": 1
+    },
+    {
+      "id": "xix3r/voxix-nemotron-3.5-asr-streaming-0.6b-gguf",
+      "revision": "4733c7aa0ffa9cbb9a172b03d626b96c6ce0a23b",
+      "slug": "nemotron-3.5-asr-streaming-0.6b",
+      "name": "Nemotron Streaming 3.5",
+      "architecture": "parakeet",
+      "family": "nemotron",
+      "parameters": "0.6B",
+      "description": "Live multilingual transcription across 28 languages",
+      "base_model": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+      "license": "other",
+      "language_count": 28,
+      "languages": [
+        "en",
+        "es",
+        "fr",
+        "it",
+        "pt",
+        "nl",
+        "de",
+        "tr",
+        "ru",
+        "ar",
+        "hi",
+        "ja",
+        "ko",
+        "vi",
+        "uk",
+        "pl",
+        "sv",
+        "cs",
+        "nb",
+        "da",
+        "bg",
+        "fi",
+        "hr",
+        "sk",
+        "zh",
+        "hu",
+        "ro",
+        "et"
+      ],
+      "capabilities": {
+        "streaming": true,
+        "translate": false,
+        "lang_detect": true,
+        "timestamps": "token"
+      },
+      "speed_score": 84,
+      "accuracy_score": 82,
+      "files": [
+        {
+          "filename": "nemotron-3.5-asr-streaming-0.6b-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 751094240,
+          "sha256": "b94545b313b3223fda7b2857a52681da813935c2127643d1e9ff0c23d988089c"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": true,
+      "recommended_rank": 2
+    },
+    {
+      "id": "xix3r/voxix-canary-180m-flash-gguf",
+      "revision": "0ea3fb87b892868d5bee090f28ecdad3c2ccd6cd",
+      "slug": "canary-180m-flash",
+      "name": "Canary 180M Flash",
+      "architecture": "canary",
+      "family": "canary",
+      "parameters": "180M",
+      "description": "Tiny and instant, runs well on any hardware",
+      "base_model": "nvidia/canary-180m-flash",
+      "license": "cc-by-4.0",
+      "language_count": 4,
+      "languages": [
+        "en",
+        "de",
+        "es",
+        "fr"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 98,
+      "accuracy_score": 88,
+      "files": [
+        {
+          "filename": "canary-180m-flash-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 139223744,
+          "sha256": "c8ae5758d7d4dc59c48d816474a33544e362ca52c635f96ee0b4b95e1b48f90c"
+        },
+        {
+          "filename": "canary-180m-flash-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 158704320,
+          "sha256": "a87992d84aea5329fa5d70f2eb440d3ae4fe47bd774875374ec381472d348299"
+        },
+        {
+          "filename": "canary-180m-flash-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 176291520,
+          "sha256": "be28948a5f6d93d59d0edc1f9580936ea30b23296130da02b719aee9f3a59e96"
+        },
+        {
+          "filename": "canary-180m-flash-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 218447552,
+          "sha256": "e13c7f5d0952b056a027cfffec13e3a3a134d1608babed24f983568f141e297c"
+        },
+        {
+          "filename": "canary-180m-flash-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 381632192,
+          "sha256": "8042593b341836ac711a617cd483bb2ab7fe05eae14ace27b2488d8ce90ab017"
+        },
+        {
+          "filename": "canary-180m-flash-F32.gguf",
+          "quant": "F32",
+          "size_bytes": 756498112,
+          "sha256": "f42fce02dc5279545cd540f0e5d51e36b9335b69e11fd98de6e08cc1250fd7ad"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": true,
+      "recommended_rank": 3
+    },
+    {
+      "id": "xix3r/voxix-cohere-transcribe-03-2026-gguf",
+      "revision": "343942e980e5c80b4585edcd8da1394e7eb297d3",
+      "slug": "cohere-transcribe-03-2026",
+      "name": "Cohere Transcribe",
+      "architecture": "cohere_asr",
+      "family": "cohere",
+      "parameters": "2.0B",
+      "description": "Highest accuracy, 14 languages, slower",
+      "base_model": "CohereLabs/cohere-transcribe-03-2026",
+      "license": "apache-2.0",
+      "language_count": 14,
+      "languages": [
+        "en",
+        "fr",
+        "de",
+        "es",
+        "it",
+        "pt",
+        "nl",
+        "pl",
+        "el",
+        "ar",
+        "ja",
+        "zh",
+        "vi",
+        "ko"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 63,
+      "accuracy_score": 92,
+      "files": [
+        {
+          "filename": "cohere-transcribe-03-2026-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1770270208,
+          "sha256": "14d02f1ad6dd77b3a60f82639879012c3adb4fe25c50a5a47a2c4c661daf1558"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": true,
+      "recommended_rank": 4
+    },
+    {
+      "id": "xix3r/voxix-whisper-medium-gguf",
+      "revision": "d86ada9ffac8757a6019bc0f40c63041441b46ae",
+      "slug": "whisper-medium",
+      "name": "Whisper Medium",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "764M",
+      "description": "Broadest language, but may run a bit slow",
+      "base_model": "openai/whisper-medium",
+      "license": "apache-2.0",
+      "language_count": 99,
+      "languages": [
+        "en",
+        "zh",
+        "de",
+        "es",
+        "ru",
+        "ko",
+        "fr",
+        "ja",
+        "pt",
+        "tr",
+        "pl",
+        "ca",
+        "nl",
+        "ar",
+        "sv",
+        "it",
+        "id",
+        "hi",
+        "fi",
+        "vi",
+        "he",
+        "uk",
+        "el",
+        "ms",
+        "cs",
+        "ro",
+        "da",
+        "hu",
+        "ta",
+        "no",
+        "th",
+        "ur",
+        "hr",
+        "bg",
+        "lt",
+        "la",
+        "mi",
+        "ml",
+        "cy",
+        "sk",
+        "te",
+        "fa",
+        "lv",
+        "bn",
+        "sr",
+        "az",
+        "sl",
+        "kn",
+        "et",
+        "mk",
+        "br",
+        "eu",
+        "is",
+        "hy",
+        "ne",
+        "mn",
+        "bs",
+        "kk",
+        "sq",
+        "sw",
+        "gl",
+        "mr",
+        "pa",
+        "si",
+        "km",
+        "sn",
+        "yo",
+        "so",
+        "af",
+        "oc",
+        "ka",
+        "be",
+        "tg",
+        "sd",
+        "gu",
+        "am",
+        "yi",
+        "lo",
+        "uz",
+        "fo",
+        "ht",
+        "ps",
+        "tk",
+        "nn",
+        "mt",
+        "sa",
+        "lb",
+        "my",
+        "bo",
+        "tl",
+        "mg",
+        "as",
+        "tt",
+        "haw",
+        "ln",
+        "ha",
+        "ba",
+        "jw",
+        "su"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": true,
+        "timestamps": "segment"
+      },
+      "speed_score": 42,
+      "accuracy_score": 84,
+      "files": [
+        {
+          "filename": "whisper-medium-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 831538144,
+          "sha256": "09e6a65e7de377aa5b10bae24608bc6f8ca2ed04b3993ef10d4a02bcd9a82adf"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": true,
+      "recommended_rank": 5
+    },
+    {
+      "id": "xix3r/voxix-Voxtral-Mini-4B-Realtime-2602-gguf",
+      "revision": "53666ae2b5eca00df997f01cff1b83951f3c27aa",
+      "slug": "Voxtral-Mini-4B-Realtime-2602",
+      "name": "Voxtral Mini 4B Realtime",
+      "architecture": "voxtral_realtime",
+      "family": "voxtral",
+      "parameters": "4.8B",
+      "description": "Live multilingual, excellent on powerful machines",
+      "base_model": "mistralai/Voxtral-Mini-4B-Realtime-2602",
+      "license": "apache-2.0",
+      "language_count": 13,
+      "languages": [
+        "en",
+        "fr",
+        "es",
+        "de",
+        "ru",
+        "zh",
+        "ja",
+        "it",
+        "pt",
+        "nl",
+        "ar",
+        "hi",
+        "ko"
+      ],
+      "capabilities": {
+        "streaming": true,
+        "translate": false,
+        "lang_detect": true,
+        "timestamps": "none"
+      },
+      "speed_score": 11,
+      "accuracy_score": 87,
+      "files": [
+        {
+          "filename": "Voxtral-Mini-4B-Realtime-2602-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 2830493984,
+          "sha256": "39dc1f65539373a406edea7490505822d77c12edff521744678717eef4da4723"
+        },
+        {
+          "filename": "Voxtral-Mini-4B-Realtime-2602-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 3281439008,
+          "sha256": "e20a7582c5cf8159454c909b7f57b184b287cb3d7c3ec85744727a2cec51b08f"
+        },
+        {
+          "filename": "Voxtral-Mini-4B-Realtime-2602-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 3661018912,
+          "sha256": "92038784cffa20ea8ee925f10fd28c110285124d94730eacce48bab6c214fa48"
+        },
+        {
+          "filename": "Voxtral-Mini-4B-Realtime-2602-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 4731791648,
+          "sha256": "6fb22249463c1e7a600d920ad732e2dd0a231510e9db59fb8061d3d1d48d0c67"
+        },
+        {
+          "filename": "Voxtral-Mini-4B-Realtime-2602-BF16.gguf",
+          "quant": "BF16",
+          "size_bytes": 8868301088,
+          "sha256": "dca6a7bece55858472e1b2df1f928642bdc1e964b1a91f3378c3a4e72fc5bc04"
+        },
+        {
+          "filename": "Voxtral-Mini-4B-Realtime-2602-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 8879114528,
+          "sha256": "243258ae0ad80f748b18cfd9c8141998157d74eb32fbb131ba8f69e0c01564d7"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": 6
+    },
+    {
+      "id": "xix3r/voxix-parakeet-tdt-0.6b-v3-gguf",
+      "revision": "e547a57013cfdca0f2669351bc04bc423d546861",
+      "slug": "parakeet-tdt-0.6b-v3",
+      "name": "Parakeet TDT 0.6B v3",
+      "architecture": "parakeet",
+      "family": "parakeet",
+      "parameters": "0.6B",
+      "description": "Fast and accurate. Supports 25 European languages",
+      "base_model": "nvidia/parakeet-tdt-0.6b-v3",
+      "license": "cc-by-4.0",
+      "language_count": 25,
+      "languages": [
+        "bg",
+        "hr",
+        "cs",
+        "da",
+        "nl",
+        "en",
+        "et",
+        "fi",
+        "fr",
+        "de",
+        "el",
+        "hu",
+        "it",
+        "lv",
+        "lt",
+        "mt",
+        "pl",
+        "pt",
+        "ro",
+        "ru",
+        "sk",
+        "sl",
+        "es",
+        "sv",
+        "uk"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": true,
+        "timestamps": "token"
+      },
+      "speed_score": 79,
+      "accuracy_score": 88,
+      "files": [
+        {
+          "filename": "parakeet-tdt-0.6b-v3-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 739508576,
+          "sha256": "5859f77944efcd8eafa23a6350731960b2b55b2203df51f319665c807d802cc7"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": 7
+    },
+    {
+      "id": "xix3r/voxix-parakeet-tdt-0.6b-v2-gguf",
+      "revision": "750618e0b25cc0734cccef0bbf1ee3dfc065fc2e",
+      "slug": "parakeet-tdt-0.6b-v2",
+      "name": "Parakeet TDT 0.6B v2",
+      "architecture": "parakeet",
+      "family": "parakeet",
+      "parameters": "0.6B",
+      "description": "English only. The best model for English speakers",
+      "base_model": "nvidia/parakeet-tdt-0.6b-v2",
+      "license": "cc-by-4.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 85,
+      "accuracy_score": 89,
+      "files": [
+        {
+          "filename": "parakeet-tdt-0.6b-v2-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 729574912,
+          "sha256": "f0d0e99cebb6d3b83f1f7069b82b5d3c2e39a54545b0da039cb4bafd9c4e5caa"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": 8
+    },
+    {
+      "id": "xix3r/voxix-Qwen3-ASR-0.6B-gguf",
+      "revision": "3cece7dab7fb9161eb7886233151985dcff98958",
+      "slug": "Qwen3-ASR-0.6B",
+      "name": "Qwen3-ASR 0.6B",
+      "architecture": "qwen3_asr",
+      "family": "qwen3",
+      "parameters": "782M",
+      "description": "Excellent multilingual model",
+      "base_model": "Qwen/Qwen3-ASR-0.6B",
+      "license": "apache-2.0",
+      "language_count": 30,
+      "languages": [
+        "zh",
+        "en",
+        "yue",
+        "ar",
+        "de",
+        "fr",
+        "es",
+        "pt",
+        "id",
+        "it",
+        "ko",
+        "ru",
+        "th",
+        "vi",
+        "ja",
+        "tr",
+        "hi",
+        "ms",
+        "nl",
+        "sv",
+        "da",
+        "fi",
+        "pl",
+        "cs",
+        "fil",
+        "fa",
+        "el",
+        "ro",
+        "hu",
+        "mk"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": true,
+        "timestamps": "none"
+      },
+      "speed_score": 63,
+      "accuracy_score": 87,
+      "files": [
+        {
+          "filename": "Qwen3-ASR-0.6B-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 589560480,
+          "sha256": "5b58f32a58ffa2c8783e0b0963485623e286e6272d953dfc9e28bc3447dee0c0"
+        },
+        {
+          "filename": "Qwen3-ASR-0.6B-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 645356192,
+          "sha256": "062a7bcb18675c2fe5ffd0e8b354eac6a1ceada9b2af9ef7168746ae16b54358"
+        },
+        {
+          "filename": "Qwen3-ASR-0.6B-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 690417824,
+          "sha256": "3b051f108f03c0c91bbe1a3b2c1ee15e3ed51e4caec2a48751b01f2a21441cc3"
+        },
+        {
+          "filename": "Qwen3-ASR-0.6B-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 850423456,
+          "sha256": "f081b2d5e23bd669d92cc331d722a8a0681943b8e6f34b48996fd5c319b5acd8"
+        },
+        {
+          "filename": "Qwen3-ASR-0.6B-BF16.gguf",
+          "quant": "BF16",
+          "size_bytes": 1571490016,
+          "sha256": "dadb8196937aa6b998a94124a043fce694e0ab6c3c6eb0ae1669fa49d04aab84"
+        },
+        {
+          "filename": "Qwen3-ASR-0.6B-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 1579793056,
+          "sha256": "5c90e4b1a72a4c59cd12afa5ebb0cc8628848148f2b337d025cc5121ae4d2eea"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": 9
+    },
+    {
+      "id": "xix3r/voxix-Fun-ASR-MLT-Nano-2512-gguf",
+      "revision": "38f895a0884f6e2ceb037277d22bc003a5a67f87",
+      "slug": "Fun-ASR-MLT-Nano-2512",
+      "name": "Fun-ASR Nano Multilingual",
+      "architecture": "funasr_nano",
+      "family": "fun",
+      "parameters": "985M",
+      "description": "A tiny multilingual model",
+      "base_model": "FunAudioLLM/Fun-ASR-MLT-Nano-2512",
+      "license": "other",
+      "language_count": 31,
+      "languages": [
+        "zh",
+        "en",
+        "yue",
+        "ja",
+        "ko",
+        "vi",
+        "id",
+        "th",
+        "ms",
+        "tl",
+        "ar",
+        "hi",
+        "bg",
+        "hr",
+        "cs",
+        "da",
+        "nl",
+        "et",
+        "fi",
+        "el",
+        "hu",
+        "ga",
+        "lv",
+        "lt",
+        "mt",
+        "pl",
+        "pt",
+        "ro",
+        "sk",
+        "sl",
+        "sv"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 68,
+      "accuracy_score": 89,
+      "files": [
+        {
+          "filename": "Fun-ASR-MLT-Nano-2512-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 556975168,
+          "sha256": "9232584a27a7dcbcaf13640de8f9c2e7375178ea11e587f90a5328ecf06d58a1"
+        },
+        {
+          "filename": "Fun-ASR-MLT-Nano-2512-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 631129152,
+          "sha256": "5906267c6067d254a2681f40d9eac70c4291ae14fb58ffea4c4cd22a307517ec"
+        },
+        {
+          "filename": "Fun-ASR-MLT-Nano-2512-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 690744384,
+          "sha256": "e4ca67cbcb9b12c828b2afbadc871a8128ea3e73890d2747c687b1fac0ac6934"
+        },
+        {
+          "filename": "Fun-ASR-MLT-Nano-2512-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 891271232,
+          "sha256": "d12476d8d9f2baa0ebf738fa955fa05ed33a654f1567289033a810c45d9d9002"
+        },
+        {
+          "filename": "Fun-ASR-MLT-Nano-2512-BF16.gguf",
+          "quant": "BF16",
+          "size_bytes": 1667504192,
+          "sha256": "dcacaf5eb69651e4e3f1f79e9bdd16be518cf5f9ecaf023dada9c5aa891bde4b"
+        },
+        {
+          "filename": "Fun-ASR-MLT-Nano-2512-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 1667504192,
+          "sha256": "ffd1e5258f2cfbc05dc3e467b570a32d5671a6511bcd070cd72f08657108213d"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": 10
+    },
+    {
+      "id": "xix3r/voxix-canary-1b-flash-gguf",
+      "revision": "7f0b8d983b6713621141c376b5b4909331bd5cb6",
+      "slug": "canary-1b-flash",
+      "name": "Canary 1B Flash",
+      "architecture": "canary",
+      "family": "canary",
+      "parameters": "1B",
+      "description": "4-language speech-to-text with translation.",
+      "base_model": "nvidia/canary-1b-flash",
+      "license": "cc-by-4.0",
+      "language_count": 4,
+      "languages": [
+        "en",
+        "de",
+        "es",
+        "fr"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 83,
+      "accuracy_score": 90,
+      "files": [
+        {
+          "filename": "canary-1b-flash-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 677141280,
+          "sha256": "2521a615a2b04ab11900d894e1f5c5a70405d85aa74be0806b569b9cc311a707"
+        },
+        {
+          "filename": "canary-1b-flash-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 769563424,
+          "sha256": "7eed3cac92f255a4adbd518c58663d3fbf65984d2619189e593f2d374b05c601"
+        },
+        {
+          "filename": "canary-1b-flash-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 857603872,
+          "sha256": "3faeb99e16c719047df92fbdcc501ab5cd00edfac83a5e6e7cd69b470d650730"
+        },
+        {
+          "filename": "canary-1b-flash-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 1048131360,
+          "sha256": "9b99e0881d883467e0a03ceb0968dba888c9f8921b73355143ad8b67931e08ce"
+        },
+        {
+          "filename": "canary-1b-flash-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 1785657120,
+          "sha256": "e87e172694fe6d808fa8844961fb7bc77a4a22063936227c62ac76b6fdbf3dcd"
+        },
+        {
+          "filename": "canary-1b-flash-F32.gguf",
+          "quant": "F32",
+          "size_bytes": 3560372000,
+          "sha256": "888c24f7d67c3c60d00003bf6a1e3123822afbc47927b7ca931d0b4aaf45305b"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-canary-1b-v2-gguf",
+      "revision": "64bb3154886076e805ac56529c8c4eb09b87c372",
+      "slug": "canary-1b-v2",
+      "name": "Canary 1B v2",
+      "architecture": "canary",
+      "family": "canary",
+      "parameters": "1B",
+      "description": "25-language speech-to-text with translation.",
+      "base_model": "nvidia/canary-1b-v2",
+      "license": "cc-by-4.0",
+      "language_count": 25,
+      "languages": [
+        "bg",
+        "hr",
+        "cs",
+        "da",
+        "nl",
+        "en",
+        "et",
+        "fi",
+        "fr",
+        "de",
+        "el",
+        "hu",
+        "it",
+        "lv",
+        "lt",
+        "mt",
+        "pl",
+        "pt",
+        "ro",
+        "sk",
+        "sl",
+        "es",
+        "sv",
+        "ru",
+        "uk"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 81,
+      "accuracy_score": 88,
+      "files": [
+        {
+          "filename": "canary-1b-v2-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 735476448,
+          "sha256": "49e0a67e219bec95a254c2348460b6350e75a7ac6f93a131e48244b4c7cb53b9"
+        },
+        {
+          "filename": "canary-1b-v2-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 836664032,
+          "sha256": "9c3a893c93795438baf9b4b1c853c39b60316c3a0d259a3ba6e284712f5ddb71"
+        },
+        {
+          "filename": "canary-1b-v2-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 931986144,
+          "sha256": "6567c2d601fccacf9809fc230edefde05728340f65860bbe91cfd72d0a5eea9d"
+        },
+        {
+          "filename": "canary-1b-v2-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 1144290016,
+          "sha256": "224f83d1bc487b3303b495a7d6874912fdece93de19d1a04b550829c30a5d289"
+        },
+        {
+          "filename": "canary-1b-v2-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 1966111456,
+          "sha256": "eadda53cd1652d65cd12ff7ac4b7dc64cba1ce9837aae0c86e4222e8db89e320"
+        },
+        {
+          "filename": "canary-1b-v2-F32.gguf",
+          "quant": "F32",
+          "size_bytes": 3920657120,
+          "sha256": "b0b48b62b2c68f2779c49481de102715c5eaadbe084bca7fdddc7912f9c20e8b"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-canary-1b-gguf",
+      "revision": "2b444cf2e6b14da8cc1f674ddd7b85143af983fa",
+      "slug": "canary-1b",
+      "name": "Canary 1B",
+      "architecture": "canary",
+      "family": "canary",
+      "parameters": "1B",
+      "description": "4-language speech-to-text with translation.",
+      "base_model": "nvidia/canary-1b",
+      "license": "cc-by-nc-4.0",
+      "language_count": 4,
+      "languages": [
+        "en",
+        "de",
+        "es",
+        "fr"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 67,
+      "accuracy_score": 90,
+      "files": [
+        {
+          "filename": "canary-1b-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 729686848,
+          "sha256": "ded40db7f9d25e992bf35a0c3c3743e1a7c85d0c30bdbbabd46bca932a47353d"
+        },
+        {
+          "filename": "canary-1b-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 837694272,
+          "sha256": "1139f01aad4ed4208d2c0532cfc25939cbc26cea1e160084c83f40d5b6eaed35"
+        },
+        {
+          "filename": "canary-1b-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 934167616,
+          "sha256": "ac3a38b09f78e7cfc5ecfcf75b6dd5ca7c77c17669c9c5d6a5f1fb3917b75c73"
+        },
+        {
+          "filename": "canary-1b-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 1162740288,
+          "sha256": "0b5d28516bcde9402d5eba34fc4a79c95b84b27954f05e5f8993d67df2857b62"
+        },
+        {
+          "filename": "canary-1b-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 2047537728,
+          "sha256": "f40216c503fe14d98b384c31ab18e705fb9c004cb8e6c9976962aae2a369e5ea"
+        },
+        {
+          "filename": "canary-1b-F32.gguf",
+          "quant": "F32",
+          "size_bytes": 4086100544,
+          "sha256": "b3ec64ca239c1266f83dc8d15ebf6d4b09b2b5aa72a972d3dea1a4c2f3e1fa37"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-canary-qwen-2.5b-gguf",
+      "revision": "f546325e8d33c7da6b4f47d12f18710f5771831c",
+      "slug": "canary-qwen-2.5b",
+      "name": "Canary-Qwen 2.5B",
+      "architecture": "canary_qwen",
+      "family": "canary",
+      "parameters": "2.5B",
+      "description": "English speech-to-text.",
+      "base_model": "nvidia/canary-qwen-2.5b",
+      "license": "cc-by-4.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 40,
+      "accuracy_score": 90,
+      "files": [
+        {
+          "filename": "canary-qwen-2.5b-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 1737575808,
+          "sha256": "db5162229d6fa22597d06a613bd9b543eddb3ee02e6afc5e759120fde02bebf7"
+        },
+        {
+          "filename": "canary-qwen-2.5b-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1983729024,
+          "sha256": "d71b1d9ae442dc538665ed4df63a69520eb9be769ec0bc78c7d2f40040928306"
+        },
+        {
+          "filename": "canary-qwen-2.5b-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 2208697728,
+          "sha256": "25dba2a425113e73d626cc3db6148d925cbd7ead6872b631b7ef4d927788be31"
+        },
+        {
+          "filename": "canary-qwen-2.5b-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 2797548928,
+          "sha256": "d89aad1285d5bd5aa441c464d3a4cf37bd5474f70705408e71558d8627415b34"
+        },
+        {
+          "filename": "canary-qwen-2.5b-BF16.gguf",
+          "quant": "BF16",
+          "size_bytes": 5076107136,
+          "sha256": "5b29334e1d257503b95436608519c39436f0e2056251d17b7c5c001f862c00b8"
+        },
+        {
+          "filename": "canary-qwen-2.5b-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 5076972928,
+          "sha256": "ae310ac25c1f190b8df4b29a301e936440e1d5306c23d6e5352e29400338ad87"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-cohere-transcribe-arabic-07-2026-gguf",
+      "revision": "6fe5ec22f9bc01364cde46f62bba606e3f6f0d34",
+      "slug": "cohere-transcribe-arabic-07-2026",
+      "name": "Cohere Transcribe",
+      "architecture": "cohere_asr",
+      "family": "cohere",
+      "parameters": "2.0B",
+      "description": "2-language speech-to-text.",
+      "base_model": "CohereLabs/cohere-transcribe-arabic-07-2026",
+      "license": "apache-2.0",
+      "language_count": 2,
+      "languages": [
+        "ar",
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 63,
+      "accuracy_score": 48,
+      "files": [
+        {
+          "filename": "cohere-transcribe-arabic-07-2026-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1770270112,
+          "sha256": "55e61c9b047e36f0e084d367f6b0bfecc71a6a0527da6eea4f0c687f3584775f"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-Fun-ASR-Nano-2512-gguf",
+      "revision": "b950d1225409fce71f7e723eadee409ff2115553",
+      "slug": "Fun-ASR-Nano-2512",
+      "name": "Fun-ASR Nano",
+      "architecture": "funasr_nano",
+      "family": "fun",
+      "parameters": "985M",
+      "description": "3-language speech-to-text.",
+      "base_model": "FunAudioLLM/Fun-ASR-Nano-2512",
+      "license": "other",
+      "language_count": 3,
+      "languages": [
+        "zh",
+        "en",
+        "ja"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 73,
+      "accuracy_score": 89,
+      "files": [
+        {
+          "filename": "Fun-ASR-Nano-2512-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 556974848,
+          "sha256": "444885fb7a16211a721e265dfe08c31b31e81fb9e2c4f21ab1079210cd038408"
+        },
+        {
+          "filename": "Fun-ASR-Nano-2512-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 631128832,
+          "sha256": "68de7b48ba46b739254fb57486edf7023943cb0af63767ab795d58d6e482096c"
+        },
+        {
+          "filename": "Fun-ASR-Nano-2512-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 690744064,
+          "sha256": "894153c04fee18f982823e67b9be6ffd83a9e245f92419b3e8170e26c818273b"
+        },
+        {
+          "filename": "Fun-ASR-Nano-2512-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 891270912,
+          "sha256": "681caef6df15a2c0e153b40ca7fe4087fdf65751fa5e6fe605d8a75dff969e61"
+        },
+        {
+          "filename": "Fun-ASR-Nano-2512-BF16.gguf",
+          "quant": "BF16",
+          "size_bytes": 1667503872,
+          "sha256": "ee183ddfeb19847e3ee7b80ffcbbae48173330dc167b07955b898a7705c68159"
+        },
+        {
+          "filename": "Fun-ASR-Nano-2512-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 1667503872,
+          "sha256": "d754b627ebe8386e565ca9aabc87906d7530d73d2981ec7106fbcc3932febc16"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-gigaam-v3-ctc-gguf",
+      "revision": "12f6d0d73f8c2eeb3f1e94e6358c403a3a9b76ec",
+      "slug": "gigaam-v3-ctc",
+      "name": "GigaAM v3 CTC",
+      "architecture": "gigaam",
+      "family": "gigaam",
+      "parameters": "221M",
+      "description": "Russian speech-to-text with token-level timestamps.",
+      "base_model": "ai-sage/GigaAM-v3",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "ru"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 98,
+      "accuracy_score": 57,
+      "files": [
+        {
+          "filename": "gigaam-v3-ctc-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 271803328,
+          "sha256": "71e5c82890e9e243a6bd7575f129f5d1bd2c3ca3ae79aab75cfb1a6934c6a62b"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-gigaam-v3-e2e-ctc-gguf",
+      "revision": "a257c2f7c1d0eadaee0e86f40a395c832fb0da6f",
+      "slug": "gigaam-v3-e2e-ctc",
+      "name": "GigaAM v3 E2E-CTC",
+      "architecture": "gigaam",
+      "family": "gigaam",
+      "parameters": "221M",
+      "description": "Russian speech-to-text with token-level timestamps.",
+      "base_model": "ai-sage/GigaAM-v3",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "ru"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 98,
+      "accuracy_score": 69,
+      "files": [
+        {
+          "filename": "gigaam-v3-e2e-ctc-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 272151136,
+          "sha256": "9ccce4750dc813a493d96ca15ee251712bedec15ac9a02fa3d2bd732f08ae5eb"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-gigaam-v3-rnnt-gguf",
+      "revision": "bf99d99164f1cede4eee17de81292d99c7e0ac50",
+      "slug": "gigaam-v3-rnnt",
+      "name": "GigaAM v3 RNN-T",
+      "architecture": "gigaam",
+      "family": "gigaam",
+      "parameters": "222M",
+      "description": "Russian speech-to-text with token-level timestamps.",
+      "base_model": "ai-sage/GigaAM-v3",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "ru"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 96,
+      "accuracy_score": 58,
+      "files": [
+        {
+          "filename": "gigaam-v3-rnnt-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 273022880,
+          "sha256": "130d54450be2922144b265d90d453b781fc2b5adaee52a16954b00f3686201f7"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-gigaam-v3-e2e-rnnt-gguf",
+      "revision": "b48aa983a198b69333cf14befc0f0ddb70e51cde",
+      "slug": "gigaam-v3-e2e-rnnt",
+      "name": "GigaAM v3 E2E-RNN-T",
+      "architecture": "gigaam",
+      "family": "gigaam",
+      "parameters": "223M",
+      "description": "Russian speech-to-text with token-level timestamps.",
+      "base_model": "ai-sage/GigaAM-v3",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "ru"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 94,
+      "accuracy_score": 70,
+      "files": [
+        {
+          "filename": "gigaam-v3-e2e-rnnt-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 273724832,
+          "sha256": "78d63b47723b7f8d78c6113a6ef983b5a86e2a86f6c273e1f5cb6967b1c4467a"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-granite-speech-4.1-2b-nar-gguf",
+      "revision": "f3bf508eff6ee8cf6dd22a75c94074f456b72e42",
+      "slug": "granite-speech-4.1-2b-nar",
+      "name": "Granite Speech 4.1 2B NAR",
+      "architecture": "granite_speech_nar",
+      "family": "granite",
+      "parameters": "2.3B",
+      "description": "5-language speech-to-text.",
+      "base_model": "ibm-granite/granite-speech-4.1-2b-nar",
+      "license": "apache-2.0",
+      "language_count": 5,
+      "languages": [
+        "en",
+        "fr",
+        "de",
+        "es",
+        "pt"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 37,
+      "accuracy_score": 92,
+      "files": [
+        {
+          "filename": "granite-speech-4.1-2b-nar-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1782089344,
+          "sha256": "88d7c7b5b8b59c95bb6580a1e7d5d81cae63943cef71405ff477527b0bb69fca"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-granite-4.0-1b-speech-gguf",
+      "revision": "fe2d87dabef7850680d4f251c0754ea2eb712a1b",
+      "slug": "granite-4.0-1b-speech",
+      "name": "Granite Speech 4.0 1B",
+      "architecture": "granite_speech",
+      "family": "granite",
+      "parameters": "2.3B",
+      "description": "6-language speech-to-text with translation.",
+      "base_model": "ibm-granite/granite-4.0-1b-speech",
+      "license": "apache-2.0",
+      "language_count": 6,
+      "languages": [
+        "en",
+        "fr",
+        "de",
+        "es",
+        "pt",
+        "ja"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 31,
+      "accuracy_score": 91,
+      "files": [
+        {
+          "filename": "granite-4.0-1b-speech-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1829704544,
+          "sha256": "f5e371d2a894e5b30dce793d573df2a965d7705488750b4ef5a6cad1069e2572"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-granite-speech-4.1-2b-gguf",
+      "revision": "b9c70f72342435e2d054c05c35b5ac2764402b82",
+      "slug": "granite-speech-4.1-2b",
+      "name": "Granite Speech 4.1 2B",
+      "architecture": "granite_speech",
+      "family": "granite",
+      "parameters": "2.3B",
+      "description": "6-language speech-to-text with translation.",
+      "base_model": "ibm-granite/granite-speech-4.1-2b",
+      "license": "apache-2.0",
+      "language_count": 6,
+      "languages": [
+        "en",
+        "fr",
+        "de",
+        "es",
+        "pt",
+        "ja"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 30,
+      "accuracy_score": 92,
+      "files": [
+        {
+          "filename": "granite-speech-4.1-2b-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1829704544,
+          "sha256": "63e0d3a82fa6f0f4688af0b7d7ee784864d271b7be820f4ea43c8298c59b0ac5"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-granite-speech-4.1-2b-plus-gguf",
+      "revision": "c4f89f60d2b85622ab6bf168220fc59311415106",
+      "slug": "granite-speech-4.1-2b-plus",
+      "name": "Granite Speech 4.1 2B Plus",
+      "architecture": "granite_speech",
+      "family": "granite",
+      "parameters": "2.1B",
+      "description": "5-language speech-to-text with word-level timestamps.",
+      "base_model": "ibm-granite/granite-speech-4.1-2b-plus",
+      "license": "apache-2.0",
+      "language_count": 5,
+      "languages": [
+        "en",
+        "fr",
+        "de",
+        "es",
+        "pt"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "word"
+      },
+      "speed_score": 29,
+      "accuracy_score": 90,
+      "files": [
+        {
+          "filename": "granite-speech-4.1-2b-plus-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1691297088,
+          "sha256": "3415f2c2d5979ded038dc012e5a875d77602fa5a0699cc75ee7fa47991f42530"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-medasr-gguf",
+      "revision": "b5b9b2094b47f2db44888e1642a851af043138a9",
+      "slug": "medasr",
+      "name": "MedASR",
+      "architecture": "medasr",
+      "family": "medasr",
+      "parameters": "105M",
+      "description": "English speech-to-text with token-level timestamps.",
+      "base_model": "google/medasr",
+      "license": "other",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 100,
+      "accuracy_score": 30,
+      "files": [
+        {
+          "filename": "medasr-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 127712448,
+          "sha256": "5a391a2154416b96241b829ac2c7eed8b64d197f00372512c9bbf63f4849c978"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-streaming-tiny-gguf",
+      "revision": "abfce8666020879d1fbb03be9488d97e7975d420",
+      "slug": "moonshine-streaming-tiny",
+      "name": "Moonshine Streaming Tiny",
+      "architecture": "moonshine_streaming",
+      "family": "moonshine",
+      "parameters": "44M",
+      "description": "English speech-to-text with streaming.",
+      "base_model": "UsefulSensors/moonshine-streaming-tiny",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": true,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 100,
+      "accuracy_score": 74,
+      "files": [
+        {
+          "filename": "moonshine-streaming-tiny-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 50462816,
+          "sha256": "930e4622ad3a24158b91406c30c977fa6a26b34cb32d6ac3e57cfb23383a869e"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-tiny-gguf",
+      "revision": "b839e29bdeda16a97dc8295ef7f0b04e5302565d",
+      "slug": "moonshine-tiny",
+      "name": "Moonshine Tiny",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "27M",
+      "description": "English speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-tiny",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 100,
+      "accuracy_score": 74,
+      "files": [
+        {
+          "filename": "moonshine-tiny-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 35466912,
+          "sha256": "2fd348d7b38f97d309cc3ec6848f3f57f537b80244950f07d2637e463f95a3a1"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-tiny-ar-gguf",
+      "revision": "da3bba10f3a3fa4c3513ae39b8202628d3407ee1",
+      "slug": "moonshine-tiny-ar",
+      "name": "Moonshine Tiny (Arabic)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "27M",
+      "description": "Arabic speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-tiny-ar",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "ar"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 100,
+      "accuracy_score": 17,
+      "files": [
+        {
+          "filename": "moonshine-tiny-ar-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 35466944,
+          "sha256": "e0bfa7c3aad2fe7acce022566daa1bb6140b6b263ba79655241acec7f7e0000b"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-tiny-ja-gguf",
+      "revision": "1896d24b2927bf2e8266b457e7298cf132cdfb95",
+      "slug": "moonshine-tiny-ja",
+      "name": "Moonshine Tiny (Japanese)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "27M",
+      "description": "Japanese speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-tiny-ja",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "ja"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 100,
+      "accuracy_score": 41,
+      "files": [
+        {
+          "filename": "moonshine-tiny-ja-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 35466944,
+          "sha256": "b47da12b2238cd176d9deebf31d49803c9eb4e99de5fd3abf672b4c0e2773c26"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-tiny-ko-gguf",
+      "revision": "08ec77819b6a74b0525b8f73323f503e9dcadd91",
+      "slug": "moonshine-tiny-ko",
+      "name": "Moonshine Tiny (Korean)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "27M",
+      "description": "Korean speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-tiny-ko",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "ko"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 100,
+      "accuracy_score": 55,
+      "files": [
+        {
+          "filename": "moonshine-tiny-ko-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 35466944,
+          "sha256": "3ffe3340ceed10843789e2f7bf580097213c97a3537cae7031dbfe2a409b36b7"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-tiny-uk-gguf",
+      "revision": "6e4844f51a401f6bcbf1d2504eeb6b67fdeff48d",
+      "slug": "moonshine-tiny-uk",
+      "name": "Moonshine Tiny (Ukrainian)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "27M",
+      "description": "Ukrainian speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-tiny-uk",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "uk"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 100,
+      "accuracy_score": 28,
+      "files": [
+        {
+          "filename": "moonshine-tiny-uk-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 35466944,
+          "sha256": "61c372f6d99cce6c7b7c45626a51a6c935217368e715d9c4e036ce85f4496338"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-tiny-vi-gguf",
+      "revision": "3279249d8b40c5850032698465ef2ac4eaa2fd3f",
+      "slug": "moonshine-tiny-vi",
+      "name": "Moonshine Tiny (Vietnamese)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "27M",
+      "description": "Vietnamese speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-tiny-vi",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "vi"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 100,
+      "accuracy_score": 42,
+      "files": [
+        {
+          "filename": "moonshine-tiny-vi-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 35466944,
+          "sha256": "a42a80ef2e3636104aa2aff87cdde3e251e319e7d0d1acb3fb594cc601d8b95f"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-tiny-zh-gguf",
+      "revision": "ac978e843467e6eb885dc375f2567aef34bca5ed",
+      "slug": "moonshine-tiny-zh",
+      "name": "Moonshine Tiny (Chinese)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "27M",
+      "description": "Chinese speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-tiny-zh",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "zh"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 100,
+      "accuracy_score": 40,
+      "files": [
+        {
+          "filename": "moonshine-tiny-zh-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 35466944,
+          "sha256": "95387abe90625410f8e2bcec43faaaadc0d92ef1e721117eb8a69cd31a7ef692"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-base-gguf",
+      "revision": "8c9bd83f56d158d89741cbbf10625dd6e448d1cc",
+      "slug": "moonshine-base",
+      "name": "Moonshine Base",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "62M",
+      "description": "English speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-base",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 99,
+      "accuracy_score": 80,
+      "files": [
+        {
+          "filename": "moonshine-base-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 77476480,
+          "sha256": "7f0027dfd857d310b63a85ef57cadf183da712cc374f85a648f8bc18aaa2efc8"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-base-ar-gguf",
+      "revision": "e8ad71d0c93ceb3358ea6afa027f2ace14cc1d09",
+      "slug": "moonshine-base-ar",
+      "name": "Moonshine Base (Arabic)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "62M",
+      "description": "Arabic speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-base-ar",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "ar"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 99,
+      "accuracy_score": 20,
+      "files": [
+        {
+          "filename": "moonshine-base-ar-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 77476480,
+          "sha256": "1a5b34653dfff0917d5bc7de1aeafca674162a5efa674472358d1b7f1644cf73"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-base-ja-gguf",
+      "revision": "4ba2839a77b15f9541fc4415d769e22689aee74a",
+      "slug": "moonshine-base-ja",
+      "name": "Moonshine Base (Japanese)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "62M",
+      "description": "Japanese speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-base-ja",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "ja"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 99,
+      "accuracy_score": 50,
+      "files": [
+        {
+          "filename": "moonshine-base-ja-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 77476480,
+          "sha256": "8ee6e9d7c9df69a3ea654af77659f1c0c08bf90998c2e2a269826096ffafc4f0"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-base-ko-gguf",
+      "revision": "855163b99b36d8d277719176e704f390a25859c0",
+      "slug": "moonshine-base-ko",
+      "name": "Moonshine Base (Korean)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "62M",
+      "description": "Korean speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-base-ko",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "ko"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 99,
+      "accuracy_score": 58,
+      "files": [
+        {
+          "filename": "moonshine-base-ko-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 77476480,
+          "sha256": "b430672cfdde98b894bd98adf1a8b3470308fea39ad1e6bb0f54d8fc9e114471"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-base-uk-gguf",
+      "revision": "35a4c92cbe0802111b06fcbc292059bfe5d697e0",
+      "slug": "moonshine-base-uk",
+      "name": "Moonshine Base (Ukrainian)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "62M",
+      "description": "Ukrainian speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-base-uk",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "uk"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 99,
+      "accuracy_score": 38,
+      "files": [
+        {
+          "filename": "moonshine-base-uk-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 77476512,
+          "sha256": "6dcac8c3905706e8c8416f531a479eccaa38cdaf1eae439f776fda4d4faa88d3"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-base-vi-gguf",
+      "revision": "1f7fd4fee76552dce21e4c97e24a45a6e084dd54",
+      "slug": "moonshine-base-vi",
+      "name": "Moonshine Base (Vietnamese)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "62M",
+      "description": "Vietnamese speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-base-vi",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "vi"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 99,
+      "accuracy_score": 52,
+      "files": [
+        {
+          "filename": "moonshine-base-vi-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 77476512,
+          "sha256": "d382ec7ac6aa821d25b921ab982bf1bf29da591cad73372b65209c6a74decb36"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-base-zh-gguf",
+      "revision": "4382d60ba981f8d6203f58a4a73a2f306ded8acb",
+      "slug": "moonshine-base-zh",
+      "name": "Moonshine Base (Chinese)",
+      "architecture": "moonshine",
+      "family": "moonshine",
+      "parameters": "62M",
+      "description": "Chinese speech-to-text.",
+      "base_model": "UsefulSensors/moonshine-base-zh",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "zh"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 99,
+      "accuracy_score": 32,
+      "files": [
+        {
+          "filename": "moonshine-base-zh-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 77476480,
+          "sha256": "1bae1d753b29b0c34038585b576d28e4f262ed10c6c7217e023fa5d624dc15ad"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-streaming-small-gguf",
+      "revision": "88cdd5834396ab591ab218ecf5c86e9f0a96c06a",
+      "slug": "moonshine-streaming-small",
+      "name": "Moonshine Streaming Small",
+      "architecture": "moonshine_streaming",
+      "family": "moonshine",
+      "parameters": "140M",
+      "description": "English speech-to-text with streaming.",
+      "base_model": "UsefulSensors/moonshine-streaming-small",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": true,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 95,
+      "accuracy_score": 84,
+      "files": [
+        {
+          "filename": "moonshine-streaming-small-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 198506848,
+          "sha256": "d03670f69629b649085d0f44a63d97668b4119117cc9611a4e4ad94341713dfc"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-moonshine-streaming-medium-gguf",
+      "revision": "c1eff1714df85136f04b8150e68fee780b368189",
+      "slug": "moonshine-streaming-medium",
+      "name": "Moonshine Streaming Medium",
+      "architecture": "moonshine_streaming",
+      "family": "moonshine",
+      "parameters": "266M",
+      "description": "English speech-to-text with streaming.",
+      "base_model": "UsefulSensors/moonshine-streaming-medium",
+      "license": "mit",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": true,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "none"
+      },
+      "speed_score": 83,
+      "accuracy_score": 87,
+      "files": [
+        {
+          "filename": "moonshine-streaming-medium-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 295793568,
+          "sha256": "f7c9564249b508f6012927ec4f9e536087da53a7047f858ca9975bea5f75299e"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-nemotron-speech-streaming-en-0.6b-gguf",
+      "revision": "27bd39f3833114305f1321bcbeb6995530f15534",
+      "slug": "nemotron-speech-streaming-en-0.6b",
+      "name": "Nemotron Speech Streaming EN",
+      "architecture": "parakeet",
+      "family": "nemotron",
+      "parameters": "0.6B",
+      "description": "English speech-to-text with streaming, token-level timestamps.",
+      "base_model": "nvidia/nemotron-speech-streaming-en-0.6b",
+      "license": "other",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": true,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 80,
+      "accuracy_score": 86,
+      "files": [
+        {
+          "filename": "nemotron-speech-streaming-en-0.6b-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 729650176,
+          "sha256": "90d8c89714cd31efc88be62a40c6b2bea57e0cc2063af1ffe2c28f1a228ca110"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-parakeet-tdt_ctc-110m-gguf",
+      "revision": "67248c91ab05d13ea4950536ec735407c30d78f2",
+      "slug": "parakeet-tdt_ctc-110m",
+      "name": "Parakeet TDT-CTC 110M",
+      "architecture": "parakeet",
+      "family": "parakeet",
+      "parameters": "110M",
+      "description": "English speech-to-text with token-level timestamps.",
+      "base_model": "nvidia/parakeet-tdt_ctc-110m",
+      "license": "cc-by-4.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 98,
+      "accuracy_score": 85,
+      "files": [
+        {
+          "filename": "parakeet-tdt_ctc-110m-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 135373280,
+          "sha256": "7dd44c74a331d788a4e5f8b16913b3feb29ced22cf5613aad0e0f6cd30516296"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-multitalker-parakeet-streaming-0.6b-v1-gguf",
+      "revision": "723719e4f736b0e86ac3d5e814fe656b8340fd0b",
+      "slug": "multitalker-parakeet-streaming-0.6b-v1",
+      "name": "Multitalker Parakeet Streaming EN",
+      "architecture": "parakeet",
+      "family": "parakeet",
+      "parameters": "0.6B",
+      "description": "English speech-to-text with streaming, token-level timestamps.",
+      "base_model": "nvidia/multitalker-parakeet-streaming-0.6b-v1",
+      "license": "other",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": true,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 96,
+      "accuracy_score": 86,
+      "files": [
+        {
+          "filename": "multitalker-parakeet-streaming-0.6b-v1-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 734123712,
+          "sha256": "4748deea0222eb9057ebdac1679eebb970bbe882ee10a96ae34596ffe83615c7"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-parakeet-ctc-0.6b-gguf",
+      "revision": "6b2eb0de33c92ef5d62748fbf83b2e7e1c957901",
+      "slug": "parakeet-ctc-0.6b",
+      "name": "Parakeet CTC 0.6B",
+      "architecture": "parakeet",
+      "family": "parakeet",
+      "parameters": "0.6B",
+      "description": "English speech-to-text with token-level timestamps.",
+      "base_model": "nvidia/parakeet-ctc-0.6b",
+      "license": "cc-by-4.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 94,
+      "accuracy_score": 88,
+      "files": [
+        {
+          "filename": "parakeet-ctc-0.6b-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 722271424,
+          "sha256": "e47ae86c1b34dbaf054334592575c29aee7de3546e75d1f0ccee05904c5c49ae"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-parakeet-rnnt-0.6b-gguf",
+      "revision": "c686bddc9e5d44ecc3f1a18d2e53476a5b218cdc",
+      "slug": "parakeet-rnnt-0.6b",
+      "name": "Parakeet RNN-T 0.6B",
+      "architecture": "parakeet",
+      "family": "parakeet",
+      "parameters": "0.6B",
+      "description": "English speech-to-text with token-level timestamps.",
+      "base_model": "nvidia/parakeet-rnnt-0.6b",
+      "license": "cc-by-4.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 84,
+      "accuracy_score": 90,
+      "files": [
+        {
+          "filename": "parakeet-rnnt-0.6b-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 729687456,
+          "sha256": "06da5ba773736984e0513037b27ff9300e95c55eaa2b79dbc688efc34b25df51"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-parakeet-ctc-1.1b-gguf",
+      "revision": "b7857be3783692b9d38ea17ca679603c722475ef",
+      "slug": "parakeet-ctc-1.1b",
+      "name": "Parakeet CTC 1.1B",
+      "architecture": "parakeet",
+      "family": "parakeet",
+      "parameters": "1.1B",
+      "description": "English speech-to-text with token-level timestamps.",
+      "base_model": "nvidia/parakeet-ctc-1.1b",
+      "license": "cc-by-4.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 83,
+      "accuracy_score": 88,
+      "files": [
+        {
+          "filename": "parakeet-ctc-1.1b-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 928584736,
+          "sha256": "8b38f60bb1c56b518953a39703068adc09991993b5aab52782e038a86a6c04cc"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-parakeet-tdt-1.1b-gguf",
+      "revision": "6041444b468dc04c5d8eeff33c82477866edcbb5",
+      "slug": "parakeet-tdt-1.1b",
+      "name": "Parakeet TDT 1.1B",
+      "architecture": "parakeet",
+      "family": "parakeet",
+      "parameters": "1.1B",
+      "description": "English speech-to-text with token-level timestamps.",
+      "base_model": "nvidia/parakeet-tdt-1.1b",
+      "license": "cc-by-4.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 76,
+      "accuracy_score": 91,
+      "files": [
+        {
+          "filename": "parakeet-tdt-1.1b-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 935758496,
+          "sha256": "18c22888fed10676fde72fdd5b833fab9175a6abf4e0cb390eb0a59b0b107cd3"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-parakeet-rnnt-1.1b-gguf",
+      "revision": "89f69e523ce7dacd5a2a985c6661206dbd5b3808",
+      "slug": "parakeet-rnnt-1.1b",
+      "name": "Parakeet RNN-T 1.1B",
+      "architecture": "parakeet",
+      "family": "parakeet",
+      "parameters": "1.1B",
+      "description": "English speech-to-text with token-level timestamps.",
+      "base_model": "nvidia/parakeet-rnnt-1.1b",
+      "license": "cc-by-4.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 75,
+      "accuracy_score": 91,
+      "files": [
+        {
+          "filename": "parakeet-rnnt-1.1b-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 935755008,
+          "sha256": "8ee2ead0c30773440743591cd8a9f8ac180c27f450c9b053805b2bab6bf352cb"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-parakeet-tdt_ctc-1.1b-gguf",
+      "revision": "c472dc685f5a046409f0273f363cf6adb0facadd",
+      "slug": "parakeet-tdt_ctc-1.1b",
+      "name": "Parakeet TDT-CTC 1.1B",
+      "architecture": "parakeet",
+      "family": "parakeet",
+      "parameters": "1.1B",
+      "description": "English speech-to-text with token-level timestamps.",
+      "base_model": "nvidia/parakeet-tdt_ctc-1.1b",
+      "license": "cc-by-4.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "token"
+      },
+      "speed_score": 75,
+      "accuracy_score": 88,
+      "files": [
+        {
+          "filename": "parakeet-tdt_ctc-1.1b-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 935758080,
+          "sha256": "da23eb8c78fe3813b88f616db85e8191cfbfffdbc2b8bb8bd74a94eb8987caee"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-Qwen3-ASR-1.7B-gguf",
+      "revision": "988a3b4ca461a509a9056b04c253c3ef1f506197",
+      "slug": "Qwen3-ASR-1.7B",
+      "name": "Qwen3-ASR 1.7B",
+      "architecture": "qwen3_asr",
+      "family": "qwen3",
+      "parameters": "2.0B",
+      "description": "30-language speech-to-text with auto language detection.",
+      "base_model": "Qwen/Qwen3-ASR-1.7B",
+      "license": "apache-2.0",
+      "language_count": 30,
+      "languages": [
+        "zh",
+        "en",
+        "yue",
+        "ar",
+        "de",
+        "fr",
+        "es",
+        "pt",
+        "id",
+        "it",
+        "ko",
+        "ru",
+        "th",
+        "vi",
+        "ja",
+        "tr",
+        "hi",
+        "ms",
+        "nl",
+        "sv",
+        "da",
+        "fi",
+        "pl",
+        "cs",
+        "fil",
+        "fa",
+        "el",
+        "ro",
+        "hu",
+        "mk"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": true,
+        "timestamps": "none"
+      },
+      "speed_score": 38,
+      "accuracy_score": 90,
+      "files": [
+        {
+          "filename": "Qwen3-ASR-1.7B-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 1319830496,
+          "sha256": "b7afe3674f653fa84f712ed2440353c6e7cf7f93697fef76b05a26538b24844e"
+        },
+        {
+          "filename": "Qwen3-ASR-1.7B-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1517290464,
+          "sha256": "034c557fe92ff8fcd9a9c041cbdaad347be0a86a58d3a348f63cf3f0180879d0"
+        },
+        {
+          "filename": "Qwen3-ASR-1.7B-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 1692554208,
+          "sha256": "c75a961b7134a6c952d89797865cb0d0376876185aee04ef6d12c31c2952e4e1"
+        },
+        {
+          "filename": "Qwen3-ASR-1.7B-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 2185030624,
+          "sha256": "9a0d81792dfea2d5f278b8a63deb3ea6e02139ce42c2301f32ea19c4f77526b7"
+        },
+        {
+          "filename": "Qwen3-ASR-1.7B-BF16.gguf",
+          "quant": "BF16",
+          "size_bytes": 4083087904,
+          "sha256": "57db745f8ec3ad2ea391b0205661e7d74f76158877a33f151e4d4624ed2b7cc9"
+        },
+        {
+          "filename": "Qwen3-ASR-1.7B-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 4091390944,
+          "sha256": "edb09c29b8f73822c639168d5ef72aa2dccdf8b4e48fc4b8518885352ff62c71"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-SenseVoiceSmall-gguf",
+      "revision": "61b77073cf2e47aa9f1ac4121f4d7e0dbbddbe70",
+      "slug": "SenseVoiceSmall",
+      "name": "SenseVoice Small",
+      "architecture": "sensevoice",
+      "family": "sensevoice",
+      "parameters": "234M",
+      "description": "5-language speech-to-text with auto language detection.",
+      "base_model": "FunAudioLLM/SenseVoiceSmall",
+      "license": "other",
+      "language_count": 5,
+      "languages": [
+        "zh",
+        "yue",
+        "en",
+        "ja",
+        "ko"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": true,
+        "timestamps": "none"
+      },
+      "speed_score": 98,
+      "accuracy_score": 81,
+      "files": [
+        {
+          "filename": "SenseVoiceSmall-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 145738304,
+          "sha256": "9d775303e6b4e793d049ef226214c400b2b1746c734ed017146a1a085b13d02b"
+        },
+        {
+          "filename": "SenseVoiceSmall-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 172474880,
+          "sha256": "622a819ef9b37dc5506f0079ddedca6ec22e272bb9b4fe950d8f13422d1ccd0b"
+        },
+        {
+          "filename": "SenseVoiceSmall-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 196438336,
+          "sha256": "5724d2ff6329f4355a29cee6a2432ecd1f60547a0a4ef7726cfceda7dafb394f"
+        },
+        {
+          "filename": "SenseVoiceSmall-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 252684608,
+          "sha256": "6c759ee4c9748c9b3f7a5a60ca74f0f7e685fb9d45d1378fce7cfd62f59adf29"
+        },
+        {
+          "filename": "SenseVoiceSmall-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 470412128,
+          "sha256": "dc172fd5ffaff0a396393cd4edd82e18403c53f8f5873bcc544ba012b70598f6"
+        },
+        {
+          "filename": "SenseVoiceSmall-F32.gguf",
+          "quant": "F32",
+          "size_bytes": 936617824,
+          "sha256": "dda511c3eac009568643b5c64541468d62be2e2a59700113f49c72675464d13d"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-Voxtral-Mini-3B-2507-gguf",
+      "revision": "14d958a2616afb510913c178be3ed27334815b2f",
+      "slug": "Voxtral-Mini-3B-2507",
+      "name": "Voxtral Mini 3B",
+      "architecture": "voxtral",
+      "family": "voxtral",
+      "parameters": "4.7B",
+      "description": "8-language speech-to-text with translation, auto language detection.",
+      "base_model": "mistralai/Voxtral-Mini-3B-2507",
+      "license": "apache-2.0",
+      "language_count": 8,
+      "languages": [
+        "en",
+        "fr",
+        "de",
+        "es",
+        "it",
+        "pt",
+        "nl",
+        "hi"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": true,
+        "timestamps": "none"
+      },
+      "speed_score": 14,
+      "accuracy_score": 88,
+      "files": [
+        {
+          "filename": "Voxtral-Mini-3B-2507-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 2984721056,
+          "sha256": "3a6717aa8f8989108d260cbd237584289eec43cc987e10133c33643515936205"
+        },
+        {
+          "filename": "Voxtral-Mini-3B-2507-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 3464182432,
+          "sha256": "9ea2eb85359f7771270715849dc2b0e80381a59dab09d9c5d85352ab9c53f675"
+        },
+        {
+          "filename": "Voxtral-Mini-3B-2507-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 3869489824,
+          "sha256": "0be733fd436c2a89483b96ed8d398abbc3ce5bcaa7aac64e886f5eb9d9066a43"
+        },
+        {
+          "filename": "Voxtral-Mini-3B-2507-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 5000084128,
+          "sha256": "06b4dd04e32953ccab0d417125bdd728ec031431596ed5e80123c3c66f29ddc2"
+        },
+        {
+          "filename": "Voxtral-Mini-3B-2507-BF16.gguf",
+          "quant": "BF16",
+          "size_bytes": 9365764768,
+          "sha256": "ddfa5eb2e5e56343ee9b3262d5581f9b48085bdecefba71c0092901cf0183ccb"
+        },
+        {
+          "filename": "Voxtral-Mini-3B-2507-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 9376578208,
+          "sha256": "a7f0bebce988a32ce7e736acffe19a48d9bc739789dfab7d13ca6b622d23dd6e"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-Voxtral-Small-24B-2507-gguf",
+      "revision": "9353eb0d3746a3d39b4016a25106c38da96825c2",
+      "slug": "Voxtral-Small-24B-2507",
+      "name": "Voxtral Small 24B",
+      "architecture": "voxtral",
+      "family": "voxtral",
+      "parameters": "24.3B",
+      "description": "8-language speech-to-text with translation, auto language detection.",
+      "base_model": "mistralai/Voxtral-Small-24B-2507",
+      "license": "apache-2.0",
+      "language_count": 8,
+      "languages": [
+        "en",
+        "fr",
+        "de",
+        "es",
+        "it",
+        "pt",
+        "nl",
+        "hi"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": true,
+        "timestamps": "none"
+      },
+      "speed_score": 10,
+      "accuracy_score": 90,
+      "files": [
+        {
+          "filename": "Voxtral-Small-24B-2507-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 14302261728,
+          "sha256": "0da1b866c0eb2ce805678c18a7fb1e413320e4ad3ccbef7160707b65bae937a3"
+        },
+        {
+          "filename": "Voxtral-Small-24B-2507-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 17138659808,
+          "sha256": "a53f73a5f63b7663fe155977616a636acac567dac898f6ef82ca519017e8b6e7"
+        },
+        {
+          "filename": "Voxtral-Small-24B-2507-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 19936473568,
+          "sha256": "e85950b9576d3913d2664abaac1cdcb3a967dbbc8a60febacaf137a7f4d216f0"
+        },
+        {
+          "filename": "Voxtral-Small-24B-2507-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 25810383328,
+          "sha256": "ab0964350131990a364dca53e3cac5f4d9cc176dce2f273066be3ef71e252fb2"
+        },
+        {
+          "filename": "Voxtral-Small-24B-2507-BF16.gguf",
+          "quant": "BF16",
+          "size_bytes": 48537285088,
+          "sha256": "5c38ff2d6dbb413d70dec37430825ff129862536f74149e015b3bc42c11c5745"
+        },
+        {
+          "filename": "Voxtral-Small-24B-2507-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 48548098528,
+          "sha256": "d5cc73553d9422dada176dd02c1920dc72a888a01eed34e20816b0bab8db207e"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-whisper-tiny-gguf",
+      "revision": "bebdaef26a833ed1f8ec190343b26afc772ee4e0",
+      "slug": "whisper-tiny",
+      "name": "Whisper Tiny",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "38M",
+      "description": "99-language speech-to-text with translation, auto language detection, segment-level timestamps.",
+      "base_model": "openai/whisper-tiny",
+      "license": "apache-2.0",
+      "language_count": 99,
+      "languages": [
+        "en",
+        "zh",
+        "de",
+        "es",
+        "ru",
+        "ko",
+        "fr",
+        "ja",
+        "pt",
+        "tr",
+        "pl",
+        "ca",
+        "nl",
+        "ar",
+        "sv",
+        "it",
+        "id",
+        "hi",
+        "fi",
+        "vi",
+        "he",
+        "uk",
+        "el",
+        "ms",
+        "cs",
+        "ro",
+        "da",
+        "hu",
+        "ta",
+        "no",
+        "th",
+        "ur",
+        "hr",
+        "bg",
+        "lt",
+        "la",
+        "mi",
+        "ml",
+        "cy",
+        "sk",
+        "te",
+        "fa",
+        "lv",
+        "bn",
+        "sr",
+        "az",
+        "sl",
+        "kn",
+        "et",
+        "mk",
+        "br",
+        "eu",
+        "is",
+        "hy",
+        "ne",
+        "mn",
+        "bs",
+        "kk",
+        "sq",
+        "sw",
+        "gl",
+        "mr",
+        "pa",
+        "si",
+        "km",
+        "sn",
+        "yo",
+        "so",
+        "af",
+        "oc",
+        "ka",
+        "be",
+        "tg",
+        "sd",
+        "gu",
+        "am",
+        "yi",
+        "lo",
+        "uz",
+        "fo",
+        "ht",
+        "ps",
+        "tk",
+        "nn",
+        "mt",
+        "sa",
+        "lb",
+        "my",
+        "bo",
+        "tl",
+        "mg",
+        "as",
+        "tt",
+        "haw",
+        "ln",
+        "ha",
+        "ba",
+        "jw",
+        "su"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": true,
+        "timestamps": "segment"
+      },
+      "speed_score": 100,
+      "accuracy_score": 61,
+      "files": [
+        {
+          "filename": "whisper-tiny-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 45981088,
+          "sha256": "325b9c7997cd1eff81ef709d55766565e71be696130cc3a3d444713798706834"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-whisper-tiny.en-gguf",
+      "revision": "9e0aac7d9a55fe0b2697cdc7aafe25768b69b459",
+      "slug": "whisper-tiny.en",
+      "name": "Whisper Tiny (English)",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "38M",
+      "description": "English speech-to-text with segment-level timestamps.",
+      "base_model": "openai/whisper-tiny.en",
+      "license": "apache-2.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "segment"
+      },
+      "speed_score": 100,
+      "accuracy_score": 68,
+      "files": [
+        {
+          "filename": "whisper-tiny.en-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 45904544,
+          "sha256": "e8c9b73c06344307d8b346e07fbe93dd88d894627854bcff31523f1ce44394fa"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-whisper-base-gguf",
+      "revision": "b748e730a9f35e6ae79b6cf608daf07285c97f32",
+      "slug": "whisper-base",
+      "name": "Whisper Base",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "73M",
+      "description": "99-language speech-to-text with translation, auto language detection, segment-level timestamps.",
+      "base_model": "openai/whisper-base",
+      "license": "apache-2.0",
+      "language_count": 99,
+      "languages": [
+        "en",
+        "zh",
+        "de",
+        "es",
+        "ru",
+        "ko",
+        "fr",
+        "ja",
+        "pt",
+        "tr",
+        "pl",
+        "ca",
+        "nl",
+        "ar",
+        "sv",
+        "it",
+        "id",
+        "hi",
+        "fi",
+        "vi",
+        "he",
+        "uk",
+        "el",
+        "ms",
+        "cs",
+        "ro",
+        "da",
+        "hu",
+        "ta",
+        "no",
+        "th",
+        "ur",
+        "hr",
+        "bg",
+        "lt",
+        "la",
+        "mi",
+        "ml",
+        "cy",
+        "sk",
+        "te",
+        "fa",
+        "lv",
+        "bn",
+        "sr",
+        "az",
+        "sl",
+        "kn",
+        "et",
+        "mk",
+        "br",
+        "eu",
+        "is",
+        "hy",
+        "ne",
+        "mn",
+        "bs",
+        "kk",
+        "sq",
+        "sw",
+        "gl",
+        "mr",
+        "pa",
+        "si",
+        "km",
+        "sn",
+        "yo",
+        "so",
+        "af",
+        "oc",
+        "ka",
+        "be",
+        "tg",
+        "sd",
+        "gu",
+        "am",
+        "yi",
+        "lo",
+        "uz",
+        "fo",
+        "ht",
+        "ps",
+        "tk",
+        "nn",
+        "mt",
+        "sa",
+        "lb",
+        "my",
+        "bo",
+        "tl",
+        "mg",
+        "as",
+        "tt",
+        "haw",
+        "ln",
+        "ha",
+        "ba",
+        "jw",
+        "su"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": true,
+        "timestamps": "segment"
+      },
+      "speed_score": 99,
+      "accuracy_score": 71,
+      "files": [
+        {
+          "filename": "whisper-base-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 84962880,
+          "sha256": "81c069428bc8a24551a8169cf31cf09bcfd9d4cf50389ae281323c9aa9648c81"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-whisper-base.en-gguf",
+      "revision": "0095d4571cc7bbfda853cee5a98a28c37729f539",
+      "slug": "whisper-base.en",
+      "name": "Whisper Base (English)",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "73M",
+      "description": "English speech-to-text with segment-level timestamps.",
+      "base_model": "openai/whisper-base.en",
+      "license": "apache-2.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "segment"
+      },
+      "speed_score": 99,
+      "accuracy_score": 76,
+      "files": [
+        {
+          "filename": "whisper-base.en-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 84886208,
+          "sha256": "3b46ca40bccbf7609c68d88a36d96077a04ca7c87f2060ede06f129fac3e7652"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-whisper-small.en-gguf",
+      "revision": "fd8cc18a103325cdeba2693bc0ff52c939332aad",
+      "slug": "whisper-small.en",
+      "name": "Whisper Small (English)",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "242M",
+      "description": "English speech-to-text with segment-level timestamps.",
+      "base_model": "openai/whisper-small.en",
+      "license": "apache-2.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "segment"
+      },
+      "speed_score": 80,
+      "accuracy_score": 81,
+      "files": [
+        {
+          "filename": "whisper-small.en-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 269674144,
+          "sha256": "9614e6b7fda2d26018e4f268aece8ca25a83296ea0b534169a585b740bfd71ef"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-whisper-small-gguf",
+      "revision": "a38b17e8adf487d86d9eaa0b80fc2f7f7e558430",
+      "slug": "whisper-small",
+      "name": "Whisper Small",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "242M",
+      "description": "99-language speech-to-text with translation, auto language detection, segment-level timestamps.",
+      "base_model": "openai/whisper-small",
+      "license": "apache-2.0",
+      "language_count": 99,
+      "languages": [
+        "en",
+        "zh",
+        "de",
+        "es",
+        "ru",
+        "ko",
+        "fr",
+        "ja",
+        "pt",
+        "tr",
+        "pl",
+        "ca",
+        "nl",
+        "ar",
+        "sv",
+        "it",
+        "id",
+        "hi",
+        "fi",
+        "vi",
+        "he",
+        "uk",
+        "el",
+        "ms",
+        "cs",
+        "ro",
+        "da",
+        "hu",
+        "ta",
+        "no",
+        "th",
+        "ur",
+        "hr",
+        "bg",
+        "lt",
+        "la",
+        "mi",
+        "ml",
+        "cy",
+        "sk",
+        "te",
+        "fa",
+        "lv",
+        "bn",
+        "sr",
+        "az",
+        "sl",
+        "kn",
+        "et",
+        "mk",
+        "br",
+        "eu",
+        "is",
+        "hy",
+        "ne",
+        "mn",
+        "bs",
+        "kk",
+        "sq",
+        "sw",
+        "gl",
+        "mr",
+        "pa",
+        "si",
+        "km",
+        "sn",
+        "yo",
+        "so",
+        "af",
+        "oc",
+        "ka",
+        "be",
+        "tg",
+        "sd",
+        "gu",
+        "am",
+        "yi",
+        "lo",
+        "uz",
+        "fo",
+        "ht",
+        "ps",
+        "tk",
+        "nn",
+        "mt",
+        "sa",
+        "lb",
+        "my",
+        "bo",
+        "tl",
+        "mg",
+        "as",
+        "tt",
+        "haw",
+        "ln",
+        "ha",
+        "ba",
+        "jw",
+        "su"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": true,
+        "timestamps": "segment"
+      },
+      "speed_score": 78,
+      "accuracy_score": 80,
+      "files": [
+        {
+          "filename": "whisper-small-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 269751136,
+          "sha256": "9b9c8811bbcc82a7766f0fb0925614bdacb0923b2cc630daeac17108b655b860"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-whisper-medium.en-gguf",
+      "revision": "2881a21b0f0562816d3c24e54ce879ad5709f685",
+      "slug": "whisper-medium.en",
+      "name": "Whisper Medium (English)",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "764M",
+      "description": "English speech-to-text with segment-level timestamps.",
+      "base_model": "openai/whisper-medium.en",
+      "license": "apache-2.0",
+      "language_count": 1,
+      "languages": [
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": false,
+        "timestamps": "segment"
+      },
+      "speed_score": 44,
+      "accuracy_score": 83,
+      "files": [
+        {
+          "filename": "whisper-medium.en-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 831460928,
+          "sha256": "03d7257fef498750ce272631bc6a34de322fc2b438aab5c268ff49dfd1b64c49"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-whisper-large-v3-turbo-gguf",
+      "revision": "c48f58847f16b6bd7273b3b805d0ba30a3148b00",
+      "slug": "whisper-large-v3-turbo",
+      "name": "Whisper Large v3 Turbo",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "809M",
+      "description": "100-language speech-to-text with auto language detection, segment-level timestamps.",
+      "base_model": "openai/whisper-large-v3-turbo",
+      "license": "apache-2.0",
+      "language_count": 100,
+      "languages": [
+        "en",
+        "zh",
+        "de",
+        "es",
+        "ru",
+        "ko",
+        "fr",
+        "ja",
+        "pt",
+        "tr",
+        "pl",
+        "ca",
+        "nl",
+        "ar",
+        "sv",
+        "it",
+        "id",
+        "hi",
+        "fi",
+        "vi",
+        "he",
+        "uk",
+        "el",
+        "ms",
+        "cs",
+        "ro",
+        "da",
+        "hu",
+        "ta",
+        "no",
+        "th",
+        "ur",
+        "hr",
+        "bg",
+        "lt",
+        "la",
+        "mi",
+        "ml",
+        "cy",
+        "sk",
+        "te",
+        "fa",
+        "lv",
+        "bn",
+        "sr",
+        "az",
+        "sl",
+        "kn",
+        "et",
+        "mk",
+        "br",
+        "eu",
+        "is",
+        "hy",
+        "ne",
+        "mn",
+        "bs",
+        "kk",
+        "sq",
+        "sw",
+        "gl",
+        "mr",
+        "pa",
+        "si",
+        "km",
+        "sn",
+        "yo",
+        "so",
+        "af",
+        "oc",
+        "ka",
+        "be",
+        "tg",
+        "sd",
+        "gu",
+        "am",
+        "yi",
+        "lo",
+        "uz",
+        "fo",
+        "ht",
+        "ps",
+        "tk",
+        "nn",
+        "mt",
+        "sa",
+        "lb",
+        "my",
+        "bo",
+        "tl",
+        "mg",
+        "as",
+        "tt",
+        "haw",
+        "ln",
+        "ha",
+        "ba",
+        "jw",
+        "su",
+        "yue"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": false,
+        "lang_detect": true,
+        "timestamps": "segment"
+      },
+      "speed_score": 35,
+      "accuracy_score": 88,
+      "files": [
+        {
+          "filename": "whisper-large-v3-turbo-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 886381760,
+          "sha256": "b2e30cc286bc9f3aba4db9099fc7403543497c05ce7100d0d83091ddfd25a183"
+        }
+      ],
+      "default_quant": "Q8_0",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-Breeze-ASR-25-gguf",
+      "revision": "9c6541cf6ff2d723deb7bf4045106e57a3a67ade",
+      "slug": "Breeze-ASR-25",
+      "name": "Breeze-ASR-25",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "1.5B",
+      "description": "Optimized for Taiwanese Mandarin. Code-switching support.",
+      "base_model": "MediaTek-Research/Breeze-ASR-25",
+      "license": "apache-2.0",
+      "language_count": 2,
+      "languages": [
+        "zh",
+        "en"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": true,
+        "timestamps": "segment"
+      },
+      "speed_score": 23,
+      "accuracy_score": 86,
+      "files": [
+        {
+          "filename": "Breeze-ASR-25-Q4_K_M.gguf",
+          "quant": "Q4_K_M",
+          "size_bytes": 996526080,
+          "sha256": "cb056e63e5606284637c8a9c6d35e3c544f190dd5d26335466c7e584e61815c4"
+        },
+        {
+          "filename": "Breeze-ASR-25-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1160366080,
+          "sha256": "c871fc811b33a16a5607c4d4166cfa2c0a1d359f7796e3da255e3e922f59139b"
+        },
+        {
+          "filename": "Breeze-ASR-25-Q6_K.gguf",
+          "quant": "Q6_K",
+          "size_bytes": 1296353280,
+          "sha256": "4c7fe8eed7b36a00dc345e9825fb0f4ac717c38cc5a9292cd552c2f141e3b258"
+        },
+        {
+          "filename": "Breeze-ASR-25-Q8_0.gguf",
+          "quant": "Q8_0",
+          "size_bytes": 1667964224,
+          "sha256": "1650c163cd1623d13b585368ffd87d7e669c5ff23014511e0fa91bb4ce994756"
+        },
+        {
+          "filename": "Breeze-ASR-25-BF16.gguf",
+          "quant": "BF16",
+          "size_bytes": 3096013408,
+          "sha256": "b2ae64afd2bea002c0188bba34e868f208eca8ab2b5d1359bd5d4b052209851e"
+        },
+        {
+          "filename": "Breeze-ASR-25-F16.gguf",
+          "quant": "F16",
+          "size_bytes": 3106458208,
+          "sha256": "1ed33e23e1dd7183c7d60e8713d159a61bfa1852019e7a65fd04ec6042a44f98"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-whisper-large-gguf",
+      "revision": "b963425803e754c7e6eae85a05805900a51d2caa",
+      "slug": "whisper-large",
+      "name": "Whisper Large",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "1.5B",
+      "description": "99-language speech-to-text with translation, auto language detection, segment-level timestamps.",
+      "base_model": "openai/whisper-large",
+      "license": "apache-2.0",
+      "language_count": 99,
+      "languages": [
+        "en",
+        "zh",
+        "de",
+        "es",
+        "ru",
+        "ko",
+        "fr",
+        "ja",
+        "pt",
+        "tr",
+        "pl",
+        "ca",
+        "nl",
+        "ar",
+        "sv",
+        "it",
+        "id",
+        "hi",
+        "fi",
+        "vi",
+        "he",
+        "uk",
+        "el",
+        "ms",
+        "cs",
+        "ro",
+        "da",
+        "hu",
+        "ta",
+        "no",
+        "th",
+        "ur",
+        "hr",
+        "bg",
+        "lt",
+        "la",
+        "mi",
+        "ml",
+        "cy",
+        "sk",
+        "te",
+        "fa",
+        "lv",
+        "bn",
+        "sr",
+        "az",
+        "sl",
+        "kn",
+        "et",
+        "mk",
+        "br",
+        "eu",
+        "is",
+        "hy",
+        "ne",
+        "mn",
+        "bs",
+        "kk",
+        "sq",
+        "sw",
+        "gl",
+        "mr",
+        "pa",
+        "si",
+        "km",
+        "sn",
+        "yo",
+        "so",
+        "af",
+        "oc",
+        "ka",
+        "be",
+        "tg",
+        "sd",
+        "gu",
+        "am",
+        "yi",
+        "lo",
+        "uz",
+        "fo",
+        "ht",
+        "ps",
+        "tk",
+        "nn",
+        "mt",
+        "sa",
+        "lb",
+        "my",
+        "bo",
+        "tl",
+        "mg",
+        "as",
+        "tt",
+        "haw",
+        "ln",
+        "ha",
+        "ba",
+        "jw",
+        "su"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": true,
+        "timestamps": "segment"
+      },
+      "speed_score": 23,
+      "accuracy_score": 83,
+      "files": [
+        {
+          "filename": "whisper-large-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1160366048,
+          "sha256": "b1dfb9fa0e9b0574d8c822f51662b8e59915831e1a3ca0d191f18ff8ba742639"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-whisper-large-v2-gguf",
+      "revision": "2c06799aa95660e4e124786cb2e88e7d766e69bc",
+      "slug": "whisper-large-v2",
+      "name": "Whisper Large v2",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "1.5B",
+      "description": "99-language speech-to-text with translation, auto language detection, segment-level timestamps.",
+      "base_model": "openai/whisper-large-v2",
+      "license": "apache-2.0",
+      "language_count": 99,
+      "languages": [
+        "en",
+        "zh",
+        "de",
+        "es",
+        "ru",
+        "ko",
+        "fr",
+        "ja",
+        "pt",
+        "tr",
+        "pl",
+        "ca",
+        "nl",
+        "ar",
+        "sv",
+        "it",
+        "id",
+        "hi",
+        "fi",
+        "vi",
+        "he",
+        "uk",
+        "el",
+        "ms",
+        "cs",
+        "ro",
+        "da",
+        "hu",
+        "ta",
+        "no",
+        "th",
+        "ur",
+        "hr",
+        "bg",
+        "lt",
+        "la",
+        "mi",
+        "ml",
+        "cy",
+        "sk",
+        "te",
+        "fa",
+        "lv",
+        "bn",
+        "sr",
+        "az",
+        "sl",
+        "kn",
+        "et",
+        "mk",
+        "br",
+        "eu",
+        "is",
+        "hy",
+        "ne",
+        "mn",
+        "bs",
+        "kk",
+        "sq",
+        "sw",
+        "gl",
+        "mr",
+        "pa",
+        "si",
+        "km",
+        "sn",
+        "yo",
+        "so",
+        "af",
+        "oc",
+        "ka",
+        "be",
+        "tg",
+        "sd",
+        "gu",
+        "am",
+        "yi",
+        "lo",
+        "uz",
+        "fo",
+        "ht",
+        "ps",
+        "tk",
+        "nn",
+        "mt",
+        "sa",
+        "lb",
+        "my",
+        "bo",
+        "tl",
+        "mg",
+        "as",
+        "tt",
+        "haw",
+        "ln",
+        "ha",
+        "ba",
+        "jw",
+        "su"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": true,
+        "timestamps": "segment"
+      },
+      "speed_score": 23,
+      "accuracy_score": 84,
+      "files": [
+        {
+          "filename": "whisper-large-v2-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1160366080,
+          "sha256": "94fab1289a98d26bf375174a8daa00f44c7b16a9944726dde05361e5a8bd07ff"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    },
+    {
+      "id": "xix3r/voxix-whisper-large-v3-gguf",
+      "revision": "e68cf927dee6f9dc64d70550b5e62c2f43a828b1",
+      "slug": "whisper-large-v3",
+      "name": "Whisper Large v3",
+      "architecture": "whisper",
+      "family": "whisper",
+      "parameters": "1.5B",
+      "description": "100-language speech-to-text with translation, auto language detection, segment-level timestamps.",
+      "base_model": "openai/whisper-large-v3",
+      "license": "apache-2.0",
+      "language_count": 100,
+      "languages": [
+        "en",
+        "zh",
+        "de",
+        "es",
+        "ru",
+        "ko",
+        "fr",
+        "ja",
+        "pt",
+        "tr",
+        "pl",
+        "ca",
+        "nl",
+        "ar",
+        "sv",
+        "it",
+        "id",
+        "hi",
+        "fi",
+        "vi",
+        "he",
+        "uk",
+        "el",
+        "ms",
+        "cs",
+        "ro",
+        "da",
+        "hu",
+        "ta",
+        "no",
+        "th",
+        "ur",
+        "hr",
+        "bg",
+        "lt",
+        "la",
+        "mi",
+        "ml",
+        "cy",
+        "sk",
+        "te",
+        "fa",
+        "lv",
+        "bn",
+        "sr",
+        "az",
+        "sl",
+        "kn",
+        "et",
+        "mk",
+        "br",
+        "eu",
+        "is",
+        "hy",
+        "ne",
+        "mn",
+        "bs",
+        "kk",
+        "sq",
+        "sw",
+        "gl",
+        "mr",
+        "pa",
+        "si",
+        "km",
+        "sn",
+        "yo",
+        "so",
+        "af",
+        "oc",
+        "ka",
+        "be",
+        "tg",
+        "sd",
+        "gu",
+        "am",
+        "yi",
+        "lo",
+        "uz",
+        "fo",
+        "ht",
+        "ps",
+        "tk",
+        "nn",
+        "mt",
+        "sa",
+        "lb",
+        "my",
+        "bo",
+        "tl",
+        "mg",
+        "as",
+        "tt",
+        "haw",
+        "ln",
+        "ha",
+        "ba",
+        "jw",
+        "su",
+        "yue"
+      ],
+      "capabilities": {
+        "streaming": false,
+        "translate": true,
+        "lang_detect": true,
+        "timestamps": "segment"
+      },
+      "speed_score": 23,
+      "accuracy_score": 89,
+      "files": [
+        {
+          "filename": "whisper-large-v3-Q5_K_M.gguf",
+          "quant": "Q5_K_M",
+          "size_bytes": 1161143008,
+          "sha256": "6053d0fd69a0fd48b8fea5ea7a52b9e0cde389343566fa30e453a1b2b258dc38"
+        }
+      ],
+      "default_quant": "Q5_K_M",
+      "recommended": false,
+      "recommended_rank": null
+    }
+  ]
+}

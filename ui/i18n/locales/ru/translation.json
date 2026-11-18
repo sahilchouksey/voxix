@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "Закрывать"
+  },
+  "serviceTab": {
+    "title": "Сервис",
+    "caption": "Локальный демон транскрипции для приложений и инструментов.",
+    "daemon": {
+      "groupTitle": "Демон",
+      "status": "Статус",
+      "running": "Работает",
+      "stopped": "Остановлен",
+      "stale": "Устарел",
+      "starting": "Запуск…",
+      "stopping": "Остановка…",
+      "refresh": "Обновить",
+      "start": "Запустить сервис",
+      "stop": "Остановить сервис",
+      "port": "Порт",
+      "processId": "ID процесса",
+      "protocolVersion": "Версия протокола",
+      "engineVersion": "Версия движка",
+      "ready": "Готов",
+      "notReady": "Не готов",
+      "uptime": "Время работы",
+      "discoveryMissing": "Нет документа discovery — сервис не запущен.",
+      "discoveryStale": "Документ discovery существует, но демон недоступен.",
+      "stopConfirmTitle": "Остановить демон сервиса?",
+      "stopConfirmBody": "Подключённые клиенты будут отключены. Демон завершит текущую работу и корректно завершится.",
+      "stopConfirmAction": "Остановить",
+      "cancel": "Отмена",
+      "startedToast": "Сервис запущен",
+      "alreadyRunningToast": "Сервис уже работает",
+      "stoppedToast": "Сервис остановлен"
+    },
+    "fingerprint": {
+      "label": "Отпечаток токена",
+      "reveal": "Показать",
+      "hide": "Скрыть"
+    },
+    "token": {
+      "groupTitle": "Токен доступа",
+      "memoryNote": "Хранится только в памяти — никогда не записывается на диск или в журналы.",
+      "inMemory": "Токен в памяти",
+      "pasteLabel": "Токен сервиса",
+      "pastePlaceholder": "vx_…",
+      "keep": "Сохранить в памяти",
+      "forget": "Забыть",
+      "rotate": "Сменить токен",
+      "rotating": "Смена…",
+      "rotateConfirmTitle": "Сменить токен сервиса?",
+      "rotateConfirmBody": "Все подключённые клиенты будут немедленно отключены. Текущий токен перестанет работать. Новый токен показывается только один раз — сохраните его в надёжном месте.",
+      "rotateConfirmAction": "Сменить",
+      "newTokenTitle": "Новый токен сервиса",
+      "newTokenBody": "Скопируйте его сейчас — он больше не будет показан.",
+      "copy": "Копировать",
+      "copied": "Скопировано",
+      "copyFailed": "Не удалось скопировать",
+      "dismiss": "Готово",
+      "rotatedToast": "Токен сменён — подключённые клиенты были отключены"
+    },
+    "sessions": {
+      "groupTitle": "Открытые сессии",
+      "caption": "Сервис сообщает только о сессии, удерживающей аренду инференса; полного списка сессий в протоколе нет.",
+      "openSessions": "Открытые сессии",
+      "leaseHolder": "Держатель аренды",
+      "noLease": "Аренда не удерживается",
+      "worstRealtimeFactor": "Худший фактор реального времени"
+    },
+    "errors": {
+      "noToken": "В памяти нет токена — вставьте его выше, чтобы опрашивать аутентифицированные маршруты.",
+      "unauthorized": "Токен отклонён. Возможно, он был сменён в другом месте.",
+      "unreachable": "Демон недоступен.",
+      "malformed": "Неожиданный ответ демона.",
+      "unknown": "Неожиданная ошибка"
+    },
+    "examples": {
+      "embedTitle": "Embed token in examples",
+      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
+      "repoLinkLabel": "Transcribe examples",
+      "repoLinkAction": "Open on GitHub"
+    }
+  },
+  "tray": {
+    "settings": "Настройки...",
+    "checkUpdates": "Проверить обновления...",
+    "copyLastTranscript": "Скопировать последнюю транскрипцию",
+    "unloadModel": "Выгрузить модель",
+    "model": "Модель",
+    "quit": "Выход",
+    "cancel": "Отмена",
+    "secureInputWarning": "⚠ Сочетания клавиш заблокированы Secure Input"
+  },
+  "voxix": {
+    "modelSection": {
+      "chooseModelTitle": "Choose a transcription model",
+      "chooseModelCaption": "Download a local model to start transcribing.",
+      "viewAllModels": "View All Models…",
+      "browseModels": "Browse Models…",
+      "noModelsDownloaded": "No models downloaded.",
+      "downloadingModel": "Downloading {{name}}…",
+      "notDownloadedWarning": "Not downloaded — transcription won't work until you download it.",
+      "cancel": "Cancel",
+      "download": "Download",
+      "suggested": "Suggested",
+      "retry": "Retry",
+      "modelLibraryTitle": "Model Library",
+      "modelLibraryCaption": "Select an installed model to use it, or download another model for local transcription.",
+      "done": "Done",
+      "localModelsNote": "Models run locally on your machine. Downloads are stored on this device.",
+      "accuracy": "Accuracy",
+      "speed": "Speed",
+      "use": "Use",
+      "remove": "Remove",
+      "removeModelTitle": "Remove {{name}}?",
+      "removeModelBody": "This frees {{size}} on this machine. You can download it again anytime.",
+      "removeDownload": "Remove Download"
+    },
+    "transforms": {
+      "preview": "Preview",
+      "inputLabel": "Input — editable sample",
+      "transformsTo": "↓ transforms to",
+      "outputLabel": "Output — preview (read-only)",
+      "noOutput": "— no output",
+      "charCount": "{{input}} → {{output}} chars",
+      "futureTranscriptsOnly": "Applies to future transcripts only — history is not re-processed.",
+      "wordRules": "Word rules",
+      "noPatterns": "No patterns yet. Add one below.",
+      "addPattern": "Add pattern",
+      "noReplacements": "No replacements yet.",
+      "addReplacement": "Add replacement",
+      "outputFormatting": "Output formatting"
+    },
+    "history": {
+      "deleteAll": "Delete All",
+      "deleteAllTitle": "Delete All Transcripts",
+      "deleteAllBody": "Are you sure you want to delete all transcripts? This action cannot be undone.",
+      "cancel": "Cancel",
+      "transcriptionFailedAudioKept": "Transcription failed — audio kept",
+      "deleteTitle": "Delete this transcription?",
+      "deleteBody": "This cannot be undone. The audio file is removed too.",
+      "delete": "Delete"
+    },
+    "settings": {
+      "systemDefault": "System Default",
+      "doNothing": "Do Nothing",
+      "muteVolume": "Mute Volume",
+      "unlimited": "Unlimited"
+    },
+    "about": {
+      "visitGithub": "Visit our GitHub",
+      "footer": "voxix — a Linux speech-to-text app, built on the voxix speech-to-text engine. MIT licensed."
+    },
+    "modelDownloadProgress": {
+      "speedValue": "{{speed}} MB/s",
+      "cancel": "Cancel"
+    },
+    "hotKeyView": {
+      "hyper": "✦"
+    },
+    "voxixApp": {
+      "voxix": "voxix"
+    }
+  }
+}

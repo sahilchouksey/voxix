@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "닫기"
+  },
+  "serviceTab": {
+    "title": "서비스",
+    "caption": "앱과 도구를 위한 로컬 전사 데몬입니다.",
+    "daemon": {
+      "groupTitle": "데몬",
+      "status": "상태",
+      "running": "실행 중",
+      "stopped": "중지됨",
+      "stale": "오래됨",
+      "starting": "시작하는 중…",
+      "stopping": "중지하는 중…",
+      "refresh": "새로 고침",
+      "start": "서비스 시작",
+      "stop": "서비스 중지",
+      "port": "포트",
+      "processId": "프로세스 ID",
+      "protocolVersion": "프로토콜 버전",
+      "engineVersion": "엔진 버전",
+      "ready": "준비됨",
+      "notReady": "준비 안 됨",
+      "uptime": "가동 시간",
+      "discoveryMissing": "검색 문서가 없습니다 — 서비스가 실행 중이지 않습니다.",
+      "discoveryStale": "검색 문서는 있지만 데몬에 연결할 수 없습니다.",
+      "stopConfirmTitle": "서비스 데몬을 중지할까요?",
+      "stopConfirmBody": "연결된 클라이언트의 연결이 끊어집니다. 데몬은 진행 중인 작업을 마치고 정상적으로 종료합니다.",
+      "stopConfirmAction": "중지",
+      "cancel": "취소",
+      "startedToast": "서비스가 시작되었습니다",
+      "alreadyRunningToast": "서비스가 이미 실행 중입니다",
+      "stoppedToast": "서비스가 중지되었습니다"
+    },
+    "fingerprint": {
+      "label": "토큰 지문",
+      "reveal": "표시",
+      "hide": "숨기기"
+    },
+    "token": {
+      "groupTitle": "액세스 토큰",
+      "memoryNote": "메모리에만 보관되며 — 디스크나 로그에 절대 기록되지 않습니다.",
+      "inMemory": "메모리에 토큰 있음",
+      "pasteLabel": "서비스 토큰",
+      "pastePlaceholder": "vx_…",
+      "keep": "메모리에 보관",
+      "forget": "잊기",
+      "rotate": "토큰 교체",
+      "rotating": "교체하는 중…",
+      "rotateConfirmTitle": "서비스 토큰을 교체할까요?",
+      "rotateConfirmBody": "연결된 모든 클라이언트의 연결이 즉시 끊어집니다. 현재 토큰은 작동을 멈춥니다. 새 토큰은 한 번만 표시됩니다 — 안전한 곳에 보관하세요.",
+      "rotateConfirmAction": "교체",
+      "newTokenTitle": "새 서비스 토큰",
+      "newTokenBody": "지금 복사하세요 — 다시 표시되지 않습니다.",
+      "copy": "복사",
+      "copied": "복사됨",
+      "copyFailed": "복사하지 못했습니다",
+      "dismiss": "완료",
+      "rotatedToast": "토큰이 교체되었습니다 — 연결된 클라이언트가 종료되었습니다"
+    },
+    "sessions": {
+      "groupTitle": "열린 세션",
+      "caption": "서비스는 추론 lease를 보유한 세션만 보고합니다. 전체 세션 목록은 프로토콜에 포함되지 않습니다.",
+      "openSessions": "열린 세션",
+      "leaseHolder": "Lease 보유자",
+      "noLease": "보유 중인 lease 없음",
+      "worstRealtimeFactor": "최악의 실시간 계수"
+    },
+    "errors": {
+      "noToken": "메모리에 토큰이 없습니다 — 인증된 경로를 호출하려면 위에 토큰을 붙여넣으세요.",
+      "unauthorized": "토큰이 거부되었습니다. 다른 곳에서 교체되었을 수 있습니다.",
+      "unreachable": "데몬에 연결할 수 없습니다.",
+      "malformed": "데몬에서 예상치 못한 응답이 왔습니다.",
+      "unknown": "예상치 못한 오류"
+    },
+    "examples": {
+      "embedTitle": "Embed token in examples",
+      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
+      "repoLinkLabel": "Transcribe examples",
+      "repoLinkAction": "Open on GitHub"
+    }
+  },
+  "tray": {
+    "settings": "설정...",
+    "checkUpdates": "업데이트 확인...",
+    "copyLastTranscript": "마지막 녹음 내용 복사",
+    "unloadModel": "모델 언로드",
+    "model": "모델",
+    "quit": "종료",
+    "cancel": "취소",
+    "secureInputWarning": "⚠ Secure Input으로 단축키가 차단됨"
+  },
+  "voxix": {
+    "modelSection": {
+      "chooseModelTitle": "Choose a transcription model",
+      "chooseModelCaption": "Download a local model to start transcribing.",
+      "viewAllModels": "View All Models…",
+      "browseModels": "Browse Models…",
+      "noModelsDownloaded": "No models downloaded.",
+      "downloadingModel": "Downloading {{name}}…",
+      "notDownloadedWarning": "Not downloaded — transcription won't work until you download it.",
+      "cancel": "Cancel",
+      "download": "Download",
+      "suggested": "Suggested",
+      "retry": "Retry",
+      "modelLibraryTitle": "Model Library",
+      "modelLibraryCaption": "Select an installed model to use it, or download another model for local transcription.",
+      "done": "Done",
+      "localModelsNote": "Models run locally on your machine. Downloads are stored on this device.",
+      "accuracy": "Accuracy",
+      "speed": "Speed",
+      "use": "Use",
+      "remove": "Remove",
+      "removeModelTitle": "Remove {{name}}?",
+      "removeModelBody": "This frees {{size}} on this machine. You can download it again anytime.",
+      "removeDownload": "Remove Download"
+    },
+    "transforms": {
+      "preview": "Preview",
+      "inputLabel": "Input — editable sample",
+      "transformsTo": "↓ transforms to",
+      "outputLabel": "Output — preview (read-only)",
+      "noOutput": "— no output",
+      "charCount": "{{input}} → {{output}} chars",
+      "futureTranscriptsOnly": "Applies to future transcripts only — history is not re-processed.",
+      "wordRules": "Word rules",
+      "noPatterns": "No patterns yet. Add one below.",
+      "addPattern": "Add pattern",
+      "noReplacements": "No replacements yet.",
+      "addReplacement": "Add replacement",
+      "outputFormatting": "Output formatting"
+    },
+    "history": {
+      "deleteAll": "Delete All",
+      "deleteAllTitle": "Delete All Transcripts",
+      "deleteAllBody": "Are you sure you want to delete all transcripts? This action cannot be undone.",
+      "cancel": "Cancel",
+      "transcriptionFailedAudioKept": "Transcription failed — audio kept",
+      "deleteTitle": "Delete this transcription?",
+      "deleteBody": "This cannot be undone. The audio file is removed too.",
+      "delete": "Delete"
+    },
+    "settings": {
+      "systemDefault": "System Default",
+      "doNothing": "Do Nothing",
+      "muteVolume": "Mute Volume",
+      "unlimited": "Unlimited"
+    },
+    "about": {
+      "visitGithub": "Visit our GitHub",
+      "footer": "voxix — a Linux speech-to-text app, built on the voxix speech-to-text engine. MIT licensed."
+    },
+    "modelDownloadProgress": {
+      "speedValue": "{{speed}} MB/s",
+      "cancel": "Cancel"
+    },
+    "hotKeyView": {
+      "hyper": "✦"
+    },
+    "voxixApp": {
+      "voxix": "voxix"
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "إغلاق"
+  },
+  "serviceTab": {
+    "title": "الخدمة",
+    "caption": "برنامج نسخ محلي للتطبيقات والأدوات.",
+    "daemon": {
+      "groupTitle": "الخدمة الخلفية",
+      "status": "الحالة",
+      "running": "قيد التشغيل",
+      "stopped": "متوقف",
+      "stale": "قديم",
+      "starting": "جارٍ البدء…",
+      "stopping": "جارٍ الإيقاف…",
+      "refresh": "تحديث",
+      "start": "تشغيل الخدمة",
+      "stop": "إيقاف الخدمة",
+      "port": "المنفذ",
+      "processId": "معرّف العملية",
+      "protocolVersion": "إصدار البروتوكول",
+      "engineVersion": "إصدار المحرك",
+      "ready": "جاهز",
+      "notReady": "غير جاهز",
+      "uptime": "مدة التشغيل",
+      "discoveryMissing": "لا توجد وثيقة اكتشاف — الخدمة غير قيد التشغيل.",
+      "discoveryStale": "توجد وثيقة اكتشاف، لكن يتعذر الوصول إلى الخدمة الخلفية.",
+      "stopConfirmTitle": "إيقاف الخدمة الخلفية؟",
+      "stopConfirmBody": "سيتم فصل العملاء المتصلين. تنهي الخدمة الخلفية العمل الجاري وتغلق بصورة منظمة.",
+      "stopConfirmAction": "إيقاف",
+      "cancel": "إلغاء",
+      "startedToast": "تم تشغيل الخدمة",
+      "alreadyRunningToast": "الخدمة قيد التشغيل بالفعل",
+      "stoppedToast": "تم إيقاف الخدمة"
+    },
+    "fingerprint": {
+      "label": "بصمة الرمز",
+      "reveal": "إظهار",
+      "hide": "إخفاء"
+    },
+    "token": {
+      "groupTitle": "رمز الوصول",
+      "memoryNote": "يُحفظ في الذاكرة فقط — لا يُكتب أبدًا على القرص أو في السجلات.",
+      "inMemory": "الرمز في الذاكرة",
+      "pasteLabel": "رمز الخدمة",
+      "pastePlaceholder": "vx_…",
+      "keep": "احتفظ به في الذاكرة",
+      "forget": "انسَه",
+      "rotate": "تدوير الرمز",
+      "rotating": "جارٍ التدوير…",
+      "rotateConfirmTitle": "تدوير رمز الخدمة؟",
+      "rotateConfirmBody": "سيتم فصل جميع العملاء المتصلين فورًا. سيتوقف الرمز الحالي عن العمل. يُعرض الرمز الجديد مرة واحدة فقط — احتفظ به في مكان آمن.",
+      "rotateConfirmAction": "تدوير",
+      "newTokenTitle": "رمز خدمة جديد",
+      "newTokenBody": "انسخه الآن — لن يُعرض مرة أخرى.",
+      "copy": "نسخ",
+      "copied": "تم النسخ",
+      "copyFailed": "تعذر النسخ",
+      "dismiss": "تم",
+      "rotatedToast": "تم تدوير الرمز — أُغلق العملاء المتصلون"
+    },
+    "sessions": {
+      "groupTitle": "الجلسات المفتوحة",
+      "caption": "تُبلغ الخدمة فقط عن الجلسة الحائزة على عقد الاستدلال؛ القائمة الكاملة للجلسات ليست جزءًا من البروتوكول.",
+      "openSessions": "الجلسات المفتوحة",
+      "leaseHolder": "حائز العقد",
+      "noLease": "لا يوجد عقد قائم",
+      "worstRealtimeFactor": "أسوأ عامل زمن حقيقي"
+    },
+    "errors": {
+      "noToken": "لا يوجد رمز في الذاكرة — الصق رمزًا أعلاه لاستدعاء المسارات الموثقة.",
+      "unauthorized": "تم رفض الرمز. ربما تم تدويره في مكان آخر.",
+      "unreachable": "يتعذر الوصول إلى الخدمة الخلفية.",
+      "malformed": "استجابة غير متوقعة من الخدمة الخلفية.",
+      "unknown": "خطأ غير متوقع"
+    },
+    "examples": {
+      "embedTitle": "Embed token in examples",
+      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
+      "repoLinkLabel": "Transcribe examples",
+      "repoLinkAction": "Open on GitHub"
+    }
+  },
+  "tray": {
+    "settings": "...الإعدادات",
+    "checkUpdates": "...التحقق من وجود تحديثات",
+    "copyLastTranscript": "نسخ آخر نص تم تفريغه",
+    "unloadModel": "تفريغ النموذج",
+    "model": "النموذج",
+    "quit": "إنهاء",
+    "cancel": "إلغاء",
+    "secureInputWarning": "⚠ الاختصارات محجوبة بواسطة Secure Input"
+  },
+  "voxix": {
+    "modelSection": {
+      "chooseModelTitle": "Choose a transcription model",
+      "chooseModelCaption": "Download a local model to start transcribing.",
+      "viewAllModels": "View All Models…",
+      "browseModels": "Browse Models…",
+      "noModelsDownloaded": "No models downloaded.",
+      "downloadingModel": "Downloading {{name}}…",
+      "notDownloadedWarning": "Not downloaded — transcription won't work until you download it.",
+      "cancel": "Cancel",
+      "download": "Download",
+      "suggested": "Suggested",
+      "retry": "Retry",
+      "modelLibraryTitle": "Model Library",
+      "modelLibraryCaption": "Select an installed model to use it, or download another model for local transcription.",
+      "done": "Done",
+      "localModelsNote": "Models run locally on your machine. Downloads are stored on this device.",
+      "accuracy": "Accuracy",
+      "speed": "Speed",
+      "use": "Use",
+      "remove": "Remove",
+      "removeModelTitle": "Remove {{name}}?",
+      "removeModelBody": "This frees {{size}} on this machine. You can download it again anytime.",
+      "removeDownload": "Remove Download"
+    },
+    "transforms": {
+      "preview": "Preview",
+      "inputLabel": "Input — editable sample",
+      "transformsTo": "↓ transforms to",
+      "outputLabel": "Output — preview (read-only)",
+      "noOutput": "— no output",
+      "charCount": "{{input}} → {{output}} chars",
+      "futureTranscriptsOnly": "Applies to future transcripts only — history is not re-processed.",
+      "wordRules": "Word rules",
+      "noPatterns": "No patterns yet. Add one below.",
+      "addPattern": "Add pattern",
+      "noReplacements": "No replacements yet.",
+      "addReplacement": "Add replacement",
+      "outputFormatting": "Output formatting"
+    },
+    "history": {
+      "deleteAll": "Delete All",
+      "deleteAllTitle": "Delete All Transcripts",
+      "deleteAllBody": "Are you sure you want to delete all transcripts? This action cannot be undone.",
+      "cancel": "Cancel",
+      "transcriptionFailedAudioKept": "Transcription failed — audio kept",
+      "deleteTitle": "Delete this transcription?",
+      "deleteBody": "This cannot be undone. The audio file is removed too.",
+      "delete": "Delete"
+    },
+    "settings": {
+      "systemDefault": "System Default",
+      "doNothing": "Do Nothing",
+      "muteVolume": "Mute Volume",
+      "unlimited": "Unlimited"
+    },
+    "about": {
+      "visitGithub": "Visit our GitHub",
+      "footer": "voxix — a Linux speech-to-text app, built on the voxix speech-to-text engine. MIT licensed."
+    },
+    "modelDownloadProgress": {
+      "speedValue": "{{speed}} MB/s",
+      "cancel": "Cancel"
+    },
+    "hotKeyView": {
+      "hyper": "✦"
+    },
+    "voxixApp": {
+      "voxix": "voxix"
+    }
+  }
+}

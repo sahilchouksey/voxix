@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "Fermer"
+  },
+  "serviceTab": {
+    "title": "Service",
+    "caption": "Démon de transcription local pour les apps et les outils.",
+    "daemon": {
+      "groupTitle": "Démon",
+      "status": "État",
+      "running": "En cours",
+      "stopped": "Arrêté",
+      "stale": "Obsolète",
+      "starting": "Démarrage…",
+      "stopping": "Arrêt…",
+      "refresh": "Actualiser",
+      "start": "Démarrer le service",
+      "stop": "Arrêter le service",
+      "port": "Port",
+      "processId": "ID de processus",
+      "protocolVersion": "Version du protocole",
+      "engineVersion": "Version du moteur",
+      "ready": "Prêt",
+      "notReady": "Pas prêt",
+      "uptime": "Temps de fonctionnement",
+      "discoveryMissing": "Aucun document de découverte — le service n'est pas en cours d'exécution.",
+      "discoveryStale": "Un document de découverte existe, mais le démon est injoignable.",
+      "stopConfirmTitle": "Arrêter le démon du service ?",
+      "stopConfirmBody": "Les clients connectés seront déconnectés. Le démon termine le travail en cours puis s'arrête proprement.",
+      "stopConfirmAction": "Arrêter",
+      "cancel": "Annuler",
+      "startedToast": "Service démarré",
+      "alreadyRunningToast": "Le service est déjà en cours d'exécution",
+      "stoppedToast": "Service arrêté"
+    },
+    "fingerprint": {
+      "label": "Empreinte du jeton",
+      "reveal": "Afficher",
+      "hide": "Masquer"
+    },
+    "token": {
+      "groupTitle": "Jeton d'accès",
+      "memoryNote": "Conservé uniquement en mémoire — jamais enregistré sur le disque ni dans les journaux.",
+      "inMemory": "Jeton en mémoire",
+      "pasteLabel": "Jeton du service",
+      "pastePlaceholder": "vx_…",
+      "keep": "Garder en mémoire",
+      "forget": "Oublier",
+      "rotate": "Renouveler le jeton",
+      "rotating": "Renouvellement…",
+      "rotateConfirmTitle": "Renouveler le jeton du service ?",
+      "rotateConfirmBody": "Tous les clients connectés sont déconnectés immédiatement. Le jeton actuel cessera de fonctionner. Le nouveau jeton n'est affiché qu'une seule fois — conservez-le en lieu sûr.",
+      "rotateConfirmAction": "Renouveler",
+      "newTokenTitle": "Nouveau jeton de service",
+      "newTokenBody": "Copiez-le maintenant — il ne sera plus affiché.",
+      "copy": "Copier",
+      "copied": "Copié",
+      "copyFailed": "Échec de la copie",
+      "dismiss": "Terminé",
+      "rotatedToast": "Jeton renouvelé — les clients connectés ont été fermés"
+    },
+    "sessions": {
+      "groupTitle": "Sessions ouvertes",
+      "caption": "Le service signale uniquement la session qui détient le bail d'inférence ; une liste complète des sessions ne fait pas partie du protocole.",
+      "openSessions": "Sessions ouvertes",
+      "leaseHolder": "Détenteur du bail",
+      "noLease": "Aucun bail détenu",
+      "worstRealtimeFactor": "Pire facteur temps réel"
+    },
+    "errors": {
+      "noToken": "Aucun jeton en mémoire — collez-en un ci-dessus pour interroger les routes authentifiées.",
+      "unauthorized": "Jeton refusé. Il a peut-être été renouvelé ailleurs.",
+      "unreachable": "Démon injoignable.",
+      "malformed": "Réponse inattendue du démon.",
+      "unknown": "Erreur inattendue"
+    },
+    "examples": {
+      "embedTitle": "Embed token in examples",
+      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
+      "repoLinkLabel": "Transcribe examples",
+      "repoLinkAction": "Open on GitHub"
+    }
+  },
+  "tray": {
+    "settings": "Paramètres...",
+    "checkUpdates": "Rechercher des mises à jour...",
+    "copyLastTranscript": "Copier la dernière transcription",
+    "unloadModel": "Décharger le modèle",
+    "model": "Modèle",
+    "quit": "Quitter",
+    "cancel": "Annuler",
+    "secureInputWarning": "⚠ Raccourcis bloqués par Secure Input"
+  },
+  "voxix": {
+    "modelSection": {
+      "chooseModelTitle": "Choose a transcription model",
+      "chooseModelCaption": "Download a local model to start transcribing.",
+      "viewAllModels": "View All Models…",
+      "browseModels": "Browse Models…",
+      "noModelsDownloaded": "No models downloaded.",
+      "downloadingModel": "Downloading {{name}}…",
+      "notDownloadedWarning": "Not downloaded — transcription won't work until you download it.",
+      "cancel": "Cancel",
+      "download": "Download",
+      "suggested": "Suggested",
+      "retry": "Retry",
+      "modelLibraryTitle": "Model Library",
+      "modelLibraryCaption": "Select an installed model to use it, or download another model for local transcription.",
+      "done": "Done",
+      "localModelsNote": "Models run locally on your machine. Downloads are stored on this device.",
+      "accuracy": "Accuracy",
+      "speed": "Speed",
+      "use": "Use",
+      "remove": "Remove",
+      "removeModelTitle": "Remove {{name}}?",
+      "removeModelBody": "This frees {{size}} on this machine. You can download it again anytime.",
+      "removeDownload": "Remove Download"
+    },
+    "transforms": {
+      "preview": "Preview",
+      "inputLabel": "Input — editable sample",
+      "transformsTo": "↓ transforms to",
+      "outputLabel": "Output — preview (read-only)",
+      "noOutput": "— no output",
+      "charCount": "{{input}} → {{output}} chars",
+      "futureTranscriptsOnly": "Applies to future transcripts only — history is not re-processed.",
+      "wordRules": "Word rules",
+      "noPatterns": "No patterns yet. Add one below.",
+      "addPattern": "Add pattern",
+      "noReplacements": "No replacements yet.",
+      "addReplacement": "Add replacement",
+      "outputFormatting": "Output formatting"
+    },
+    "history": {
+      "deleteAll": "Delete All",
+      "deleteAllTitle": "Delete All Transcripts",
+      "deleteAllBody": "Are you sure you want to delete all transcripts? This action cannot be undone.",
+      "cancel": "Cancel",
+      "transcriptionFailedAudioKept": "Transcription failed — audio kept",
+      "deleteTitle": "Delete this transcription?",
+      "deleteBody": "This cannot be undone. The audio file is removed too.",
+      "delete": "Delete"
+    },
+    "settings": {
+      "systemDefault": "System Default",
+      "doNothing": "Do Nothing",
+      "muteVolume": "Mute Volume",
+      "unlimited": "Unlimited"
+    },
+    "about": {
+      "visitGithub": "Visit our GitHub",
+      "footer": "voxix — a Linux speech-to-text app, built on the voxix speech-to-text engine. MIT licensed."
+    },
+    "modelDownloadProgress": {
+      "speedValue": "{{speed}} MB/s",
+      "cancel": "Cancel"
+    },
+    "hotKeyView": {
+      "hyper": "✦"
+    },
+    "voxixApp": {
+      "voxix": "voxix"
+    }
+  }
+}

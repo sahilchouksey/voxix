@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "बंद करें"
+  },
+  "serviceTab": {
+    "title": "सेवा",
+    "caption": "ऐप्स और टूल के लिए स्थानीय ट्रांसक्रिप्शन डेमन।",
+    "daemon": {
+      "groupTitle": "डेमन",
+      "status": "स्थिति",
+      "running": "चल रहा है",
+      "stopped": "रुका हुआ",
+      "stale": "बासी",
+      "starting": "शुरू हो रहा है…",
+      "stopping": "रुक रहा है…",
+      "refresh": "रीफ़्रेश करें",
+      "start": "सेवा शुरू करें",
+      "stop": "सेवा रोकें",
+      "port": "पोर्ट",
+      "processId": "प्रोसेस आईडी",
+      "protocolVersion": "प्रोटोकॉल संस्करण",
+      "engineVersion": "इंजन संस्करण",
+      "ready": "तैयार",
+      "notReady": "तैयार नहीं",
+      "uptime": "अपटाइम",
+      "discoveryMissing": "कोई discovery दस्तावेज़ नहीं — सेवा नहीं चल रही है।",
+      "discoveryStale": "एक discovery दस्तावेज़ मौजूद है, लेकिन डेमन तक पहुँच नहीं है।",
+      "stopConfirmTitle": "सेवा डेमन रोकें?",
+      "stopConfirmBody": "जुड़े हुए क्लाइंट डिसकनेक्ट हो जाएंगे। डेमन चल रहा काम समाप्त करके सामान्य रूप से बाहर निकलता है।",
+      "stopConfirmAction": "रोकें",
+      "cancel": "रद्द करें",
+      "startedToast": "सेवा शुरू हुई",
+      "alreadyRunningToast": "सेवा पहले से चल रही है",
+      "stoppedToast": "सेवा रुक गई"
+    },
+    "fingerprint": {
+      "label": "टोकन फ़िंगरप्रिंट",
+      "reveal": "दिखाएँ",
+      "hide": "छिपाएँ"
+    },
+    "token": {
+      "groupTitle": "एक्सेस टोकन",
+      "memoryNote": "केवल मेमोरी में रखा जाता है — कभी डिस्क या लॉग में नहीं लिखा जाता।",
+      "inMemory": "टोकन मेमोरी में है",
+      "pasteLabel": "सेवा टोकन",
+      "pastePlaceholder": "vx_…",
+      "keep": "मेमोरी में रखें",
+      "forget": "भूल जाएँ",
+      "rotate": "टोकन बदलें",
+      "rotating": "बदला जा रहा है…",
+      "rotateConfirmTitle": "सेवा टोकन बदलें?",
+      "rotateConfirmBody": "सभी जुड़े क्लाइंट तुरंत डिसकनेक्ट हो जाएंगे। मौजूदा टोकन काम करना बंद कर देगा। नया टोकन केवल एक बार दिखाया जाता है — इसे सुरक्षित जगह पर सहेजें।",
+      "rotateConfirmAction": "बदलें",
+      "newTokenTitle": "नया सेवा टोकन",
+      "newTokenBody": "अभी कॉपी करें — यह फिर नहीं दिखाया जाएगा।",
+      "copy": "कॉपी करें",
+      "copied": "कॉपी हो गया",
+      "copyFailed": "कॉपी नहीं हो सका",
+      "dismiss": "हो गया",
+      "rotatedToast": "टोकन बदल गया — जुड़े हुए क्लाइंट बंद कर दिए गए"
+    },
+    "sessions": {
+      "groupTitle": "खुले सत्र",
+      "caption": "सेवा केवल उस सत्र की जानकारी देती है जो इन्फ़रेंस लीज़ धारण करता है; पूर्ण सत्र सूची प्रोटोकॉल का हिस्सा नहीं है।",
+      "openSessions": "खुले सत्र",
+      "leaseHolder": "लीज़ धारक",
+      "noLease": "कोई लीज़ धारण नहीं",
+      "worstRealtimeFactor": "सबसे खराब रीयलटाइम फैक्टर"
+    },
+    "errors": {
+      "noToken": "मेमोरी में टोकन नहीं है — प्रमाणित रूट क्वेरी करने के लिए ऊपर पेस्ट करें।",
+      "unauthorized": "टोकन अस्वीकार कर दिया गया। हो सकता है कहीं और बदला गया हो।",
+      "unreachable": "डेमन तक पहुँच नहीं है।",
+      "malformed": "डेमन से अप्रत्याशित प्रतिक्रिया।",
+      "unknown": "अप्रत्याशित त्रुटि"
+    },
+    "examples": {
+      "embedTitle": "Embed token in examples",
+      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
+      "repoLinkLabel": "Transcribe examples",
+      "repoLinkAction": "Open on GitHub"
+    }
+  },
+  "tray": {
+    "settings": "सेटिंग...",
+    "checkUpdates": "अपडेट जांचें...",
+    "copyLastTranscript": "पिछला ट्रांसक्रिप्ट कॉपी करें",
+    "unloadModel": "मॉडल अनलोड करें",
+    "model": "मॉडल",
+    "quit": "बाहर निकलें",
+    "cancel": "रद्द करें",
+    "secureInputWarning": "⚠ Secure Input ने शॉर्टकट ब्लॉक किए हैं"
+  },
+  "voxix": {
+    "modelSection": {
+      "chooseModelTitle": "Choose a transcription model",
+      "chooseModelCaption": "Download a local model to start transcribing.",
+      "viewAllModels": "View All Models…",
+      "browseModels": "Browse Models…",
+      "noModelsDownloaded": "No models downloaded.",
+      "downloadingModel": "Downloading {{name}}…",
+      "notDownloadedWarning": "Not downloaded — transcription won't work until you download it.",
+      "cancel": "Cancel",
+      "download": "Download",
+      "suggested": "Suggested",
+      "retry": "Retry",
+      "modelLibraryTitle": "Model Library",
+      "modelLibraryCaption": "Select an installed model to use it, or download another model for local transcription.",
+      "done": "Done",
+      "localModelsNote": "Models run locally on your machine. Downloads are stored on this device.",
+      "accuracy": "Accuracy",
+      "speed": "Speed",
+      "use": "Use",
+      "remove": "Remove",
+      "removeModelTitle": "Remove {{name}}?",
+      "removeModelBody": "This frees {{size}} on this machine. You can download it again anytime.",
+      "removeDownload": "Remove Download"
+    },
+    "transforms": {
+      "preview": "Preview",
+      "inputLabel": "Input — editable sample",
+      "transformsTo": "↓ transforms to",
+      "outputLabel": "Output — preview (read-only)",
+      "noOutput": "— no output",
+      "charCount": "{{input}} → {{output}} chars",
+      "futureTranscriptsOnly": "Applies to future transcripts only — history is not re-processed.",
+      "wordRules": "Word rules",
+      "noPatterns": "No patterns yet. Add one below.",
+      "addPattern": "Add pattern",
+      "noReplacements": "No replacements yet.",
+      "addReplacement": "Add replacement",
+      "outputFormatting": "Output formatting"
+    },
+    "history": {
+      "deleteAll": "Delete All",
+      "deleteAllTitle": "Delete All Transcripts",
+      "deleteAllBody": "Are you sure you want to delete all transcripts? This action cannot be undone.",
+      "cancel": "Cancel",
+      "transcriptionFailedAudioKept": "Transcription failed — audio kept",
+      "deleteTitle": "Delete this transcription?",
+      "deleteBody": "This cannot be undone. The audio file is removed too.",
+      "delete": "Delete"
+    },
+    "settings": {
+      "systemDefault": "System Default",
+      "doNothing": "Do Nothing",
+      "muteVolume": "Mute Volume",
+      "unlimited": "Unlimited"
+    },
+    "about": {
+      "visitGithub": "Visit our GitHub",
+      "footer": "voxix — a Linux speech-to-text app, built on the voxix speech-to-text engine. MIT licensed."
+    },
+    "modelDownloadProgress": {
+      "speedValue": "{{speed}} MB/s",
+      "cancel": "Cancel"
+    },
+    "hotKeyView": {
+      "hyper": "✦"
+    },
+    "voxixApp": {
+      "voxix": "voxix"
+    }
+  }
+}

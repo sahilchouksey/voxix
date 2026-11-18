@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "סגור"
+  },
+  "serviceTab": {
+    "title": "שירות",
+    "caption": "דמון תמלול מקומי עבור אפליקציות וכלים.",
+    "daemon": {
+      "groupTitle": "הדמון",
+      "status": "מצב",
+      "running": "פועל",
+      "stopped": "נעצר",
+      "stale": "לא עדכני",
+      "starting": "מפעיל…",
+      "stopping": "עוצר…",
+      "refresh": "רענן",
+      "start": "הפעל שירות",
+      "stop": "עצור שירות",
+      "port": "פורט",
+      "processId": "מזהה תהליך",
+      "protocolVersion": "גרסת פרוטוקול",
+      "engineVersion": "גרסת מנוע",
+      "ready": "מוכן",
+      "notReady": "לא מוכן",
+      "uptime": "זמן פעילות",
+      "discoveryMissing": "אין מסמך גילוי — השירות אינו פועל.",
+      "discoveryStale": "קיים מסמך גילוי, אך הדמון אינו נגיש.",
+      "stopConfirmTitle": "לעצור את דמון השירות?",
+      "stopConfirmBody": "לקוחות מחוברים יתנתקו. הדמון יסיים עבודה פעילה וייסגר בצורה מסודרת.",
+      "stopConfirmAction": "עצור",
+      "cancel": "ביטול",
+      "startedToast": "השירות הופעל",
+      "alreadyRunningToast": "השירות כבר פועל",
+      "stoppedToast": "השירות נעצר"
+    },
+    "fingerprint": {
+      "label": "טביעת אצבע של אסימון",
+      "reveal": "הצג",
+      "hide": "הסתר"
+    },
+    "token": {
+      "groupTitle": "אסימון גישה",
+      "memoryNote": "נשמר בזיכרון בלבד — לעולם אינו נכתב לדיסק או ללוגים.",
+      "inMemory": "אסימון בזיכרון",
+      "pasteLabel": "אסימון שירות",
+      "pastePlaceholder": "vx_…",
+      "keep": "שמור בזיכרון",
+      "forget": "שכח",
+      "rotate": "החלף אסימון",
+      "rotating": "מחליף…",
+      "rotateConfirmTitle": "להחליף את אסימון השירות?",
+      "rotateConfirmBody": "כל הלקוחות המחוברים יתנתקו מיד. האסימון הנוכחי יפסיק לעבוד. האסימון החדש מוצג פעם אחת בלבד — שמרו אותו במקום בטוח.",
+      "rotateConfirmAction": "החלף",
+      "newTokenTitle": "אסימון שירות חדש",
+      "newTokenBody": "העתיקו אותו עכשיו — הוא לא יוצג שוב.",
+      "copy": "העתק",
+      "copied": "הועתק",
+      "copyFailed": "ההעתקה נכשלה",
+      "dismiss": "סיום",
+      "rotatedToast": "האסימון הוחלף — לקוחות מחוברים נסגרו"
+    },
+    "sessions": {
+      "groupTitle": "סשנים פתוחים",
+      "caption": "השירות מדווח רק על הסשן המחזיק בחכירה של ההסקה; רשימת סשנים מלאה אינה חלק מהפרוטוקול.",
+      "openSessions": "סשנים פתוחים",
+      "leaseHolder": "מחזיק החכירה",
+      "noLease": "אין חכירה מוחזקת",
+      "worstRealtimeFactor": "גורם זמן-אמיתי גרוע ביותר"
+    },
+    "errors": {
+      "noToken": "אין אסימון בזיכרון — הדביקו אסימון למעלה כדי לבצע שאילתות על הנתיבים המאומתים.",
+      "unauthorized": "האסימון נדחה. ייתכן שהוחלף במקום אחר.",
+      "unreachable": "הדמון אינו נגיש.",
+      "malformed": "תגובה בלתי צפויה מהדמון.",
+      "unknown": "שגיאה בלתי צפויה"
+    },
+    "examples": {
+      "embedTitle": "Embed token in examples",
+      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
+      "repoLinkLabel": "Transcribe examples",
+      "repoLinkAction": "Open on GitHub"
+    }
+  },
+  "tray": {
+    "settings": "הגדרות...",
+    "checkUpdates": "בדוק עדכונים...",
+    "copyLastTranscript": "העתק את התמלול האחרון",
+    "unloadModel": "פרוק מודל",
+    "model": "מודל",
+    "quit": "יציאה",
+    "cancel": "ביטול",
+    "secureInputWarning": "⚠ קיצורי המקשים חסומים על ידי Secure Input"
+  },
+  "voxix": {
+    "modelSection": {
+      "chooseModelTitle": "Choose a transcription model",
+      "chooseModelCaption": "Download a local model to start transcribing.",
+      "viewAllModels": "View All Models…",
+      "browseModels": "Browse Models…",
+      "noModelsDownloaded": "No models downloaded.",
+      "downloadingModel": "Downloading {{name}}…",
+      "notDownloadedWarning": "Not downloaded — transcription won't work until you download it.",
+      "cancel": "Cancel",
+      "download": "Download",
+      "suggested": "Suggested",
+      "retry": "Retry",
+      "modelLibraryTitle": "Model Library",
+      "modelLibraryCaption": "Select an installed model to use it, or download another model for local transcription.",
+      "done": "Done",
+      "localModelsNote": "Models run locally on your machine. Downloads are stored on this device.",
+      "accuracy": "Accuracy",
+      "speed": "Speed",
+      "use": "Use",
+      "remove": "Remove",
+      "removeModelTitle": "Remove {{name}}?",
+      "removeModelBody": "This frees {{size}} on this machine. You can download it again anytime.",
+      "removeDownload": "Remove Download"
+    },
+    "transforms": {
+      "preview": "Preview",
+      "inputLabel": "Input — editable sample",
+      "transformsTo": "↓ transforms to",
+      "outputLabel": "Output — preview (read-only)",
+      "noOutput": "— no output",
+      "charCount": "{{input}} → {{output}} chars",
+      "futureTranscriptsOnly": "Applies to future transcripts only — history is not re-processed.",
+      "wordRules": "Word rules",
+      "noPatterns": "No patterns yet. Add one below.",
+      "addPattern": "Add pattern",
+      "noReplacements": "No replacements yet.",
+      "addReplacement": "Add replacement",
+      "outputFormatting": "Output formatting"
+    },
+    "history": {
+      "deleteAll": "Delete All",
+      "deleteAllTitle": "Delete All Transcripts",
+      "deleteAllBody": "Are you sure you want to delete all transcripts? This action cannot be undone.",
+      "cancel": "Cancel",
+      "transcriptionFailedAudioKept": "Transcription failed — audio kept",
+      "deleteTitle": "Delete this transcription?",
+      "deleteBody": "This cannot be undone. The audio file is removed too.",
+      "delete": "Delete"
+    },
+    "settings": {
+      "systemDefault": "System Default",
+      "doNothing": "Do Nothing",
+      "muteVolume": "Mute Volume",
+      "unlimited": "Unlimited"
+    },
+    "about": {
+      "visitGithub": "Visit our GitHub",
+      "footer": "voxix — a Linux speech-to-text app, built on the voxix speech-to-text engine. MIT licensed."
+    },
+    "modelDownloadProgress": {
+      "speedValue": "{{speed}} MB/s",
+      "cancel": "Cancel"
+    },
+    "hotKeyView": {
+      "hyper": "✦"
+    },
+    "voxixApp": {
+      "voxix": "voxix"
+    }
+  }
+}

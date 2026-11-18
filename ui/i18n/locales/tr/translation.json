@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "Kapat"
+  },
+  "serviceTab": {
+    "title": "Hizmet",
+    "caption": "Uygulamalar ve araçlar için yerel yazıya dökme arka plan süreci.",
+    "daemon": {
+      "groupTitle": "Arka plan süreci",
+      "status": "Durum",
+      "running": "Çalışıyor",
+      "stopped": "Durduruldu",
+      "stale": "Güncel değil",
+      "starting": "Başlatılıyor…",
+      "stopping": "Durduruluyor…",
+      "refresh": "Yenile",
+      "start": "Hizmeti başlat",
+      "stop": "Hizmeti durdur",
+      "port": "Port",
+      "processId": "İşlem kimliği",
+      "protocolVersion": "Protokol sürümü",
+      "engineVersion": "Motor sürümü",
+      "ready": "Hazır",
+      "notReady": "Hazır değil",
+      "uptime": "Çalışma süresi",
+      "discoveryMissing": "Keşif belgesi yok — hizmet çalışmıyor.",
+      "discoveryStale": "Bir keşif belgesi var ancak arka plan sürecine ulaşılamıyor.",
+      "stopConfirmTitle": "Hizmet arka plan süreci durdurulsun mu?",
+      "stopConfirmBody": "Bağlı istemcilerin bağlantısı kesilir. Arka plan süreci devam eden işi bitirir ve düzgünce kapanır.",
+      "stopConfirmAction": "Durdur",
+      "cancel": "İptal",
+      "startedToast": "Hizmet başlatıldı",
+      "alreadyRunningToast": "Hizmet zaten çalışıyor",
+      "stoppedToast": "Hizmet durduruldu"
+    },
+    "fingerprint": {
+      "label": "Belirteç parmak izi",
+      "reveal": "Göster",
+      "hide": "Gizle"
+    },
+    "token": {
+      "groupTitle": "Erişim belirteci",
+      "memoryNote": "Yalnızca bellek içinde tutulur — asla diske ya da kayıtlara yazılmaz.",
+      "inMemory": "Belirteç bellekte",
+      "pasteLabel": "Hizmet belirteci",
+      "pastePlaceholder": "vx_…",
+      "keep": "Bellekte tut",
+      "forget": "Unut",
+      "rotate": "Belirteci yenile",
+      "rotating": "Yenileniyor…",
+      "rotateConfirmTitle": "Hizmet belirteci yenilensin mi?",
+      "rotateConfirmBody": "Tüm bağlı istemcilerin bağlantısı hemen kesilir. Geçerli belirteç çalışmayı durdurur. Yeni belirteç yalnızca bir kez gösterilir — güvenli bir yerde saklayın.",
+      "rotateConfirmAction": "Yenile",
+      "newTokenTitle": "Yeni hizmet belirteci",
+      "newTokenBody": "Şimdi kopyalayın — bir daha gösterilmeyecek.",
+      "copy": "Kopyala",
+      "copied": "Kopyalandı",
+      "copyFailed": "Kopyalanamadı",
+      "dismiss": "Tamam",
+      "rotatedToast": "Belirteç yenilendi — bağlı istemciler kapatıldı"
+    },
+    "sessions": {
+      "groupTitle": "Açık oturumlar",
+      "caption": "Hizmet yalnızca çıkarım kirasını tutan oturumu bildirir; tam oturum listesi protokolde yoktur.",
+      "openSessions": "Açık oturumlar",
+      "leaseHolder": "Kira sahibi",
+      "noLease": "Tutulan kira yok",
+      "worstRealtimeFactor": "En kötü gerçek zamanlı faktör"
+    },
+    "errors": {
+      "noToken": "Bellekte belirteç yok — kimliği doğrulanmış rotaları sorgulamak için yukarıya bir belirteç yapıştırın.",
+      "unauthorized": "Belirteç reddedildi. Başka bir yerde yenilenmiş olabilir.",
+      "unreachable": "Arka plan sürecine ulaşılamıyor.",
+      "malformed": "Arka plan sürecinden beklenmeyen yanıt.",
+      "unknown": "Beklenmeyen hata"
+    },
+    "examples": {
+      "embedTitle": "Embed token in examples",
+      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
+      "repoLinkLabel": "Transcribe examples",
+      "repoLinkAction": "Open on GitHub"
+    }
+  },
+  "tray": {
+    "settings": "Ayarlar...",
+    "checkUpdates": "Güncellemeleri Kontrol Et...",
+    "copyLastTranscript": "Son transkripti kopyala",
+    "unloadModel": "Modeli boşalt",
+    "model": "Model",
+    "quit": "Çıkış",
+    "cancel": "İptal",
+    "secureInputWarning": "⚠ Kısayollar Secure Input tarafından engelleniyor"
+  },
+  "voxix": {
+    "modelSection": {
+      "chooseModelTitle": "Choose a transcription model",
+      "chooseModelCaption": "Download a local model to start transcribing.",
+      "viewAllModels": "View All Models…",
+      "browseModels": "Browse Models…",
+      "noModelsDownloaded": "No models downloaded.",
+      "downloadingModel": "Downloading {{name}}…",
+      "notDownloadedWarning": "Not downloaded — transcription won't work until you download it.",
+      "cancel": "Cancel",
+      "download": "Download",
+      "suggested": "Suggested",
+      "retry": "Retry",
+      "modelLibraryTitle": "Model Library",
+      "modelLibraryCaption": "Select an installed model to use it, or download another model for local transcription.",
+      "done": "Done",
+      "localModelsNote": "Models run locally on your machine. Downloads are stored on this device.",
+      "accuracy": "Accuracy",
+      "speed": "Speed",
+      "use": "Use",
+      "remove": "Remove",
+      "removeModelTitle": "Remove {{name}}?",
+      "removeModelBody": "This frees {{size}} on this machine. You can download it again anytime.",
+      "removeDownload": "Remove Download"
+    },
+    "transforms": {
+      "preview": "Preview",
+      "inputLabel": "Input — editable sample",
+      "transformsTo": "↓ transforms to",
+      "outputLabel": "Output — preview (read-only)",
+      "noOutput": "— no output",
+      "charCount": "{{input}} → {{output}} chars",
+      "futureTranscriptsOnly": "Applies to future transcripts only — history is not re-processed.",
+      "wordRules": "Word rules",
+      "noPatterns": "No patterns yet. Add one below.",
+      "addPattern": "Add pattern",
+      "noReplacements": "No replacements yet.",
+      "addReplacement": "Add replacement",
+      "outputFormatting": "Output formatting"
+    },
+    "history": {
+      "deleteAll": "Delete All",
+      "deleteAllTitle": "Delete All Transcripts",
+      "deleteAllBody": "Are you sure you want to delete all transcripts? This action cannot be undone.",
+      "cancel": "Cancel",
+      "transcriptionFailedAudioKept": "Transcription failed — audio kept",
+      "deleteTitle": "Delete this transcription?",
+      "deleteBody": "This cannot be undone. The audio file is removed too.",
+      "delete": "Delete"
+    },
+    "settings": {
+      "systemDefault": "System Default",
+      "doNothing": "Do Nothing",
+      "muteVolume": "Mute Volume",
+      "unlimited": "Unlimited"
+    },
+    "about": {
+      "visitGithub": "Visit our GitHub",
+      "footer": "voxix — a Linux speech-to-text app, built on the voxix speech-to-text engine. MIT licensed."
+    },
+    "modelDownloadProgress": {
+      "speedValue": "{{speed}} MB/s",
+      "cancel": "Cancel"
+    },
+    "hotKeyView": {
+      "hyper": "✦"
+    },
+    "voxixApp": {
+      "voxix": "voxix"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+:root {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Inter, Roboto,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+
+  --bg: #0a0a0a;
+  --bg-elev: #171717;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-soft: rgba(255, 255, 255, 0.04);
+  --red: #ff453a;
+}
+
+.voxix-overlay-root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.voxix-pill-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.voxix-pill.rec {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.voxix-pill-hint {
+  font-size: 11px;
+  line-height: 13px;
+  height: 13px;
+  color: #a1a1a1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.voxix-pill-hint.off {
+  visibility: hidden;
+}
+
+.voxix-pill {
+  height: 24px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  box-shadow:
+    0 0 0 1px var(--line-soft),
+    0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: width 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.voxix-pill.error {
+  background: #2a0f0f;
+  border-color: rgba(255, 69, 58, 0.45);
+  height: auto;
+}
+
+.voxix-pill-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 24px;
+  padding: 6px 12px;
+}
+
+.voxix-pill-error svg {
+  flex: 0 0 auto;
+}
+
+.voxix-pill-error-text {
+  color: #ffb5ad;
+  font-size: 11px;
+  line-height: 15px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  flex: 1 1 auto;
+  min-width: 0;
+  word-break: break-word;
+  user-select: text;
+}
+
+.voxix-pill-wave {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.voxix-pill-wave svg {
+  display: block;
+  width: 22px;
+  height: 12px;
+  shape-rendering: geometricPrecision;
+}

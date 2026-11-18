@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "Đóng"
+  },
+  "serviceTab": {
+    "title": "Dịch vụ",
+    "caption": "Trình nền phiên âm cục bộ cho ứng dụng và công cụ.",
+    "daemon": {
+      "groupTitle": "Trình nền",
+      "status": "Trạng thái",
+      "running": "Đang chạy",
+      "stopped": "Đã dừng",
+      "stale": "Cũ",
+      "starting": "Đang khởi động…",
+      "stopping": "Đang dừng…",
+      "refresh": "Làm mới",
+      "start": "Khởi động dịch vụ",
+      "stop": "Dừng dịch vụ",
+      "port": "Cổng",
+      "processId": "ID tiến trình",
+      "protocolVersion": "Phiên bản giao thức",
+      "engineVersion": "Phiên bản engine",
+      "ready": "Sẵn sàng",
+      "notReady": "Chưa sẵn sàng",
+      "uptime": "Thời gian hoạt động",
+      "discoveryMissing": "Không có tài liệu khám phá — dịch vụ không chạy.",
+      "discoveryStale": "Có tài liệu khám phá nhưng không kết nối được tới trình nền.",
+      "stopConfirmTitle": "Dừng trình nền dịch vụ?",
+      "stopConfirmBody": "Các client đang kết nối sẽ bị ngắt. Trình nền hoàn tất công việc đang dở và thoát gọn gàng.",
+      "stopConfirmAction": "Dừng",
+      "cancel": "Hủy",
+      "startedToast": "Dịch vụ đã khởi động",
+      "alreadyRunningToast": "Dịch vụ đang chạy",
+      "stoppedToast": "Dịch vụ đã dừng"
+    },
+    "fingerprint": {
+      "label": "Dấu vân tay mã thông báo",
+      "reveal": "Hiện",
+      "hide": "Ẩn"
+    },
+    "token": {
+      "groupTitle": "Mã thông báo truy cập",
+      "memoryNote": "Chỉ giữ trong bộ nhớ — không bao giờ ghi xuống đĩa hay nhật ký.",
+      "inMemory": "Có mã thông báo trong bộ nhớ",
+      "pasteLabel": "Mã thông báo dịch vụ",
+      "pastePlaceholder": "vx_…",
+      "keep": "Giữ trong bộ nhớ",
+      "forget": "Quên",
+      "rotate": "Xoay mã thông báo",
+      "rotating": "Đang xoay…",
+      "rotateConfirmTitle": "Xoay mã thông báo dịch vụ?",
+      "rotateConfirmBody": "Tất cả client đang kết nối sẽ bị ngắt ngay lập tức. Mã thông báo hiện tại sẽ ngừng hoạt động. Mã thông báo mới chỉ hiển thị một lần — hãy lưu nó ở nơi an toàn.",
+      "rotateConfirmAction": "Xoay",
+      "newTokenTitle": "Mã thông báo dịch vụ mới",
+      "newTokenBody": "Sao chép ngay — nó sẽ không hiển thị lại.",
+      "copy": "Sao chép",
+      "copied": "Đã sao chép",
+      "copyFailed": "Không thể sao chép",
+      "dismiss": "Xong",
+      "rotatedToast": "Đã xoay mã thông báo — các client đang kết nối đã bị đóng"
+    },
+    "sessions": {
+      "groupTitle": "Phiên đang mở",
+      "caption": "Dịch vụ chỉ báo cáo phiên đang giữ lease suy luận; danh sách đầy đủ không thuộc giao thức.",
+      "openSessions": "Phiên đang mở",
+      "leaseHolder": "Chủ lease",
+      "noLease": "Không có lease nào được giữ",
+      "worstRealtimeFactor": "Hệ số realtime tệ nhất"
+    },
+    "errors": {
+      "noToken": "Không có mã thông báo trong bộ nhớ — hãy dán một mã ở trên để gọi các route đã xác thực.",
+      "unauthorized": "Mã thông báo bị từ chối. Nó có thể đã được xoay ở nơi khác.",
+      "unreachable": "Không kết nối được tới trình nền.",
+      "malformed": "Phản hồi bất thường từ trình nền.",
+      "unknown": "Lỗi không mong đợi"
+    },
+    "examples": {
+      "embedTitle": "Embed token in examples",
+      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
+      "repoLinkLabel": "Transcribe examples",
+      "repoLinkAction": "Open on GitHub"
+    }
+  },
+  "tray": {
+    "settings": "Cài đặt...",
+    "checkUpdates": "Kiểm tra cập nhật...",
+    "copyLastTranscript": "Sao chép bản chép lời mới nhất",
+    "unloadModel": "Dỡ mô hình",
+    "model": "Mô hình",
+    "quit": "Thoát",
+    "cancel": "Hủy",
+    "secureInputWarning": "⚠ Phím tắt bị Secure Input chặn"
+  },
+  "voxix": {
+    "modelSection": {
+      "chooseModelTitle": "Choose a transcription model",
+      "chooseModelCaption": "Download a local model to start transcribing.",
+      "viewAllModels": "View All Models…",
+      "browseModels": "Browse Models…",
+      "noModelsDownloaded": "No models downloaded.",
+      "downloadingModel": "Downloading {{name}}…",
+      "notDownloadedWarning": "Not downloaded — transcription won't work until you download it.",
+      "cancel": "Cancel",
+      "download": "Download",
+      "suggested": "Suggested",
+      "retry": "Retry",
+      "modelLibraryTitle": "Model Library",
+      "modelLibraryCaption": "Select an installed model to use it, or download another model for local transcription.",
+      "done": "Done",
+      "localModelsNote": "Models run locally on your machine. Downloads are stored on this device.",
+      "accuracy": "Accuracy",
+      "speed": "Speed",
+      "use": "Use",
+      "remove": "Remove",
+      "removeModelTitle": "Remove {{name}}?",
+      "removeModelBody": "This frees {{size}} on this machine. You can download it again anytime.",
+      "removeDownload": "Remove Download"
+    },
+    "transforms": {
+      "preview": "Preview",
+      "inputLabel": "Input — editable sample",
+      "transformsTo": "↓ transforms to",
+      "outputLabel": "Output — preview (read-only)",
+      "noOutput": "— no output",
+      "charCount": "{{input}} → {{output}} chars",
+      "futureTranscriptsOnly": "Applies to future transcripts only — history is not re-processed.",
+      "wordRules": "Word rules",
+      "noPatterns": "No patterns yet. Add one below.",
+      "addPattern": "Add pattern",
+      "noReplacements": "No replacements yet.",
+      "addReplacement": "Add replacement",
+      "outputFormatting": "Output formatting"
+    },
+    "history": {
+      "deleteAll": "Delete All",
+      "deleteAllTitle": "Delete All Transcripts",
+      "deleteAllBody": "Are you sure you want to delete all transcripts? This action cannot be undone.",
+      "cancel": "Cancel",
+      "transcriptionFailedAudioKept": "Transcription failed — audio kept",
+      "deleteTitle": "Delete this transcription?",
+      "deleteBody": "This cannot be undone. The audio file is removed too.",
+      "delete": "Delete"
+    },
+    "settings": {
+      "systemDefault": "System Default",
+      "doNothing": "Do Nothing",
+      "muteVolume": "Mute Volume",
+      "unlimited": "Unlimited"
+    },
+    "about": {
+      "visitGithub": "Visit our GitHub",
+      "footer": "voxix — a Linux speech-to-text app, built on the voxix speech-to-text engine. MIT licensed."
+    },
+    "modelDownloadProgress": {
+      "speedValue": "{{speed}} MB/s",
+      "cancel": "Cancel"
+    },
+    "hotKeyView": {
+      "hyper": "✦"
+    },
+    "voxixApp": {
+      "voxix": "voxix"
+    }
+  }
+}

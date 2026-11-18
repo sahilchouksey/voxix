@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "閉じる"
+  },
+  "serviceTab": {
+    "title": "サービス",
+    "caption": "アプリやツール向けのローカル文字起こしデーモン。",
+    "daemon": {
+      "groupTitle": "デーモン",
+      "status": "ステータス",
+      "running": "実行中",
+      "stopped": "停止中",
+      "stale": "古い情報",
+      "starting": "起動中…",
+      "stopping": "停止中…",
+      "refresh": "更新",
+      "start": "サービスを起動",
+      "stop": "サービスを停止",
+      "port": "ポート",
+      "processId": "プロセス ID",
+      "protocolVersion": "プロトコルバージョン",
+      "engineVersion": "エンジンバージョン",
+      "ready": "準備完了",
+      "notReady": "準備未完了",
+      "uptime": "稼働時間",
+      "discoveryMissing": "ディスカバリードキュメントがありません — サービスは動作していません。",
+      "discoveryStale": "ディスカバリードキュメントは存在しますが、デーモンに到達できません。",
+      "stopConfirmTitle": "サービスデーモンを停止しますか？",
+      "stopConfirmBody": "接続中のクライアントは切断されます。デーモンは進行中の処理を完了してから正常に終了します。",
+      "stopConfirmAction": "停止",
+      "cancel": "キャンセル",
+      "startedToast": "サービスを起動しました",
+      "alreadyRunningToast": "サービスはすでに実行中です",
+      "stoppedToast": "サービスを停止しました"
+    },
+    "fingerprint": {
+      "label": "トークンフィンガープリント",
+      "reveal": "表示",
+      "hide": "非表示"
+    },
+    "token": {
+      "groupTitle": "アクセストークン",
+      "memoryNote": "メモリ内のみで保持され — ディスクやログには書き込まれません。",
+      "inMemory": "トークンはメモリ内にあります",
+      "pasteLabel": "サービストークン",
+      "pastePlaceholder": "vx_…",
+      "keep": "メモリに保持",
+      "forget": "忘れる",
+      "rotate": "トークンをローテーション",
+      "rotating": "ローテーション中…",
+      "rotateConfirmTitle": "サービストークンをローテーションしますか？",
+      "rotateConfirmBody": "接続中のすべてのクライアントは直ちに切断されます。現在のトークンは動作しなくなります。新しいトークンは一度だけ表示されます — 安全な場所に保管してください。",
+      "rotateConfirmAction": "ローテーション",
+      "newTokenTitle": "新しいサービストークン",
+      "newTokenBody": "今すぐコピーしてください — 再表示されません。",
+      "copy": "コピー",
+      "copied": "コピーしました",
+      "copyFailed": "コピーできませんでした",
+      "dismiss": "完了",
+      "rotatedToast": "トークンをローテーションしました — 接続中のクライアントは切断されました"
+    },
+    "sessions": {
+      "groupTitle": "オープンセッション",
+      "caption": "サービスは推論リースを保持するセッションのみを報告します。完全なセッション一覧はプロトコルに含まれません。",
+      "openSessions": "オープンセッション",
+      "leaseHolder": "リース保持者",
+      "noLease": "リースは保持されていません",
+      "worstRealtimeFactor": "最悪リアルタイム係数"
+    },
+    "errors": {
+      "noToken": "メモリにトークンがありません — 上記に貼り付けて認証ルートを照会してください。",
+      "unauthorized": "トークンが拒否されました。他の場所でローテーションされた可能性があります。",
+      "unreachable": "デーモンに到達できません。",
+      "malformed": "デーモンから予期しない応答がありました。",
+      "unknown": "予期しないエラー"
+    },
+    "examples": {
+      "embedTitle": "Embed token in examples",
+      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
+      "repoLinkLabel": "Transcribe examples",
+      "repoLinkAction": "Open on GitHub"
+    }
+  },
+  "tray": {
+    "settings": "設定…",
+    "checkUpdates": "アップデートを確認…",
+    "copyLastTranscript": "最新の文字起こしをコピー",
+    "unloadModel": "モデルをアンロード",
+    "model": "モデル",
+    "quit": "終了",
+    "cancel": "キャンセル",
+    "secureInputWarning": "⚠ Secure Input でショートカットがブロック中"
+  },
+  "voxix": {
+    "modelSection": {
+      "chooseModelTitle": "Choose a transcription model",
+      "chooseModelCaption": "Download a local model to start transcribing.",
+      "viewAllModels": "View All Models…",
+      "browseModels": "Browse Models…",
+      "noModelsDownloaded": "No models downloaded.",
+      "downloadingModel": "Downloading {{name}}…",
+      "notDownloadedWarning": "Not downloaded — transcription won't work until you download it.",
+      "cancel": "Cancel",
+      "download": "Download",
+      "suggested": "Suggested",
+      "retry": "Retry",
+      "modelLibraryTitle": "Model Library",
+      "modelLibraryCaption": "Select an installed model to use it, or download another model for local transcription.",
+      "done": "Done",
+      "localModelsNote": "Models run locally on your machine. Downloads are stored on this device.",
+      "accuracy": "Accuracy",
+      "speed": "Speed",
+      "use": "Use",
+      "remove": "Remove",
+      "removeModelTitle": "Remove {{name}}?",
+      "removeModelBody": "This frees {{size}} on this machine. You can download it again anytime.",
+      "removeDownload": "Remove Download"
+    },
+    "transforms": {
+      "preview": "Preview",
+      "inputLabel": "Input — editable sample",
+      "transformsTo": "↓ transforms to",
+      "outputLabel": "Output — preview (read-only)",
+      "noOutput": "— no output",
+      "charCount": "{{input}} → {{output}} chars",
+      "futureTranscriptsOnly": "Applies to future transcripts only — history is not re-processed.",
+      "wordRules": "Word rules",
+      "noPatterns": "No patterns yet. Add one below.",
+      "addPattern": "Add pattern",
+      "noReplacements": "No replacements yet.",
+      "addReplacement": "Add replacement",
+      "outputFormatting": "Output formatting"
+    },
+    "history": {
+      "deleteAll": "Delete All",
+      "deleteAllTitle": "Delete All Transcripts",
+      "deleteAllBody": "Are you sure you want to delete all transcripts? This action cannot be undone.",
+      "cancel": "Cancel",
+      "transcriptionFailedAudioKept": "Transcription failed — audio kept",
+      "deleteTitle": "Delete this transcription?",
+      "deleteBody": "This cannot be undone. The audio file is removed too.",
+      "delete": "Delete"
+    },
+    "settings": {
+      "systemDefault": "System Default",
+      "doNothing": "Do Nothing",
+      "muteVolume": "Mute Volume",
+      "unlimited": "Unlimited"
+    },
+    "about": {
+      "visitGithub": "Visit our GitHub",
+      "footer": "voxix — a Linux speech-to-text app, built on the voxix speech-to-text engine. MIT licensed."
+    },
+    "modelDownloadProgress": {
+      "speedValue": "{{speed}} MB/s",
+      "cancel": "Cancel"
+    },
+    "hotKeyView": {
+      "hyper": "✦"
+    },
+    "voxixApp": {
+      "voxix": "voxix"
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "Fechar"
+  },
+  "serviceTab": {
+    "title": "Serviço",
+    "caption": "Daemon de transcrição local para apps e ferramentas.",
+    "daemon": {
+      "groupTitle": "Daemon",
+      "status": "Estado",
+      "running": "Em execução",
+      "stopped": "Parado",
+      "stale": "Obsoleto",
+      "starting": "Iniciando…",
+      "stopping": "Parando…",
+      "refresh": "Atualizar",
+      "start": "Iniciar serviço",
+      "stop": "Parar serviço",
+      "port": "Porta",
+      "processId": "ID do processo",
+      "protocolVersion": "Versão do protocolo",
+      "engineVersion": "Versão do motor",
+      "ready": "Pronto",
+      "notReady": "Não pronto",
+      "uptime": "Tempo de atividade",
+      "discoveryMissing": "Nenhum documento de discovery — o serviço não está em execução.",
+      "discoveryStale": "Existe um documento de discovery, mas o daemon não está acessível.",
+      "stopConfirmTitle": "Parar o daemon do serviço?",
+      "stopConfirmBody": "Os clientes conectados serão desconectados. O daemon termina o trabalho em andamento e encerra de forma ordenada.",
+      "stopConfirmAction": "Parar",
+      "cancel": "Cancelar",
+      "startedToast": "Serviço iniciado",
+      "alreadyRunningToast": "O serviço já está em execução",
+      "stoppedToast": "Serviço parado"
+    },
+    "fingerprint": {
+      "label": "Impressão digital do token",
+      "reveal": "Revelar",
+      "hide": "Ocultar"
+    },
+    "token": {
+      "groupTitle": "Token de acesso",
+      "memoryNote": "Mantido apenas na memória — nunca gravado em disco ou logs.",
+      "inMemory": "Token na memória",
+      "pasteLabel": "Token do serviço",
+      "pastePlaceholder": "vx_…",
+      "keep": "Manter na memória",
+      "forget": "Esquecer",
+      "rotate": "Rotacionar token",
+      "rotating": "Rotacionando…",
+      "rotateConfirmTitle": "Rotacionar o token do serviço?",
+      "rotateConfirmBody": "Todos os clientes conectados são desconectados imediatamente. O token atual deixa de funcionar. O novo token é exibido apenas uma vez — guarde-o em local seguro.",
+      "rotateConfirmAction": "Rotacionar",
+      "newTokenTitle": "Novo token de serviço",
+      "newTokenBody": "Copie agora — ele não será exibido novamente.",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "copyFailed": "Não foi possível copiar",
+      "dismiss": "Concluir",
+      "rotatedToast": "Token rotacionado — clientes conectados foram fechados"
+    },
+    "sessions": {
+      "groupTitle": "Sessões abertas",
+      "caption": "O serviço informa apenas a sessão que detém o lease de inferência; uma lista completa de sessões não faz parte do protocolo.",
+      "openSessions": "Sessões abertas",
+      "leaseHolder": "Detentor do lease",
+      "noLease": "Nenhum lease em uso",
+      "worstRealtimeFactor": "Pior fator de tempo real"
+    },
+    "errors": {
+      "noToken": "Sem token na memória — cole um acima para consultar as rotas autenticadas.",
+      "unauthorized": "Token rejeitado. Talvez tenha sido rotacionado em outro lugar.",
+      "unreachable": "Daemon inacessível.",
+      "malformed": "Resposta inesperada do daemon.",
+      "unknown": "Erro inesperado"
+    },
+    "examples": {
+      "embedTitle": "Embed token in examples",
+      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
+      "repoLinkLabel": "Transcribe examples",
+      "repoLinkAction": "Open on GitHub"
+    }
+  },
+  "tray": {
+    "settings": "Configurações...",
+    "checkUpdates": "Verificar Atualizações...",
+    "copyLastTranscript": "Copiar última transcrição",
+    "unloadModel": "Descarregar modelo",
+    "model": "Modelo",
+    "quit": "Sair",
+    "cancel": "Cancelar",
+    "secureInputWarning": "⚠ Atalhos bloqueados pelo Secure Input"
+  },
+  "voxix": {
+    "modelSection": {
+      "chooseModelTitle": "Choose a transcription model",
+      "chooseModelCaption": "Download a local model to start transcribing.",
+      "viewAllModels": "View All Models…",
+      "browseModels": "Browse Models…",
+      "noModelsDownloaded": "No models downloaded.",
+      "downloadingModel": "Downloading {{name}}…",
+      "notDownloadedWarning": "Not downloaded — transcription won't work until you download it.",
+      "cancel": "Cancel",
+      "download": "Download",
+      "suggested": "Suggested",
+      "retry": "Retry",
+      "modelLibraryTitle": "Model Library",
+      "modelLibraryCaption": "Select an installed model to use it, or download another model for local transcription.",
+      "done": "Done",
+      "localModelsNote": "Models run locally on your machine. Downloads are stored on this device.",
+      "accuracy": "Accuracy",
+      "speed": "Speed",
+      "use": "Use",
+      "remove": "Remove",
+      "removeModelTitle": "Remove {{name}}?",
+      "removeModelBody": "This frees {{size}} on this machine. You can download it again anytime.",
+      "removeDownload": "Remove Download"
+    },
+    "transforms": {
+      "preview": "Preview",
+      "inputLabel": "Input — editable sample",
+      "transformsTo": "↓ transforms to",
+      "outputLabel": "Output — preview (read-only)",
+      "noOutput": "— no output",
+      "charCount": "{{input}} → {{output}} chars",
+      "futureTranscriptsOnly": "Applies to future transcripts only — history is not re-processed.",
+      "wordRules": "Word rules",
+      "noPatterns": "No patterns yet. Add one below.",
+      "addPattern": "Add pattern",
+      "noReplacements": "No replacements yet.",
+      "addReplacement": "Add replacement",
+      "outputFormatting": "Output formatting"
+    },
+    "history": {
+      "deleteAll": "Delete All",
+      "deleteAllTitle": "Delete All Transcripts",
+      "deleteAllBody": "Are you sure you want to delete all transcripts? This action cannot be undone.",
+      "cancel": "Cancel",
+      "transcriptionFailedAudioKept": "Transcription failed — audio kept",
+      "deleteTitle": "Delete this transcription?",
+      "deleteBody": "This cannot be undone. The audio file is removed too.",
+      "delete": "Delete"
+    },
+    "settings": {
+      "systemDefault": "System Default",
+      "doNothing": "Do Nothing",
+      "muteVolume": "Mute Volume",
+      "unlimited": "Unlimited"
+    },
+    "about": {
+      "visitGithub": "Visit our GitHub",
+      "footer": "voxix — a Linux speech-to-text app, built on the voxix speech-to-text engine. MIT licensed."
+    },
+    "modelDownloadProgress": {
+      "speedValue": "{{speed}} MB/s",
+      "cancel": "Cancel"
+    },
+    "hotKeyView": {
+      "hyper": "✦"
+    },
+    "voxixApp": {
+      "voxix": "voxix"
+    }
+  }
+}

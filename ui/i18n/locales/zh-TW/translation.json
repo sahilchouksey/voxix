@@ -1,0 +1,165 @@
+{
+  "common": {
+    "close": "關閉"
+  },
+  "serviceTab": {
+    "title": "服務",
+    "caption": "面向應用程式和工具的本機轉寫守護程序。",
+    "daemon": {
+      "groupTitle": "守護程序",
+      "status": "狀態",
+      "running": "執行中",
+      "stopped": "已停止",
+      "stale": "已過期",
+      "starting": "正在啟動…",
+      "stopping": "正在停止…",
+      "refresh": "重新整理",
+      "start": "啟動服務",
+      "stop": "停止服務",
+      "port": "連接埠",
+      "processId": "處理程序 ID",
+      "protocolVersion": "協定版本",
+      "engineVersion": "引擎版本",
+      "ready": "就緒",
+      "notReady": "未就緒",
+      "uptime": "運行時間",
+      "discoveryMissing": "沒有探索文件 — 服務未執行。",
+      "discoveryStale": "探索文件存在，但無法連線到守護程序。",
+      "stopConfirmTitle": "停止服務守護程序？",
+      "stopConfirmBody": "已連線的用戶端將被中斷。守護程序會完成進行中的工作並正常結束。",
+      "stopConfirmAction": "停止",
+      "cancel": "取消",
+      "startedToast": "服務已啟動",
+      "alreadyRunningToast": "服務已在執行",
+      "stoppedToast": "服務已停止"
+    },
+    "fingerprint": {
+      "label": "權杖指紋",
+      "reveal": "顯示",
+      "hide": "隱藏"
+    },
+    "token": {
+      "groupTitle": "存取權杖",
+      "memoryNote": "僅保存在記憶體中——絕不寫入磁碟或紀錄。",
+      "inMemory": "記憶體中有權杖",
+      "pasteLabel": "服務權杖",
+      "pastePlaceholder": "vx_…",
+      "keep": "保留在記憶體",
+      "forget": "遺忘",
+      "rotate": "輪替權杖",
+      "rotating": "正在輪替…",
+      "rotateConfirmTitle": "輪替服務權杖？",
+      "rotateConfirmBody": "所有已連線的用戶端將立即中斷。目前權杖將停止運作。新權杖僅顯示一次——請妥善保管。",
+      "rotateConfirmAction": "輪替",
+      "newTokenTitle": "新的服務權杖",
+      "newTokenBody": "請立即複製——它不會再次顯示。",
+      "copy": "複製",
+      "copied": "已複製",
+      "copyFailed": "無法複製",
+      "dismiss": "完成",
+      "rotatedToast": "權杖已輪替——已連線的用戶端已關閉"
+    },
+    "sessions": {
+      "groupTitle": "開啟的工作階段",
+      "caption": "服務僅回報持有推論租約的工作階段；完整的工作階段清單不是協定的一部分。",
+      "openSessions": "開啟的工作階段",
+      "leaseHolder": "租約持有者",
+      "noLease": "未持有租約",
+      "worstRealtimeFactor": "最差即時係數"
+    },
+    "errors": {
+      "noToken": "記憶體中沒有權杖——請在上方貼上一個以查詢需驗證的路由。",
+      "unauthorized": "權杖遭拒。它可能已在別處輪替。",
+      "unreachable": "無法連線到守護程序。",
+      "malformed": "守護程序回傳了非預期的回應。",
+      "unknown": "非預期錯誤"
+    },
+    "examples": {
+      "embedTitle": "Embed token in examples",
+      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
+      "repoLinkLabel": "Transcribe examples",
+      "repoLinkAction": "Open on GitHub"
+    }
+  },
+  "tray": {
+    "settings": "設定...",
+    "checkUpdates": "檢查更新...",
+    "copyLastTranscript": "複製最新轉錄",
+    "unloadModel": "卸載模型",
+    "model": "模型",
+    "quit": "結束",
+    "cancel": "取消",
+    "secureInputWarning": "⚠ 快捷鍵被 Secure Input 阻擋"
+  },
+  "voxix": {
+    "modelSection": {
+      "chooseModelTitle": "Choose a transcription model",
+      "chooseModelCaption": "Download a local model to start transcribing.",
+      "viewAllModels": "View All Models…",
+      "browseModels": "Browse Models…",
+      "noModelsDownloaded": "No models downloaded.",
+      "downloadingModel": "Downloading {{name}}…",
+      "notDownloadedWarning": "Not downloaded — transcription won't work until you download it.",
+      "cancel": "Cancel",
+      "download": "Download",
+      "suggested": "Suggested",
+      "retry": "Retry",
+      "modelLibraryTitle": "Model Library",
+      "modelLibraryCaption": "Select an installed model to use it, or download another model for local transcription.",
+      "done": "Done",
+      "localModelsNote": "Models run locally on your machine. Downloads are stored on this device.",
+      "accuracy": "Accuracy",
+      "speed": "Speed",
+      "use": "Use",
+      "remove": "Remove",
+      "removeModelTitle": "Remove {{name}}?",
+      "removeModelBody": "This frees {{size}} on this machine. You can download it again anytime.",
+      "removeDownload": "Remove Download"
+    },
+    "transforms": {
+      "preview": "Preview",
+      "inputLabel": "Input — editable sample",
+      "transformsTo": "↓ transforms to",
+      "outputLabel": "Output — preview (read-only)",
+      "noOutput": "— no output",
+      "charCount": "{{input}} → {{output}} chars",
+      "futureTranscriptsOnly": "Applies to future transcripts only — history is not re-processed.",
+      "wordRules": "Word rules",
+      "noPatterns": "No patterns yet. Add one below.",
+      "addPattern": "Add pattern",
+      "noReplacements": "No replacements yet.",
+      "addReplacement": "Add replacement",
+      "outputFormatting": "Output formatting"
+    },
+    "history": {
+      "deleteAll": "Delete All",
+      "deleteAllTitle": "Delete All Transcripts",
+      "deleteAllBody": "Are you sure you want to delete all transcripts? This action cannot be undone.",
+      "cancel": "Cancel",
+      "transcriptionFailedAudioKept": "Transcription failed — audio kept",
+      "deleteTitle": "Delete this transcription?",
+      "deleteBody": "This cannot be undone. The audio file is removed too.",
+      "delete": "Delete"
+    },
+    "settings": {
+      "systemDefault": "System Default",
+      "doNothing": "Do Nothing",
+      "muteVolume": "Mute Volume",
+      "unlimited": "Unlimited"
+    },
+    "about": {
+      "visitGithub": "Visit our GitHub",
+      "footer": "voxix — a Linux speech-to-text app, built on the voxix speech-to-text engine. MIT licensed."
+    },
+    "modelDownloadProgress": {
+      "speedValue": "{{speed}} MB/s",
+      "cancel": "Cancel"
+    },
+    "hotKeyView": {
+      "hyper": "✦"
+    },
+    "voxixApp": {
+      "voxix": "voxix"
+    }
+  }
+}

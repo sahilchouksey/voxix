@@ -371,6 +371,10 @@ jobs:
           echo "$SHA256  ort.whl" | shasum -a 256 -c -
           python3 -c "import zipfile; zipfile.ZipFile('ort.whl').extractall('ort-dist')"
           ORT_DIR="$(pwd)/ort-dist/onnxruntime/capi"
+          # The PyPI wheel ships only libonnxruntime.1.23.2.dylib; create the
+          # plain `libonnxruntime.dylib` ld name so `-lonnxruntime` resolves.
+          REAL_NAME=$(basename "$(ls "$ORT_DIR"/libonnxruntime.*.dylib | head -1)")
+          ln -sf "$REAL_NAME" "$ORT_DIR/libonnxruntime.dylib"
           echo "ORT_LIB_LOCATION=$ORT_DIR" >> $GITHUB_ENV
           echo "ORT_PREFER_DYNAMIC_LINK=1" >> $GITHUB_ENV
           # Bundle the versioned dylib (matches the install name @rpath/libonnxruntime.1.23.2.dylib)
@@ -390,13 +394,13 @@ jobs:
           curl -LsSf -o ort.whl "$URL"
           echo "$SHA256  ort.whl" | sha256sum -c -
           python3 -c "import zipfile; zipfile.ZipFile('ort.whl').extractall('ort-dist')"
-          # Resolve symlinks so the deb bundler gets real files (not broken symlinks)
-          for f in ort-dist/onnxruntime/capi/libonnxruntime.so*; do
-            if [ -L "$f" ]; then
-              cp -L "$f" "$f.real" && mv "$f.real" "$f"
-            fi
-          done
           ORT_DIR="$(pwd)/ort-dist/onnxruntime/capi"
+          # The PyPI wheel ships only libonnxruntime.so.1.23.2 (no SONAME and
+          # no ld-search name). Fabricate both so `-lonnxruntime` resolves:
+          # `.so.1` for the dynamic loader, `.so` for the linker.
+          REAL_NAME=$(basename "$(ls "$ORT_DIR"/libonnxruntime.so.1.* | head -1)")
+          ln -sf "$REAL_NAME" "$ORT_DIR/libonnxruntime.so.1"
+          ln -sf "libonnxruntime.so.1" "$ORT_DIR/libonnxruntime.so"
           echo "ORT_LIB_LOCATION=$ORT_DIR" >> $GITHUB_ENV
           echo "ORT_PREFER_DYNAMIC_LINK=1" >> $GITHUB_ENV
           # Ship ORT in the private lib dir under its SONAME only — the one

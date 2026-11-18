@@ -14,6 +14,7 @@
 use serde::{Deserialize, Serialize};
 use std::io::Write;
 use std::net::TcpStream;
+#[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::time::Duration;

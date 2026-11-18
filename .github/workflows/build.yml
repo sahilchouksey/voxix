@@ -375,6 +375,7 @@ jobs:
           # plain `libonnxruntime.dylib` ld name so `-lonnxruntime` resolves.
           REAL_NAME=$(basename "$(ls "$ORT_DIR"/libonnxruntime.*.dylib | head -1)")
           ln -sf "$REAL_NAME" "$ORT_DIR/libonnxruntime.dylib"
+          ln -sf "$REAL_NAME" "$ORT_DIR/libonnxruntime.$ORT_VERSION.dylib"
           echo "ORT_LIB_LOCATION=$ORT_DIR" >> $GITHUB_ENV
           echo "ORT_PREFER_DYNAMIC_LINK=1" >> $GITHUB_ENV
           # Bundle the versioned dylib (matches the install name @rpath/libonnxruntime.1.23.2.dylib)

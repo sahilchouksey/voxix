@@ -993,63 +993,63 @@ mod tests {
         assert_eq!(result.stage, SimStage::Processing);
     }
 
-/// Toggle mode + double-tap lock ON: a short tap (press → release < min_t)
-/// must NOT discard the recording and must NOT arm the tap window. The
-/// recording keeps running; the release is a complete no-op.
-#[test]
-fn toggle_mode_short_release_does_not_discard_or_arm() {
-    let events = vec![Ev::Press, Ev::Release];
-    let result = simulate_mode(&events, true, false, 20, false);
-    assert_eq!(result.starts, 1, "the press must start the recording");
-    assert_eq!(result.discards, 0, "toggle releases must never discard");
-    assert_eq!(result.stops, 0, "toggle releases must never auto-stop");
-    assert_eq!(
-        result.stage,
-        SimStage::Recording,
-        "recording must keep running after a short tap-and-release"
-    );
-    assert!(!result.locked);
-}
+    /// Toggle mode + double-tap lock ON: a short tap (press → release < min_t)
+    /// must NOT discard the recording and must NOT arm the tap window. The
+    /// recording keeps running; the release is a complete no-op.
+    #[test]
+    fn toggle_mode_short_release_does_not_discard_or_arm() {
+        let events = vec![Ev::Press, Ev::Release];
+        let result = simulate_mode(&events, true, false, 20, false);
+        assert_eq!(result.starts, 1, "the press must start the recording");
+        assert_eq!(result.discards, 0, "toggle releases must never discard");
+        assert_eq!(result.stops, 0, "toggle releases must never auto-stop");
+        assert_eq!(
+            result.stage,
+            SimStage::Recording,
+            "recording must keep running after a short tap-and-release"
+        );
+        assert!(!result.locked);
+    }
 
-/// Toggle mode: an eligible long press → release followed by window
-/// expiry must not auto-stop either.
-#[test]
-fn toggle_mode_release_and_timeout_does_not_stop() {
-    let events = vec![Ev::Press, Ev::Release, Ev::Wait, Ev::TapWindow];
-    let result = simulate_mode(&events, true, false, 0, false);
-    assert_eq!(result.stops, 0, "toggle releases never arm the tap window");
-    assert_eq!(result.stage, SimStage::Recording);
-}
+    /// Toggle mode: an eligible long press → release followed by window
+    /// expiry must not auto-stop either.
+    #[test]
+    fn toggle_mode_release_and_timeout_does_not_stop() {
+        let events = vec![Ev::Press, Ev::Release, Ev::Wait, Ev::TapWindow];
+        let result = simulate_mode(&events, true, false, 0, false);
+        assert_eq!(result.stops, 0, "toggle releases never arm the tap window");
+        assert_eq!(result.stage, SimStage::Recording);
+    }
 
-/// Toggle mode: second press stops the recording exactly once.
-#[test]
-fn toggle_mode_second_press_stops() {
-    let events = vec![
-        Ev::Press,
-        Ev::Release,
-        Ev::Wait,
-        Ev::Wait,
-        Ev::Wait,
-        Ev::Wait,
-        Ev::Wait,
-        Ev::Wait,
-        Ev::Wait, // clear the debounce
-        Ev::Press,
-    ];
-    let result = simulate_mode(&events, true, false, 0, false);
-    assert_eq!(result.starts, 1);
-    assert_eq!(result.stops, 1, "the second press must stop exactly once");
-    assert_eq!(result.stage, SimStage::Processing);
-    assert!(!result.locked);
-    assert_eq!(result.discards, 0);
-}
+    /// Toggle mode: second press stops the recording exactly once.
+    #[test]
+    fn toggle_mode_second_press_stops() {
+        let events = vec![
+            Ev::Press,
+            Ev::Release,
+            Ev::Wait,
+            Ev::Wait,
+            Ev::Wait,
+            Ev::Wait,
+            Ev::Wait,
+            Ev::Wait,
+            Ev::Wait, // clear the debounce
+            Ev::Press,
+        ];
+        let result = simulate_mode(&events, true, false, 0, false);
+        assert_eq!(result.starts, 1);
+        assert_eq!(result.stops, 1, "the second press must stop exactly once");
+        assert_eq!(result.stage, SimStage::Processing);
+        assert!(!result.locked);
+        assert_eq!(result.discards, 0);
+    }
 
-/// Toggle mode with the lock disabled behaves the same on releases.
-#[test]
-fn toggle_mode_without_lock_release_is_noop() {
-    let events = vec![Ev::Press, Ev::Release, Ev::TapWindow];
-    let result = simulate_mode(&events, false, false, 0, false);
-    assert_eq!(result.stops, 0);
-    assert_eq!(result.stage, SimStage::Recording);
-}
+    /// Toggle mode with the lock disabled behaves the same on releases.
+    #[test]
+    fn toggle_mode_without_lock_release_is_noop() {
+        let events = vec![Ev::Press, Ev::Release, Ev::TapWindow];
+        let result = simulate_mode(&events, false, false, 0, false);
+        assert_eq!(result.stops, 0);
+        assert_eq!(result.stage, SimStage::Recording);
+    }
 }

@@ -33,8 +33,8 @@ fn rdev() -> &'static rdev_backend::RdevBackend {
 /// Check if a binding string is modifier-only (e.g. "alt+shift").
 pub(crate) fn is_modifier_only(raw: &str) -> bool {
     let modifiers = [
-        "ctrl", "control", "shift", "alt", "option", "super", "meta", "cmd", "command",
-        "win", "windows",
+        "ctrl", "control", "shift", "alt", "option", "super", "meta", "cmd", "command", "win",
+        "windows",
     ];
     let parts: Vec<String> = raw.split('+').map(|p| p.trim().to_lowercase()).collect();
     !parts.is_empty() && parts.iter().all(|p| modifiers.contains(&p.as_str()))

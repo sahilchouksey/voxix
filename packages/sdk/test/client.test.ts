@@ -1,7 +1,13 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { startHarness, type Harness } from "./mock-server.js";
 import { VoxixClient } from "../src/client.js";
-import { AuthError, ModelError, ProtocolError, ServiceError, TransportError } from "../src/errors.js";
+import {
+  AuthError,
+  ModelError,
+  ProtocolError,
+  ServiceError,
+  TransportError,
+} from "../src/errors.js";
 import type { FetchLike } from "../src/transport.js";
 
 let harness: Harness;
@@ -22,7 +28,8 @@ function wavBytes(): ArrayBuffer {
   const buffer = new ArrayBuffer(44 + sampleBytes);
   const view = new DataView(buffer);
   const text = (offset: number, value: string) => {
-    for (let i = 0; i < value.length; i++) view.setUint8(offset + i, value.charCodeAt(i));
+    for (let i = 0; i < value.length; i++)
+      view.setUint8(offset + i, value.charCodeAt(i));
   };
   text(0, "RIFF");
   view.setUint32(4, 36 + sampleBytes, true);
@@ -66,7 +73,10 @@ describe("VoxixClient over the fake daemon (real HTTP)", () => {
   });
 
   test("unauthed requests answer 401 empty body → AuthError", async () => {
-    const client = new VoxixClient({ baseUrl: harness.baseUrl, token: "vx_wrong_token" });
+    const client = new VoxixClient({
+      baseUrl: harness.baseUrl,
+      token: "vx_wrong_token",
+    });
     await expect(client.health()).rejects.toBeInstanceOf(AuthError);
   });
 
@@ -90,7 +100,9 @@ describe("VoxixClient over the fake daemon (real HTTP)", () => {
   test("prepare SSE → prepareModel resolves ok with progress stages", async () => {
     const client = authed();
     const stages: string[] = [];
-    const result = await client.prepareModel("tiny-16k", (event) => stages.push(event.event));
+    const result = await client.prepareModel("tiny-16k", (event) =>
+      stages.push(event.event),
+    );
     expect(stages).toEqual(["verifying", "loading", "ok"]);
     expect(result.state).toBe("completed");
     expect(result.backend).toBe("transcribe_cpp");
@@ -98,14 +110,18 @@ describe("VoxixClient over the fake daemon (real HTTP)", () => {
 
   test("prepare SSE terminal error → ModelError", async () => {
     const client = authed();
-    expect(client.prepareModel("missing-model")).rejects.toBeInstanceOf(ModelError);
+    expect(client.prepareModel("missing-model")).rejects.toBeInstanceOf(
+      ModelError,
+    );
   });
 
   test("prepare-busy is a ModelError (held slot)", async () => {
     const client = authed();
     const release = harness.holdPrepare();
     try {
-      await expect(client.prepareModel("tiny-16k")).rejects.toBeInstanceOf(ModelError);
+      await expect(client.prepareModel("tiny-16k")).rejects.toBeInstanceOf(
+        ModelError,
+      );
     } finally {
       release();
     }
@@ -130,11 +146,17 @@ describe("VoxixClient over the fake daemon (real HTTP)", () => {
 
     // Cancel → resolves (204); a second cancel reports nothing in flight (422).
     await client.cancelModelDownload("catalog-large");
-    await expect(client.cancelModelDownload("catalog-large")).rejects.toBeInstanceOf(ServiceError);
+    await expect(
+      client.cancelModelDownload("catalog-large"),
+    ).rejects.toBeInstanceOf(ServiceError);
 
     // Unknown id → ModelError (404 model_not_found).
-    await expect(client.downloadModel("no-such-model")).rejects.toBeInstanceOf(ModelError);
-    await expect(client.cancelModelDownload("no-such-model")).rejects.toBeInstanceOf(ModelError);
+    await expect(client.downloadModel("no-such-model")).rejects.toBeInstanceOf(
+      ModelError,
+    );
+    await expect(
+      client.cancelModelDownload("no-such-model"),
+    ).rejects.toBeInstanceOf(ModelError);
   });
 
   test("batch transcribeFile → 202 → poll completed → history row", async () => {
@@ -176,14 +198,20 @@ describe("VoxixClient over the fake daemon (real HTTP)", () => {
     const view = await client.getSession(session.id, session.sessionToken);
     expect(view.state).toBe("created");
 
-    await expect(client.getSession(session.id, "vx_mississippi")).rejects.toMatchObject({
+    await expect(
+      client.getSession(session.id, "vx_mississippi"),
+    ).rejects.toMatchObject({
       remoteCode: "session_not_found",
       status: 404,
     });
   });
 
   test("injected fetch override is honored (URL join + bearer + envelope mapping)", async () => {
-    const calls: Array<{ url: string; method?: string; headers?: Record<string, string> }> = [];
+    const calls: Array<{
+      url: string;
+      method?: string;
+      headers?: Record<string, string>;
+    }> = [];
     const fake: FetchLike = async (url, init) => {
       calls.push({ url, method: init?.method, headers: init?.headers });
       if (url.endsWith("/v1/health")) {
@@ -191,34 +219,76 @@ describe("VoxixClient over the fake daemon (real HTTP)", () => {
           ok: true,
           status: 200,
           headers: { get: () => "application/json" },
-          text: async () => JSON.stringify({ status: "ok", version: "x", engine_version: "y", protocol_version: 1, uptime_ms: 0, ready: true }),
+          text: async () =>
+            JSON.stringify({
+              status: "ok",
+              version: "x",
+              engine_version: "y",
+              protocol_version: 1,
+              uptime_ms: 0,
+              ready: true,
+            }),
           arrayBuffer: async () => new ArrayBuffer(0),
-          json: async () => ({ status: "ok", version: "x", engine_version: "y", protocol_version: 1, uptime_ms: 0, ready: true }),
+          json: async () => ({
+            status: "ok",
+            version: "x",
+            engine_version: "y",
+            protocol_version: 1,
+            uptime_ms: 0,
+            ready: true,
+          }),
         };
       }
       return {
         ok: false,
         status: 429,
         headers: { get: () => "application/json" },
-        text: async () => JSON.stringify({ error: { code: "queue-full", message: "capacity", retryable: true, request_id: "r" } }),
+        text: async () =>
+          JSON.stringify({
+            error: {
+              code: "queue-full",
+              message: "capacity",
+              retryable: true,
+              request_id: "r",
+            },
+          }),
         arrayBuffer: async () => new ArrayBuffer(0),
-        json: async () => ({ error: { code: "queue-full", message: "capacity", retryable: true, request_id: "r" } }),
+        json: async () => ({
+          error: {
+            code: "queue-full",
+            message: "capacity",
+            retryable: true,
+            request_id: "r",
+          },
+        }),
       };
     };
-    const client = new VoxixClient({ baseUrl: "http://vxix.local:47832/", token: "vx_t", fetch: fake });
+    const client = new VoxixClient({
+      baseUrl: "http://vxix.local:47832/",
+      token: "vx_t",
+      fetch: fake,
+    });
     const health = await client.health();
     expect(health.protocol_version).toBe(1);
     expect(calls[0]?.url).toBe("http://vxix.local:47832/v1/health");
     expect(calls[0]?.headers?.Authorization).toBe("Bearer vx_t");
-    expect(client.listModels()).rejects.toMatchObject({ remoteCode: "queue-full", status: 429 });
+    expect(client.listModels()).rejects.toMatchObject({
+      remoteCode: "queue-full",
+      status: 429,
+    });
   });
 
   test("transport failure (dead server) → TransportError retryable", async () => {
-    const client = new VoxixClient({ baseUrl: "http://127.0.0.1:1", token: "vx_t" });
+    const client = new VoxixClient({
+      baseUrl: "http://127.0.0.1:1",
+      token: "vx_t",
+    });
     await expect(client.health()).rejects.toBeInstanceOf(TransportError);
   });
 
   test("protocol misuse inputs throw ProtocolError", async () => {
-    expect(() => new VoxixClient({ baseUrl: "", token: "x" })).toThrow(ProtocolError);
+    expect(() => new VoxixClient({ baseUrl: "", token: "x" })).toThrow(
+      ProtocolError,
+    );
   });
 });

@@ -20,7 +20,10 @@ async function newSession(overrides?: { ticketFallback?: boolean }) {
     ticketFallback: overrides?.ticketFallback,
     timeouts: { pingIntervalMs: 200 },
   });
-  const session = await client.createSession({ vad: { mode: "server" }, partial_results: true });
+  const session = await client.createSession({
+    vad: { mode: "server" },
+    partial_results: true,
+  });
   return { client, session };
 }
 
@@ -87,7 +90,12 @@ describe("VoxixSession over the fake daemon (real WS)", () => {
     }
     // the server observes exactly the pushed audio (poll: frames land across
     // macrotasks; the harness is deterministic once they have)
-    const waitForServer = async (predicate: (s: { audioReceivedMs: number; lastAudioSeq: number }) => boolean) => {
+    const waitForServer = async (
+      predicate: (s: {
+        audioReceivedMs: number;
+        lastAudioSeq: number;
+      }) => boolean,
+    ) => {
       for (let i = 0; i < 100; i++) {
         const snap = harness.sessionState(session.id);
         if (snap && predicate(snap)) return snap;
@@ -95,7 +103,9 @@ describe("VoxixSession over the fake daemon (real WS)", () => {
       }
       return harness.sessionState(session.id);
     };
-    const snapshot = await waitForServer((s) => s.audioReceivedMs === 240 && s.lastAudioSeq === 11);
+    const snapshot = await waitForServer(
+      (s) => s.audioReceivedMs === 240 && s.lastAudioSeq === 11,
+    );
     expect(snapshot?.audioReceivedMs).toBe(240);
     expect(snapshot?.lastAudioSeq).toBe(11);
 
@@ -126,14 +136,24 @@ describe("VoxixSession over the fake daemon (real WS)", () => {
 
   test("pushAudio validation: bad duration, bad payload length, dead-phase", async () => {
     const { session } = await newSession();
-    await expect(session.pushAudio(new Int16Array(320), 15 as never)).rejects.toBeInstanceOf(ProtocolError);
+    await expect(
+      session.pushAudio(new Int16Array(320), 15 as never),
+    ).rejects.toBeInstanceOf(ProtocolError);
     await session.connect();
-    await expect(session.pushAudio(new Int16Array(320), 20)).rejects.toBeInstanceOf(ProtocolError); // not started
+    await expect(
+      session.pushAudio(new Int16Array(320), 20),
+    ).rejects.toBeInstanceOf(ProtocolError); // not started
     await session.start();
-    await expect(session.pushAudio(new Int16Array(321), 20)).rejects.toThrow(/payload length/);
-    await expect(session.pushAudio(new Uint8Array(321 * 2), 20)).rejects.toThrow(/payload length/);
+    await expect(session.pushAudio(new Int16Array(321), 20)).rejects.toThrow(
+      /payload length/,
+    );
+    await expect(
+      session.pushAudio(new Uint8Array(321 * 2), 20),
+    ).rejects.toThrow(/payload length/);
     session.close();
-    await expect(session.pushAudio(new Int16Array(320), 20)).rejects.toBeInstanceOf(ProtocolError);
+    await expect(
+      session.pushAudio(new Int16Array(320), 20),
+    ).rejects.toBeInstanceOf(ProtocolError);
   });
 
   test("pause/resume: barrier works, synthesized resumed event, pushAudio blocked while paused", async () => {
@@ -146,7 +166,9 @@ describe("VoxixSession over the fake daemon (real WS)", () => {
     expect(through).toBe(0); // last_audio_seq of paused payload
     expect(session.phaseName).toBe("paused");
     expect(recorder.events.some((e) => e.type === "paused")).toBe(true);
-    await expect(session.pushAudio(new Int16Array(320), 20)).rejects.toBeInstanceOf(ProtocolError);
+    await expect(
+      session.pushAudio(new Int16Array(320), 20),
+    ).rejects.toBeInstanceOf(ProtocolError);
     await session.resume();
     expect(recorder.events.some((e) => e.type === "resumed")).toBe(true);
     expect(session.phaseName).toBe("streaming");
@@ -188,7 +210,9 @@ describe("VoxixSession over the fake daemon (real WS)", () => {
       token: harness.token,
       timeouts: { pingIntervalMs: 200 },
     });
-    const sessionA = await resumeClient.createSession({ client_session_key: "resume-window-1" });
+    const sessionA = await resumeClient.createSession({
+      client_session_key: "resume-window-1",
+    });
     await sessionA.connect();
     await sessionA.start();
     const firstPair = sessionA.resumeCredentials;
@@ -196,7 +220,10 @@ describe("VoxixSession over the fake daemon (real WS)", () => {
     sessionA.close(); // drops the socket; the harness keeps the session live
 
     // rebind to the SAME session (attach flow) and present the stored pair
-    const view = await resumeClient.getSession(sessionA.id, sessionA.sessionToken);
+    const view = await resumeClient.getSession(
+      sessionA.id,
+      sessionA.sessionToken,
+    );
     expect(view.state).toBe("created");
     const reborn = resumeClient.attachSession({
       session_id: sessionA.id,
@@ -204,7 +231,12 @@ describe("VoxixSession over the fake daemon (real WS)", () => {
       state: "created",
       ws_url: `/v1/sessions/${sessionA.id}/stream`,
       expires_at: "2030-01-01T00:00:00Z",
-      negotiated_audio: { codec: "pcm_s16le", sample_rate_hz: 16_000, channels: 1, chunk_ms: 20 },
+      negotiated_audio: {
+        codec: "pcm_s16le",
+        sample_rate_hz: 16_000,
+        channels: 1,
+        chunk_ms: 20,
+      },
       streaming_mode: "native",
       resume_window_ms: 30_000,
     });
@@ -225,7 +257,9 @@ describe("VoxixSession over the fake daemon (real WS)", () => {
     const { session } = await newSession();
     await session.connect();
     const first = session.events[Symbol.asyncIterator]();
-    expect(() => session.events[Symbol.asyncIterator]()).toThrow(/strict-consumer/);
+    expect(() => session.events[Symbol.asyncIterator]()).toThrow(
+      /strict-consumer/,
+    );
     await first.next();
     session.close();
   });
@@ -259,7 +293,10 @@ describe("VoxixSession over the fake daemon (real WS)", () => {
 
   test("WS-level close before hello → connect rejects with protocol error", async () => {
     // Create a session, then drop it server-side so the upgrade is 404.
-    const client = new VoxixClient({ baseUrl: harness.baseUrl, token: harness.token });
+    const client = new VoxixClient({
+      baseUrl: harness.baseUrl,
+      token: harness.token,
+    });
     const session = await client.createSession({});
     harness.cancelSession(session.id); // terminal → upgrade path 404 session_not_found
     await expect(session.connect()).rejects.toBeInstanceOf(ProtocolError);

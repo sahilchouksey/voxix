@@ -46,4 +46,3 @@ export const updateDocumentLanguage = (lang: string): void => {
     document.documentElement.setAttribute("lang", lang);
   }
 };
-

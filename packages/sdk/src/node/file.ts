@@ -15,16 +15,33 @@ export interface WavInfo {
 /** Parses RIFF chunks and the fmt/data pair. Not a strict validator. */
 export function readWavHeader(bytes: Uint8Array): WavInfo {
   if (bytes.length < 12) throw new Error("not a WAV file (too short)");
-  if (bytes[0] !== 0x52 || bytes[1] !== 0x49 || bytes[2] !== 0x46 || bytes[3] !== 0x46) {
+  if (
+    bytes[0] !== 0x52 ||
+    bytes[1] !== 0x49 ||
+    bytes[2] !== 0x46 ||
+    bytes[3] !== 0x46
+  ) {
     throw new Error("not a RIFF container");
   }
-  if (!(bytes[8] === 0x57 && bytes[9] === 0x41 && bytes[10] === 0x56 && bytes[11] === 0x45)) {
+  if (
+    !(
+      bytes[8] === 0x57 &&
+      bytes[9] === 0x41 &&
+      bytes[10] === 0x56 &&
+      bytes[11] === 0x45
+    )
+  ) {
     throw new Error("not a WAVE RIFF");
   }
   let position = 12;
   let info: WavInfo | undefined;
   while (position + 8 <= bytes.length) {
-    const chunkId = String.fromCharCode(bytes[position], bytes[position + 1], bytes[position + 2], bytes[position + 3]);
+    const chunkId = String.fromCharCode(
+      bytes[position],
+      bytes[position + 1],
+      bytes[position + 2],
+      bytes[position + 3],
+    );
     const chunkSize = readU32LE(bytes, position + 4);
     position += 8;
     if (chunkId === "fmt " && position + 16 <= bytes.length) {
@@ -41,14 +58,21 @@ export function readWavHeader(bytes: Uint8Array): WavInfo {
         dataOffset: 0,
       };
     } else if (chunkId === "data" && info) {
-      info.dataBytes = chunkSize === 0 ? bytes.length - position : Math.min(chunkSize, bytes.length - position);
+      info.dataBytes =
+        chunkSize === 0
+          ? bytes.length - position
+          : Math.min(chunkSize, bytes.length - position);
       info.dataOffset = position;
       break;
     }
     position += chunkSize + (chunkSize & 1); // RIFF chunks are word-aligned
   }
   if (!info) throw new Error("missing fmt/data chunks");
-  if (info.bitsPerSample % 8 !== 0 || info.bitsPerSample < 8 || info.bitsPerSample > 32) {
+  if (
+    info.bitsPerSample % 8 !== 0 ||
+    info.bitsPerSample < 8 ||
+    info.bitsPerSample > 32
+  ) {
     throw new Error(`unsupported bits/sample ${info.bitsPerSample}`);
   }
   return info;
@@ -58,9 +82,15 @@ export function readWavHeader(bytes: Uint8Array): WavInfo {
  * Extract mono PCM16 samples — downmixing stereo, converting
  * i8/i16/i24/i32/f32. Returns raw samples (not §6 framed).
  */
-export function wavToMonoPcm16(bytes: Uint8Array): { samples: Int16Array; sampleRateHz: number } {
+export function wavToMonoPcm16(bytes: Uint8Array): {
+  samples: Int16Array;
+  sampleRateHz: number;
+} {
   const info = readWavHeader(bytes);
-  const data = bytes.subarray(info.dataOffset, info.dataOffset + info.dataBytes);
+  const data = bytes.subarray(
+    info.dataOffset,
+    info.dataOffset + info.dataBytes,
+  );
   const bytesPerSample = info.bitsPerSample / 8;
   const frameCount = Math.floor(data.length / (bytesPerSample * info.channels));
   const mono = new Int16Array(frameCount);
@@ -87,7 +117,9 @@ export function wavToMonoPcm16(bytes: Uint8Array): { samples: Int16Array; sample
           break;
         }
         case 32:
-          value = info.isFloat ? view.getFloat32(offset, true) : view.getInt32(offset, true) / 2147483648;
+          value = info.isFloat
+            ? view.getFloat32(offset, true)
+            : view.getInt32(offset, true) / 2147483648;
           break;
         default:
           throw new Error(`unsupported bits/sample ${info.bitsPerSample}`);
@@ -108,6 +140,9 @@ function readU16LE(bytes: Uint8Array, offset: number): number {
 
 function readU32LE(bytes: Uint8Array, offset: number): number {
   return (
-    bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16) | (bytes[offset + 3] << 24)
+    bytes[offset] |
+    (bytes[offset + 1] << 8) |
+    (bytes[offset + 2] << 16) |
+    (bytes[offset + 3] << 24)
   );
 }

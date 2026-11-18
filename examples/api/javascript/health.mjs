@@ -20,10 +20,15 @@
 //     "capabilities": { "max_concurrent_streams": 1, … }, … }
 // Exit codes: 0 ok · 1 request failure (401 = missing/wrong token) · 2 usage
 // Note: /alive never needs a token; every other /v1/* route does (401 + empty body on failure).
-const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(/\/+$/, "");
+const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(
+  /\/+$/,
+  "",
+);
 const token = process.env.VOXIX_TOKEN;
 if (!token) {
-  console.error("error: VOXIX_TOKEN is not set (expected the vx_… bearer printed at first daemon start)");
+  console.error(
+    "error: VOXIX_TOKEN is not set (expected the vx_… bearer printed at first daemon start)",
+  );
   process.exit(2);
 }
 
@@ -45,7 +50,9 @@ const get = async (path, auth) => {
 
 const run = async () => {
   let [status, body] = await get("/alive", false).catch((e) => {
-    console.error(`error: cannot reach ${base} (${e.cause?.message ?? e.message})`);
+    console.error(
+      `error: cannot reach ${base} (${e.cause?.message ?? e.message})`,
+    );
     process.exit(1);
   });
   show("GET /alive (no auth)", status, body);

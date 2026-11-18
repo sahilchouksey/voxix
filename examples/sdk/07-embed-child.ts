@@ -24,12 +24,19 @@
  * Exit codes: 0 ok or skipped · 1 child failed the handshake · 2 usage
  */
 import { create } from "../../packages/sdk/src/node/index.js";
-import { TransportError, ProtocolError, VoxixError } from "../../packages/sdk/src/errors.js";
+import {
+  TransportError,
+  ProtocolError,
+  VoxixError,
+} from "../../packages/sdk/src/errors.js";
 
 const commandFlag = process.argv[process.argv.indexOf("--command") + 1];
-const command = process.argv.includes("--command") && commandFlag && !commandFlag.startsWith("--")
-  ? commandFlag
-  : "voxix";
+const command =
+  process.argv.includes("--command") &&
+  commandFlag &&
+  !commandFlag.startsWith("--")
+    ? commandFlag
+    : "voxix";
 
 try {
   // create() validates the ready line (loopback URL, vx_ token, integer pid
@@ -46,7 +53,9 @@ try {
   if (error instanceof TransportError || error instanceof ProtocolError) {
     // The overwhelmingly common cause here is a missing `voxix` binary.
     console.log(`SKIP: embedded child did not come up (${error.message})`);
-    console.log("this example needs the packaged `voxix` binary on PATH — see packaging/");
+    console.log(
+      "this example needs the packaged `voxix` binary on PATH — see packaging/",
+    );
     process.exit(0);
   }
   if (error instanceof VoxixError) {

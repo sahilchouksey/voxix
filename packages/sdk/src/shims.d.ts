@@ -10,7 +10,10 @@ type TimerHandle = object;
 
 declare function setTimeout(handler: () => void, timeout?: number): TimerHandle;
 declare function clearTimeout(handle: TimerHandle | undefined): void;
-declare function setInterval(handler: () => void, timeout?: number): TimerHandle;
+declare function setInterval(
+  handler: () => void,
+  timeout?: number,
+): TimerHandle;
 declare function clearInterval(handle: TimerHandle | undefined): void;
 
 /** Minimal structural URL (transport factory signatures only). */
@@ -31,7 +34,7 @@ declare class Blob {
 
 /** Minimal structural URLSearchParams (history paging helpers). */
 declare class URLSearchParams {
-  constructor(init?: string);// | Record<string, string>);
+  constructor(init?: string); // | Record<string, string>);
   get(name: string): string | null;
   set(name: string, value: string): void;
   toString(): string;

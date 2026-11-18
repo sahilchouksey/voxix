@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { startHarness, type Harness } from "./mock-server.js";
-import { create, parseReadyLine, type ChildProcessLike } from "../src/node/create.js";
+import {
+  create,
+  parseReadyLine,
+  type ChildProcessLike,
+} from "../src/node/create.js";
 import { ProtocolError, TransportError } from "../src/errors.js";
 
 /** Assembles a ChildProcessLike that emits a scripted stdout/stderr flow. */
@@ -11,7 +15,9 @@ function fakeChild(lines: {
   exit?: number;
 }): ChildProcessLike {
   const stdoutCallbacks: Array<(chunk: Uint8Array | string) => void> = [];
-  const exitCallbacks: Array<(code: number | null, signal: string | null) => void> = [];
+  const exitCallbacks: Array<
+    (code: number | null, signal: string | null) => void
+  > = [];
   const child: ChildProcessLike = {
     pid: lines.pid ?? 424242,
     stdin: {
@@ -43,7 +49,8 @@ function fakeChild(lines: {
   (child as { __kills: string[] }).__kills = [];
   queueMicrotask(() => {
     if (lines.stdout) for (const cb of stdoutCallbacks) cb(lines.stdout);
-    if (lines.exit !== undefined) for (const cb of exitCallbacks) cb(lines.exit, null);
+    if (lines.exit !== undefined)
+      for (const cb of exitCallbacks) cb(lines.exit, null);
   });
   return child as ChildProcessLike & { __ends: number[]; __kills: string[] };
 }
@@ -64,15 +71,46 @@ describe("embedded-child create() (§15 G1.1/G24)", () => {
 
     expect(() => parseReadyLine('{"type":"other"}')).toThrow(/"ready"/);
     expect(() =>
-      parseReadyLine(JSON.stringify({ type: "ready", url: "http://10.0.0.1:47", token: "vx_x", pid: 1 })),
+      parseReadyLine(
+        JSON.stringify({
+          type: "ready",
+          url: "http://10.0.0.1:47",
+          token: "vx_x",
+          pid: 1,
+        }),
+      ),
     ).toThrow(/loopback/);
     expect(() =>
-      parseReadyLine(JSON.stringify({ type: "ready", url: "http://127.0.0.1:47", token: "plain", pid: 1 })),
+      parseReadyLine(
+        JSON.stringify({
+          type: "ready",
+          url: "http://127.0.0.1:47",
+          token: "plain",
+          pid: 1,
+        }),
+      ),
     ).toThrow(/vx_/);
     expect(() =>
-      parseReadyLine(JSON.stringify({ type: "ready", url: "http://127.0.0.1:47", token: "vx_x", pid: "seven" })),
+      parseReadyLine(
+        JSON.stringify({
+          type: "ready",
+          url: "http://127.0.0.1:47",
+          token: "vx_x",
+          pid: "seven",
+        }),
+      ),
     ).toThrow(/pid/);
-    expect(() => parseReadyLine(JSON.stringify({ type: "ready", url: "http://127.0.0.1:47", token: "vx_x", pid: 1, api_version: 2 }))).toThrow(/api_version/);
+    expect(() =>
+      parseReadyLine(
+        JSON.stringify({
+          type: "ready",
+          url: "http://127.0.0.1:47",
+          token: "vx_x",
+          pid: 1,
+          api_version: 2,
+        }),
+      ),
+    ).toThrow(/api_version/);
     expect(() => parseReadyLine("x".repeat(5_000))).toThrow(/byte cap/);
   });
 
@@ -113,12 +151,20 @@ describe("embedded-child create() (§15 G1.1/G24)", () => {
       command: "fake",
       spawn: () =>
         fakeChild({
-          stdout: JSON.stringify({ type: "ready", url: "http://127.0.0.1:47", token: "vx_a", pid: 9999 }) + "\n",
+          stdout:
+            JSON.stringify({
+              type: "ready",
+              url: "http://127.0.0.1:47",
+              token: "vx_a",
+              pid: 9999,
+            }) + "\n",
           pid: 7,
         }),
     }).catch((e) => e);
     expect(mismatch).toBeInstanceOf(ProtocolError);
-    expect((mismatch as Error).message).toContain("does not match the spawned child");
+    expect((mismatch as Error).message).toContain(
+      "does not match the spawned child",
+    );
 
     const exited = await create({
       command: "fake",

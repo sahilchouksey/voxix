@@ -22,8 +22,12 @@ if (!wavPathArg) {
   console.error("usage: node-transcribe.ts <file.wav> [baseUrl] [token]");
   process.exit(2);
 }
-const baseUrl = baseUrlArg ?? process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832";
-const token = tokenArg ?? process.env.VOXIX_TOKEN ?? envOrExit("token via argv[3] or VOXIX_TOKEN");
+const baseUrl =
+  baseUrlArg ?? process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832";
+const token =
+  tokenArg ??
+  process.env.VOXIX_TOKEN ??
+  envOrExit("token via argv[3] or VOXIX_TOKEN");
 
 await transcribe(wavPathArg);
 
@@ -36,9 +40,13 @@ async function transcribe(wavPath: string): Promise<void> {
   const client = new VoxixClient({ baseUrl, token });
   try {
     const health = await client.health();
-    console.log(`daemon ${health.engine_version} · protocol v${health.protocol_version}`);
+    console.log(
+      `daemon ${health.engine_version} · protocol v${health.protocol_version}`,
+    );
   } catch (error) {
-    console.error(`daemon unreachable at ${baseUrl}: ${(error as Error).message}`);
+    console.error(
+      `daemon unreachable at ${baseUrl}: ${(error as Error).message}`,
+    );
     process.exit(1);
   }
 
@@ -51,23 +59,33 @@ async function transcribe(wavPath: string): Promise<void> {
     process.exit(1);
   }
 
-  const session = await client.createSession({ vad: { mode: "server" }, partial_results: true });
+  const session = await client.createSession({
+    vad: { mode: "server" },
+    partial_results: true,
+  });
   await session.connect();
   await session.start();
-  console.log(`session ${session.id} · negotiated ${JSON.stringify(session.negotiatedAudio)}`);
+  console.log(
+    `session ${session.id} · negotiated ${JSON.stringify(session.negotiatedAudio)}`,
+  );
 
   const render = (async () => {
     for await (const event of session.events) {
       if (event.type === "partial") {
-        process.stdout.write(`\r› ${event.payload.committed}${event.payload.tentative}`);
+        process.stdout.write(
+          `\r› ${event.payload.committed}${event.payload.tentative}`,
+        );
       }
       if (event.type === "final") {
         console.log(`\n✓ final: ${event.payload.text}`);
         const historyId = event.payload.history_id;
-        if (typeof historyId === "number") console.log(`  history #${historyId}`);
+        if (typeof historyId === "number")
+          console.log(`  history #${historyId}`);
       }
       if (event.type === "error") {
-        console.error(`\n✗ remote event ${event.payload.code}: ${event.payload.message}`);
+        console.error(
+          `\n✗ remote event ${event.payload.code}: ${event.payload.message}`,
+        );
       }
     }
   })();
@@ -77,13 +95,18 @@ async function transcribe(wavPath: string): Promise<void> {
     const chunkMs: FrameDurationMs = 20;
     const chunkSamples = samplesFor(chunkMs);
     for (let offset = 0; offset < samples.length; offset += chunkSamples) {
-      const slice = samples.subarray(offset, Math.min(offset + chunkSamples, samples.length));
+      const slice = samples.subarray(
+        offset,
+        Math.min(offset + chunkSamples, samples.length),
+      );
       const frame = new Int16Array(chunkSamples);
       frame.set(slice);
       await session.pushAudio(frame, chunkMs);
     }
     const final = await session.stop("end_of_stream");
-    console.log(`streamed ${session.lastAck.through_seq + 1} frames (${final.duration_ms} ms audio)`);
+    console.log(
+      `streamed ${session.lastAck.through_seq + 1} frames (${final.duration_ms} ms audio)`,
+    );
   } catch (error) {
     if (error instanceof VoxixError) {
       console.error(

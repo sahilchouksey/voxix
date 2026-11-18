@@ -114,7 +114,15 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
   const primaryToken = `vx_h${harnessId}_service_${Math.random().toString(36).slice(2, 10)}`;
   const models: FakeModel[] = options.models ?? [
     { id: "tiny-16k", name: "Tiny Speech 16k" },
-    { id: "missing-model", name: "Absent Model", prepareError: { code: "engine_error", message: "model load failed", retryable: true } },
+    {
+      id: "missing-model",
+      name: "Absent Model",
+      prepareError: {
+        code: "engine_error",
+        message: "model load failed",
+        retryable: true,
+      },
+    },
     { id: "catalog-large", name: "Catalog Large", installed: false },
   ];
   const sessions = new Map<string, SessionState>();
@@ -131,16 +139,26 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
   const taskBysession = new Map<string, StreamTask>();
 
   const envelope = (code: string, message: string, retryable: boolean) => ({
-    error: { code, message, retryable, request_id: `req-${Math.random().toString(36).slice(2)}` },
+    error: {
+      code,
+      message,
+      retryable,
+      request_id: `req-${Math.random().toString(36).slice(2)}`,
+    },
   });
-  const json = (status: number, body: unknown, extraHeaders?: Record<string, string>) =>
+  const json = (
+    status: number,
+    body: unknown,
+    extraHeaders?: Record<string, string>,
+  ) =>
     new Response(JSON.stringify(body), {
       status,
       headers: { "Content-Type": "application/json", ...(extraHeaders ?? {}) },
     });
 
   const nowMs = () => Date.now();
-  const randomToken = (prefix: string) => `${prefix}${Math.random().toString(36).slice(2, 18)}`;
+  const randomToken = (prefix: string) =>
+    `${prefix}${Math.random().toString(36).slice(2, 18)}`;
 
   /* ------------------------------------------------------------ */
   /* WS media-plane task                                           */
@@ -160,7 +178,13 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     if (session) session.lastEventSeq = wire.seq;
   }
 
-  function failTask(task: StreamTask, code: string, message: string, retryable: boolean, closeCode: number): void {
+  function failTask(
+    task: StreamTask,
+    code: string,
+    message: string,
+    retryable: boolean,
+    closeCode: number,
+  ): void {
     sendEvent(task, "error", { code, message, retryable, details: null });
     const session = sessions.get(task.sessionId);
     if (session) {
@@ -175,7 +199,11 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     }
   }
 
-  function dispatchControl(task: StreamTask, type: string, payload: Record<string, unknown>): void {
+  function dispatchControl(
+    task: StreamTask,
+    type: string,
+    payload: Record<string, unknown>,
+  ): void {
     const session = sessions.get(task.sessionId);
     if (!session) return;
     switch (type) {
@@ -196,16 +224,26 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
         // M3 fencing: presented resume creds validate against the session's
         // stored pair; stale or presented-before-any-start is the terminal
         // `stale_resume` error + close 4003.
-        const presented = payload as { resume_token?: string; resume_epoch?: number };
+        const presented = payload as {
+          resume_token?: string;
+          resume_epoch?: number;
+        };
         const hasCreds =
-          presented.resume_token !== undefined || presented.resume_epoch !== undefined;
+          presented.resume_token !== undefined ||
+          presented.resume_epoch !== undefined;
         if (hasCreds) {
           const ok =
             session.resumeToken !== undefined &&
             presented.resume_token === session.resumeToken &&
             presented.resume_epoch === session.resumeEpoch;
           if (!ok) {
-            failTask(task, "stale_resume", "resume credentials do not match the live session; reconnect fresh", false, 4003);
+            failTask(
+              task,
+              "stale_resume",
+              "resume credentials do not match the live session; reconnect fresh",
+              false,
+              4003,
+            );
             return;
           }
           session.resumeToken = randomToken("vx_res_");
@@ -293,20 +331,44 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     const session = sessions.get(task.sessionId);
     if (!session) return;
     if (task.phase !== "streaming") {
-      failTask(task, "invalid_request", "audio frames are accepted only while streaming", false, 1008);
+      failTask(
+        task,
+        "invalid_request",
+        "audio frames are accepted only while streaming",
+        false,
+        1008,
+      );
       return;
     }
     const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
     if (bytes.length < 12) {
-      failTask(task, "invalid_request", "audio frame shorter than the 12-byte header", false, 1008);
+      failTask(
+        task,
+        "invalid_request",
+        "audio frame shorter than the 12-byte header",
+        false,
+        1008,
+      );
       return;
     }
     if (bytes[0] !== 0x56 || bytes[1] !== 0x58) {
-      failTask(task, "invalid_request", "audio frame missing the 'VX' magic", false, 1008);
+      failTask(
+        task,
+        "invalid_request",
+        "audio frame missing the 'VX' magic",
+        false,
+        1008,
+      );
       return;
     }
     if (bytes[2] !== 1) {
-      failTask(task, "invalid_request", "unsupported audio frame version", false, 1008);
+      failTask(
+        task,
+        "invalid_request",
+        "unsupported audio frame version",
+        false,
+        1008,
+      );
       return;
     }
     if (bytes[3] !== 1) {
@@ -318,7 +380,13 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     const durationMs = view.getUint16(8, false);
     const flags = view.getUint16(10, false);
     if (![10, 20, 30, 40, 60].includes(durationMs)) {
-      failTask(task, "invalid_request", "unsupported frame duration", false, 1008);
+      failTask(
+        task,
+        "invalid_request",
+        "unsupported frame duration",
+        false,
+        1008,
+      );
       return;
     }
     if ((flags & ~1) !== 0) {
@@ -329,14 +397,24 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     const samples = Math.floor((bytes.length - 12) / 2);
     const truncated = bytes.length % 2 !== 0;
     if (truncated || samples !== expected) {
-      failTask(task, "invalid_request", `payload length does not match duration: expected ${expected} samples, got ${truncated ? "odd-length" : samples}`, false, 1008);
+      failTask(
+        task,
+        "invalid_request",
+        `payload length does not match duration: expected ${expected} samples, got ${truncated ? "odd-length" : samples}`,
+        false,
+        1008,
+      );
       return;
     }
     // Duplicate sequences are acknowledged and ignored (§11.4) — but the
     // first frame (seq 0) has no predecessor: `last_audio_seq` starts at 0
     // meaning "none accepted yet", guarded by this flag.
     if (session.sawAudio && seq <= session.lastAudioSeq) {
-      sendEvent(task, "audio_ack", { through_seq: seq, received_ms: session.audioReceivedMs, buffered_ms: 0 });
+      sendEvent(task, "audio_ack", {
+        through_seq: seq,
+        received_ms: session.audioReceivedMs,
+        buffered_ms: 0,
+      });
       return;
     }
     if (!session.sawAudio && seq !== 0 && (flags & 1) === 0) {
@@ -344,7 +422,11 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
       return;
     }
     // A gap closes 4004 unless the discontinuity flag covers it.
-    if (session.sawAudio && seq !== session.lastAudioSeq + 1 && (flags & 1) === 0) {
+    if (
+      session.sawAudio &&
+      seq !== session.lastAudioSeq + 1 &&
+      (flags & 1) === 0
+    ) {
       failTask(task, "audio_gap", `audio sequence gap at ${seq}`, false, 4004);
       return;
     }
@@ -352,7 +434,11 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     task.framesSeen += 1;
     session.lastAudioSeq = seq;
     session.audioReceivedMs += durationMs;
-    sendEvent(task, "audio_ack", { through_seq: seq, received_ms: session.audioReceivedMs, buffered_ms: 0 });
+    sendEvent(task, "audio_ack", {
+      through_seq: seq,
+      received_ms: session.audioReceivedMs,
+      buffered_ms: 0,
+    });
     if (task.framesSeen % 5 === 0) {
       task.partialRevision += 1;
       const transcript = options.transcript ?? "fixture";
@@ -416,7 +502,12 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
       state: "created",
       ws_url: `/v1/sessions/${state.id}/stream`,
       expires_at: new Date(state.createdAt + 600_000).toISOString(),
-      negotiated_audio: { codec: "pcm_s16le", sample_rate_hz: 16_000, channels: 1, chunk_ms: 20 },
+      negotiated_audio: {
+        codec: "pcm_s16le",
+        sample_rate_hz: 16_000,
+        channels: 1,
+        chunk_ms: 20,
+      },
       streaming_mode: "native",
       resume_window_ms: 30_000,
     };
@@ -454,12 +545,28 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
             percentage: 100,
           }
         : inflightDownloads.has(model.id)
-          ? { state: "downloading", downloaded_bytes: 10_000_000, total_bytes: 75_000_000, percentage: 13 }
-          : { state: "not_started", downloaded_bytes: 0, total_bytes: 75_000_000, percentage: 0 },
+          ? {
+              state: "downloading",
+              downloaded_bytes: 10_000_000,
+              total_bytes: 75_000_000,
+              percentage: 13,
+            }
+          : {
+              state: "not_started",
+              downloaded_bytes: 0,
+              total_bytes: 75_000_000,
+              percentage: 0,
+            },
     };
   }
 
-  async function handleRest(request: Request, url: URL, bearerOk: boolean, ticketOk: boolean, ticketState: TicketState | undefined): Promise<Response | undefined> {
+  async function handleRest(
+    request: Request,
+    url: URL,
+    bearerOk: boolean,
+    ticketOk: boolean,
+    ticketState: TicketState | undefined,
+  ): Promise<Response | undefined> {
     const path = url.pathname;
     const method = request.method.toUpperCase();
 
@@ -490,8 +597,13 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
         active_model_id: selectedModelId,
         model_state: "loaded",
         backend: "transcribe_cpp",
-        active_session_id: sessionOrder.find((id) => taskBysession.get(id)?.phase === "streaming") ?? null,
-        active_sessions: sessionOrder.filter((id) => sessions.get(id)?.state === "created").length,
+        active_session_id:
+          sessionOrder.find(
+            (id) => taskBysession.get(id)?.phase === "streaming",
+          ) ?? null,
+        active_sessions: sessionOrder.filter(
+          (id) => sessions.get(id)?.state === "created",
+        ).length,
         max_realtime_factor: 0.241,
         lease_held: false,
         capabilities: {
@@ -518,42 +630,93 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
         });
       }
       if (method === "PATCH") {
-        const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
-        if (Object.keys(body).some((k) => !["allowed_origins","max_sessions","max_audio_seconds","session_resume_window_ms","pause_max_ms","save_history_default","vad_enabled_default"].includes(k))) {
+        const body = (await request.json().catch(() => ({}))) as Record<
+          string,
+          unknown
+        >;
+        if (
+          Object.keys(body).some(
+            (k) =>
+              ![
+                "allowed_origins",
+                "max_sessions",
+                "max_audio_seconds",
+                "session_resume_window_ms",
+                "pause_max_ms",
+                "save_history_default",
+                "vad_enabled_default",
+              ].includes(k),
+          )
+        ) {
           return json(422, envelope("invalid_request", "unknown field", false));
         }
         return json(200, {
           bind: "127.0.0.1:47832",
-          allowed_origins: Array.isArray(body.allowed_origins) ? body.allowed_origins : [],
-          max_sessions: typeof body.max_sessions === "number" ? body.max_sessions : 4,
-          max_audio_seconds: typeof body.max_audio_seconds === "number" ? body.max_audio_seconds : 120,
-          session_resume_window_ms: typeof body.session_resume_window_ms === "number" ? body.session_resume_window_ms : 30_000,
-          pause_max_ms: typeof body.pause_max_ms === "number" ? body.pause_max_ms : 0,
-          save_history_default: body.save_history_default === undefined ? true : body.save_history_default === true,
-          vad_enabled_default: body.vad_enabled_default === undefined ? true : body.vad_enabled_default === true,
+          allowed_origins: Array.isArray(body.allowed_origins)
+            ? body.allowed_origins
+            : [],
+          max_sessions:
+            typeof body.max_sessions === "number" ? body.max_sessions : 4,
+          max_audio_seconds:
+            typeof body.max_audio_seconds === "number"
+              ? body.max_audio_seconds
+              : 120,
+          session_resume_window_ms:
+            typeof body.session_resume_window_ms === "number"
+              ? body.session_resume_window_ms
+              : 30_000,
+          pause_max_ms:
+            typeof body.pause_max_ms === "number" ? body.pause_max_ms : 0,
+          save_history_default:
+            body.save_history_default === undefined
+              ? true
+              : body.save_history_default === true,
+          vad_enabled_default:
+            body.vad_enabled_default === undefined
+              ? true
+              : body.vad_enabled_default === true,
           opus_enabled: false,
           restart_required: false,
         });
       }
     }
     if (path === "/v1/auth/ws-ticket" && method === "POST") {
-      const body = (await request.json().catch(() => ({}))) as { session_id?: string };
+      const body = (await request.json().catch(() => ({}))) as {
+        session_id?: string;
+      };
       const ticket = randomToken("vx_ticket_");
-      tickets.set(ticket, { session: body.session_id, expiresAtMs: nowMs() + 60_000, consumed: false });
-      return json(201, { ticket, expires_at: new Date(nowMs() + 60_000).toISOString() });
+      tickets.set(ticket, {
+        session: body.session_id,
+        expiresAtMs: nowMs() + 60_000,
+        consumed: false,
+      });
+      return json(201, {
+        ticket,
+        expires_at: new Date(nowMs() + 60_000).toISOString(),
+      });
     }
 
     /* -- sessions ------------------------------------------------ */
     if (path === "/v1/sessions" && method === "POST") {
-      const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+      const body = (await request.json().catch(() => ({}))) as Record<
+        string,
+        unknown
+      >;
       if (body.user_defined_extra_field !== undefined) {
         return json(422, envelope("invalid_request", "unknown field", false));
       }
-      const key = typeof body.client_session_key === "string" ? body.client_session_key : undefined;
+      const key =
+        typeof body.client_session_key === "string"
+          ? body.client_session_key
+          : undefined;
       if (key) {
         for (const id of sessionOrder) {
           const existing = sessions.get(id);
-          if (existing && existing.clientKey === key && existing.state === "created") {
+          if (
+            existing &&
+            existing.clientKey === key &&
+            existing.state === "created"
+          ) {
             return json(201, createdResponse(existing));
           }
         }
@@ -580,10 +743,17 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
       const id = sessionMatch[1];
       const session = sessions.get(id);
       const subToken = request.headers.get("x-session-token");
-      if (!session || (subToken !== session.token && !(ticketOk && ticketState && (ticketState.session ?? id) === id))) {
+      if (
+        !session ||
+        (subToken !== session.token &&
+          !(ticketOk && ticketState && (ticketState.session ?? id) === id))
+      ) {
         // Unknown id and wrong/missing sub-credential are identical (404,
         // never 403 — ids cannot be probed).
-        return json(404, envelope("session_not_found", "No such session", false));
+        return json(
+          404,
+          envelope("session_not_found", "No such session", false),
+        );
       }
       if (method === "GET") {
         return json(200, {
@@ -595,7 +765,9 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
           last_audio_seq: session.lastAudioSeq,
           last_event_seq: session.lastEventSeq,
           created_at: new Date(session.createdAt).toISOString(),
-          ...(session.final !== undefined ? { final_result: session.final } : {}),
+          ...(session.final !== undefined
+            ? { final_result: session.final }
+            : {}),
           ...(session.error !== undefined ? { error: session.error } : {}),
         });
       }
@@ -627,7 +799,8 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     if (downloadsMatch && method === "GET") {
       const id = decodeURIComponent(downloadsMatch[1]);
       const model = models.find((m) => m.id === id);
-      if (!model) return json(404, envelope("model_not_found", "No such model", false));
+      if (!model)
+        return json(404, envelope("model_not_found", "No such model", false));
       if (inflightDownloads.has(id)) {
         return json(200, {
           state: "downloading",
@@ -642,7 +815,8 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     if (downloadMatch) {
       const id = decodeURIComponent(downloadMatch[1]);
       const model = models.find((m) => m.id === id);
-      if (!model) return json(404, envelope("model_not_found", "No such model", false));
+      if (!model)
+        return json(404, envelope("model_not_found", "No such model", false));
       const installed = model.installed !== false && !inflightDownloads.has(id);
       if (method === "POST") {
         // Already installed → 200; otherwise starts (or converges on) the
@@ -665,7 +839,14 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
       }
       if (method === "DELETE") {
         if (!inflightDownloads.has(id)) {
-          return json(422, envelope("invalid_request", `nothing_to_cancel: no download in flight for model '${id}'`, false));
+          return json(
+            422,
+            envelope(
+              "invalid_request",
+              `nothing_to_cancel: no download in flight for model '${id}'`,
+              false,
+            ),
+          );
         }
         inflightDownloads.delete(id);
         return new Response("", { status: 204 });
@@ -675,13 +856,18 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     if (modelMatch && method === "GET") {
       const id = decodeURIComponent(modelMatch[1]);
       const model = models.find((m) => m.id === id);
-      if (!model) return json(404, envelope("model_not_found", "No such model", false));
+      if (!model)
+        return json(404, envelope("model_not_found", "No such model", false));
       return json(200, { model: modelView(model), prepare: { stage: "ok" } });
     }
     if (path === "/v1/models/selected" && method === "PUT") {
-      const body = (await request.json().catch(() => ({}))) as { model_id?: string; load?: string };
+      const body = (await request.json().catch(() => ({}))) as {
+        model_id?: string;
+        load?: string;
+      };
       const model = models.find((m) => m.id === body.model_id);
-      if (!model) return json(404, envelope("model_not_found", "No such model", false));
+      if (!model)
+        return json(404, envelope("model_not_found", "No such model", false));
       selectedModelId = model.id;
       loadedModelId = body.load === "lazy" ? loadedModelId : model.id;
       return json(200, {
@@ -696,7 +882,15 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     const prepareMatch = /^\/v1\/models\/(.+)\/prepare$/.exec(path);
     if (prepareMatch && method === "POST") {
       if (prepareSlot.held) {
-        return json(409, envelope("prepare-busy", "another model prepare is already in flight", true), { "Retry-After": "2" });
+        return json(
+          409,
+          envelope(
+            "prepare-busy",
+            "another model prepare is already in flight",
+            true,
+          ),
+          { "Retry-After": "2" },
+        );
       }
       prepareSlot.held = true;
       const release = () => {
@@ -715,7 +909,11 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
       emit("verifying", { model_id: id, stage: "verifying" });
       emit("loading", { model_id: id, stage: "loading" });
       if (model.prepareError) {
-        emit("error", { code: model.prepareError.code, message: model.prepareError.message, retryable: model.prepareError.retryable });
+        emit("error", {
+          code: model.prepareError.code,
+          message: model.prepareError.message,
+          retryable: model.prepareError.retryable,
+        });
       } else {
         emit("ok", { model_id: id, backend: "transcribe_cpp", stage: "ok" });
       }
@@ -736,7 +934,10 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
       });
       return new Response(stream, {
         status: 200,
-        headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" },
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+        },
       });
     }
 
@@ -744,7 +945,14 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     if (path === "/v1/transcriptions" && method === "POST") {
       const bytes = new Uint8Array(await request.arrayBuffer());
       if (bytes.length < 64) {
-        return json(400, envelope("invalid-audio", "WAV validation failed: file too short", false));
+        return json(
+          400,
+          envelope(
+            "invalid-audio",
+            "WAV validation failed: file too short",
+            false,
+          ),
+        );
       }
       const jobId = `job_${jobs.size + 1}`;
       jobs.set(jobId, { state: "processing" });
@@ -752,7 +960,10 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
         const job = jobs.get(jobId);
         if (job && job.state === "processing") {
           job.state = "completed";
-          job.result = { transcript: "batch-fixture-transcript", duration_ms: 400 };
+          job.result = {
+            transcript: "batch-fixture-transcript",
+            duration_ms: 400,
+          };
           history.push({
             id: history.length + 1,
             timestamp_ms: nowMs(),
@@ -763,7 +974,11 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
           });
         }
       }, 10);
-      return json(202, { job_id: jobId, state: "processing", status_url: `/v1/transcriptions/${jobId}` });
+      return json(202, {
+        job_id: jobId,
+        state: "processing",
+        status_url: `/v1/transcriptions/${jobId}`,
+      });
     }
     const jobMatch = /^\/v1\/transcriptions\/([^/]+)$/.exec(path);
     if (jobMatch) {
@@ -784,12 +999,17 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
 
     /* -- history --------------------------------------------------- */
     if (path === "/v1/history" && method === "GET") {
-      return json(200, { entries: history.slice(0, 20), has_more: false, next_cursor: null });
+      return json(200, {
+        entries: history.slice(0, 20),
+        has_more: false,
+        next_cursor: null,
+      });
     }
     const historyMatch = /^\/v1\/history\/(\d+)$/.exec(path);
     if (historyMatch && method === "GET") {
       const entry = history.find((e) => e.id === Number(historyMatch[1]));
-      if (!entry) return json(404, envelope("not_found", "no such history entry", false));
+      if (!entry)
+        return json(404, envelope("not_found", "no such history entry", false));
       return json(200, entry);
     }
 
@@ -804,17 +1024,26 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     port: 0,
     hostname: "127.0.0.1",
     development: false,
-    fetch: (request: Request, bunServer: { upgrade: (req: Request, opts?: { data?: unknown }) => boolean }) => {
+    fetch: (
+      request: Request,
+      bunServer: {
+        upgrade: (req: Request, opts?: { data?: unknown }) => boolean;
+      },
+    ) => {
       const url = new URL(request.url);
       const path = url.pathname;
       const authHeader = request.headers.get("authorization");
-      const bearer = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : undefined;
+      const bearer = authHeader?.startsWith("Bearer ")
+        ? authHeader.slice(7)
+        : undefined;
       const bearerOk = bearer === primaryToken;
       const ticketParam = url.searchParams.get("ticket");
       const isStreamPath = /^\/v1\/sessions\/[^/]+\/stream\/?$/.test(path);
       const ticketState = ticketParam ? tickets.get(ticketParam) : undefined;
       const ticketOk =
-        ticketState !== undefined && !ticketState.consumed && ticketState.expiresAtMs > nowMs()
+        ticketState !== undefined &&
+        !ticketState.consumed &&
+        ticketState.expiresAtMs > nowMs()
           ? isStreamPath
           : false;
 
@@ -830,7 +1059,10 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
           return new Response("", { status: 401 });
         }
         if (!sessionId || !session || session.state !== "created") {
-          return json(404, envelope("session_not_found", "No such session", false));
+          return json(
+            404,
+            envelope("session_not_found", "No such session", false),
+          );
         }
         const subOk = subToken === session.token;
         const ticketBound =
@@ -838,22 +1070,42 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
           ticketOk &&
           (ticketState.session ?? sessionId) === sessionId;
         if (!subOk && !ticketBound) {
-          return json(404, envelope("session_not_found", "No such session", false));
+          return json(
+            404,
+            envelope("session_not_found", "No such session", false),
+          );
         }
         const existingTask = taskBysession.get(sessionId);
         if (existingTask && existingTask.phase !== "terminal") {
-          return json(503, envelope("service_full", "A stream socket is already attached to this session", true), { "Retry-After": "1" });
+          return json(
+            503,
+            envelope(
+              "service_full",
+              "A stream socket is already attached to this session",
+              true,
+            ),
+            { "Retry-After": "1" },
+          );
         }
-        if (ticketBound && ticketParam && ticketState) ticketState.consumed = true;
+        if (ticketBound && ticketParam && ticketState)
+          ticketState.consumed = true;
 
         const upgraded = bunServer.upgrade(request, { data: { sessionId } });
         if (!upgraded) {
-          return json(503, envelope("service_full", "upgrade declined", true), { "Retry-After": "1" });
+          return json(503, envelope("service_full", "upgrade declined", true), {
+            "Retry-After": "1",
+          });
         }
         return undefined; // handshake took over
       }
 
-      const response = handleRest(request, url, bearerOk, ticketOk, ticketState);
+      const response = handleRest(
+        request,
+        url,
+        bearerOk,
+        ticketOk,
+        ticketState,
+      );
       return response !== undefined
         ? Promise.resolve(response)
         : json(404, envelope("not_found", "no route", false));
@@ -881,7 +1133,12 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
           heartbeat_ms: 15_000,
           max_frame_bytes: 65_536,
           resume_window_ms: 30_000,
-          negotiated_audio: { codec: "pcm_s16le", sample_rate_hz: 16_000, channels: 1, chunk_ms: 20 },
+          negotiated_audio: {
+            codec: "pcm_s16le",
+            sample_rate_hz: 16_000,
+            channels: 1,
+            chunk_ms: 20,
+          },
           streaming_mode: "native",
         });
       },
@@ -897,12 +1154,27 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
         try {
           parsed = JSON.parse(raw);
         } catch {
-          failTask(task, "invalid_request", "control frame is not JSON", false, 1008);
+          failTask(
+            task,
+            "invalid_request",
+            "control frame is not JSON",
+            false,
+            1008,
+          );
           return;
         }
-        const record = parsed as { type?: string; payload?: Record<string, unknown> };
+        const record = parsed as {
+          type?: string;
+          payload?: Record<string, unknown>;
+        };
         if (typeof record.type !== "string") {
-          failTask(task, "invalid_request", "control frame lacks a type", false, 1008);
+          failTask(
+            task,
+            "invalid_request",
+            "control frame lacks a type",
+            false,
+            1008,
+          );
           return;
         }
         dispatchControl(task, record.type, record.payload ?? {});
@@ -951,15 +1223,18 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
       };
     },
     allSessionStates(): SessionSnapshot[] {
-      return sessionOrder.map((id) => sessions.get(id)).filter((s): s is SessionState => s !== undefined).map((s) => ({
-        id: s.id,
-        state: s.state,
-        audioReceivedMs: s.audioReceivedMs,
-        lastAudioSeq: s.lastAudioSeq,
-        lastEventSeq: s.lastEventSeq,
-        final: s.final,
-        error: s.error,
-      }));
+      return sessionOrder
+        .map((id) => sessions.get(id))
+        .filter((s): s is SessionState => s !== undefined)
+        .map((s) => ({
+          id: s.id,
+          state: s.state,
+          audioReceivedMs: s.audioReceivedMs,
+          lastAudioSeq: s.lastAudioSeq,
+          lastEventSeq: s.lastEventSeq,
+          final: s.final,
+          error: s.error,
+        }));
     },
     cancelSession(id: string): void {
       const s = sessions.get(id);

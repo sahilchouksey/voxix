@@ -62,13 +62,13 @@ export function encodeAudioFrame(
   discontinuity = false,
 ): Uint8Array {
   if (!LEGAL_FRAME_DURATIONS.includes(durationMs)) {
-    throw new Error(`unsupported frame duration ${durationMs} (10/20/30/40/60 ms)`);
+    throw new Error(
+      `unsupported frame duration ${durationMs} (10/20/30/40/60 ms)`,
+    );
   }
   const expected = samplesFor(durationMs);
   const payload =
-    pcm instanceof Int16Array
-      ? pcm
-      : i16FromBytes(pcm, durationMs);
+    pcm instanceof Int16Array ? pcm : i16FromBytes(pcm, durationMs);
   if (payload.length !== expected) {
     throw new Error(
       `payload length does not match duration: expected ${expected} samples, got ${payload.length}`,
@@ -118,7 +118,10 @@ export function encodeOpusFrame(
 }
 
 /** Validate raw i16 LE bytes against the declared duration, LE everywhere. */
-function i16FromBytes(bytes: Uint8Array, durationMs: FrameDurationMs): Int16Array {
+function i16FromBytes(
+  bytes: Uint8Array,
+  durationMs: FrameDurationMs,
+): Int16Array {
   const expected = samplesFor(durationMs);
   if (bytes.length % 2 !== 0 || bytes.length / 2 !== expected) {
     throw new Error(
@@ -145,25 +148,50 @@ function view16(bytes: Uint8Array, offset: number): DataView {
  * Parse a wire frame (mainly for interop tests and non-SDK readers).
  * Returns the frame or a structured rejection.
  */
-export function parseAudioFrame(bytes: Uint8Array): { frame?: AudioFrame; error?: FrameError } {
+export function parseAudioFrame(bytes: Uint8Array): {
+  frame?: AudioFrame;
+  error?: FrameError;
+} {
   if (bytes.length < AUDIO_HEADER_BYTES) {
-    return { error: { reason: "short", message: "audio frame shorter than the 12-byte header" } };
+    return {
+      error: {
+        reason: "short",
+        message: "audio frame shorter than the 12-byte header",
+      },
+    };
   }
   if (bytes[0] !== 0x56 || bytes[1] !== 0x58) {
-    return { error: { reason: "magic", message: "audio frame missing the 'VX' magic" } };
+    return {
+      error: { reason: "magic", message: "audio frame missing the 'VX' magic" },
+    };
   }
   if (bytes[2] !== 1) {
-    return { error: { reason: "version", message: "unsupported audio frame version (only 1)" } };
+    return {
+      error: {
+        reason: "version",
+        message: "unsupported audio frame version (only 1)",
+      },
+    };
   }
   if (bytes[3] !== CODEC_PCM_S16LE) {
-    return { error: { reason: "codec", message: "unsupported audio codec (only pcm_s16le in v1)" } };
+    return {
+      error: {
+        reason: "codec",
+        message: "unsupported audio codec (only pcm_s16le in v1)",
+      },
+    };
   }
   const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const seq = dv.getUint32(4, false);
   const durationMs = dv.getUint16(8, false);
   const flags = dv.getUint16(10, false);
   if (!(LEGAL_FRAME_DURATIONS as readonly number[]).includes(durationMs)) {
-    return { error: { reason: "duration", message: "unsupported frame duration (10/20/30/40/60 ms)" } };
+    return {
+      error: {
+        reason: "duration",
+        message: "unsupported frame duration (10/20/30/40/60 ms)",
+      },
+    };
   }
   if ((flags & ~FLAG_DISCONTINUITY) !== 0) {
     return { error: { reason: "flags", message: "reserved flag bits set" } };
@@ -183,6 +211,11 @@ export function parseAudioFrame(bytes: Uint8Array): { frame?: AudioFrame; error?
     pcm[i] = dv.getInt16(AUDIO_HEADER_BYTES + i * 2, true); // little-endian
   }
   return {
-    frame: { seq, duration_ms: durationMs, discontinuity: (flags & FLAG_DISCONTINUITY) !== 0, pcm },
+    frame: {
+      seq,
+      duration_ms: durationMs,
+      discontinuity: (flags & FLAG_DISCONTINUITY) !== 0,
+      pcm,
+    },
   };
 }

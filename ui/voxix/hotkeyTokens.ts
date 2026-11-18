@@ -26,7 +26,14 @@ const GLYPHS: Record<string, string> = {
   down: "↓",
 };
 
-export const MOD_TOKENS = new Set(["ctrl", "alt", "shift", "super", "cmd", "fn"]);
+export const MOD_TOKENS = new Set([
+  "ctrl",
+  "alt",
+  "shift",
+  "super",
+  "cmd",
+  "fn",
+]);
 
 export const cap = (token: string): string =>
   GLYPHS[token] ?? (token.length === 1 ? token.toUpperCase() : token);

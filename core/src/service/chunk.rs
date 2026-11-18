@@ -40,11 +40,7 @@ const NO_PAUSE_RATIO: f32 = 0.8;
 pub fn chunk_bounds(audio: &[f32]) -> Vec<(usize, usize)> {
     let len = audio.len();
     if len <= MAX_CHUNK_SAMPLES {
-        return if len == 0 {
-            Vec::new()
-        } else {
-            vec![(0, len)]
-        };
+        return if len == 0 { Vec::new() } else { vec![(0, len)] };
     }
 
     let mut bounds: Vec<(usize, usize)> = Vec::new();
@@ -54,7 +50,9 @@ pub fn chunk_bounds(audio: &[f32]) -> Vec<(usize, usize)> {
         let mut cut = find_quiet_cut(audio, cursor, hard_end, len);
         if len - cut < MIN_CHUNK_SAMPLES {
             // Snap the cut back so the tail remainder stays ≥ 0.25 s.
-            cut = len.saturating_sub(MIN_CHUNK_SAMPLES).max(cursor + MIN_CHUNK_SAMPLES);
+            cut = len
+                .saturating_sub(MIN_CHUNK_SAMPLES)
+                .max(cursor + MIN_CHUNK_SAMPLES);
         }
         cut = cut.clamp(cursor + MIN_CHUNK_SAMPLES, hard_end);
         bounds.push((cursor, cut));
@@ -177,7 +175,11 @@ mod tests {
     fn quiet_boundary_is_preferred() {
         // Loud audio with a silent gap at 33 s: the cut should land inside it.
         let mut audio = vec![0.5f32; SAMPLE_RATE_HZ * 100];
-        for s in audio.iter_mut().take(SAMPLE_RATE_HZ * 34).skip(SAMPLE_RATE_HZ * 33) {
+        for s in audio
+            .iter_mut()
+            .take(SAMPLE_RATE_HZ * 34)
+            .skip(SAMPLE_RATE_HZ * 33)
+        {
             *s = 0.0;
         }
         let bounds = chunk_bounds(&audio);

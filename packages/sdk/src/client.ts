@@ -43,7 +43,11 @@ import {
 } from "./transport.js";
 import { defaultWebSocketFactory, WebSocketFactory } from "./transport.js";
 import { wrapTransportFailure } from "./errors.js";
-import { VoxixSession, type VoxixSessionOptions, type VoxixSessionConfig } from "./session.js";
+import {
+  VoxixSession,
+  type VoxixSessionOptions,
+  type VoxixSessionConfig,
+} from "./session.js";
 
 /* ------------------------------------------------------------------ */
 /* Options                                                             */
@@ -97,12 +101,20 @@ function joinUrl(base: string, path: string): string {
   return `${base.replace(/\/+$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
-function renderToken(token: string | (() => Promise<string> | string)): Promise<string> {
-  return typeof token === "function" ? Promise.resolve(token()) : Promise.resolve(token);
+function renderToken(
+  token: string | (() => Promise<string> | string),
+): Promise<string> {
+  return typeof token === "function"
+    ? Promise.resolve(token())
+    : Promise.resolve(token);
 }
 
 /** Terminal model-plane codes that map to ModelError. */
-const MODEL_ERROR_CODES = new Set(["model_not_found", "model_not_ready", "prepare-busy"]);
+const MODEL_ERROR_CODES = new Set([
+  "model_not_found",
+  "model_not_ready",
+  "prepare-busy",
+]);
 
 function joinBytes(parts: Uint8Array[]): Uint8Array {
   const total = parts.reduce((n, p) => n + p.byteLength, 0);
@@ -214,7 +226,9 @@ export class VoxixClient {
     this.timeouts = { ...DEFAULT_TIMEOUTS, ...(options.timeouts ?? {}) };
     this.ticketFallback = options.ticketFallback === true;
     this.factory = options.webSocketFactory;
-    this.fetchFn = options.fetch ? Promise.resolve(options.fetch) : Promise.resolve().then(() => defaultFetch());
+    this.fetchFn = options.fetch
+      ? Promise.resolve(options.fetch)
+      : Promise.resolve().then(() => defaultFetch());
   }
 
   private async rawFetch(
@@ -223,7 +237,8 @@ export class VoxixClient {
     signal?: AbortSignalLike,
   ): Promise<FetchResponseLike> {
     const fetchImpl = await this.fetchFn;
-    if (signal?.aborted) throw new CancelledError({ message: "aborted before the request" });
+    if (signal?.aborted)
+      throw new CancelledError({ message: "aborted before the request" });
     try {
       return await fetchImpl(url, init);
     } catch (cause) {
@@ -235,10 +250,17 @@ export class VoxixClient {
   private async request<T>(
     method: string,
     path: string,
-    opts?: { bodyBytes?: Uint8Array; bodyJson?: unknown; signal?: AbortSignalLike; extraHeaders?: Record<string, string> },
+    opts?: {
+      bodyBytes?: Uint8Array;
+      bodyJson?: unknown;
+      signal?: AbortSignalLike;
+      extraHeaders?: Record<string, string>;
+    },
   ): Promise<T> {
     const token = await renderToken(this.token);
-    const headers: Record<string, string> = { Authorization: `Bearer ${token}` };
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${token}`,
+    };
     let body: Uint8Array | string | undefined;
     if (opts?.bodyBytes) {
       headers["Content-Type"] = "application/octet-stream";
@@ -259,7 +281,8 @@ export class VoxixClient {
     } catch (cause) {
       if (cause instanceof VoxixError) throw cause;
       throw new TransportError({
-        message: cause instanceof Error ? cause.message : "response handling failed",
+        message:
+          cause instanceof Error ? cause.message : "response handling failed",
         retryable: true,
         cause,
       });
@@ -270,7 +293,10 @@ export class VoxixClient {
   async alive(signal?: AbortSignalLike): Promise<boolean> {
     let response: FetchResponseLike;
     try {
-      response = await this.rawFetch(joinUrl(this.baseUrl, "/alive"), { method: "GET", signal });
+      response = await this.rawFetch(joinUrl(this.baseUrl, "/alive"), {
+        method: "GET",
+        signal,
+      });
     } catch (cause) {
       throw wrapTransportFailure(cause);
     }
@@ -292,23 +318,42 @@ export class VoxixClient {
   }
 
   /** GET /v1/models?installed=true|false. */
-  async listModels(filter?: { installed?: boolean }, signal?: AbortSignalLike): Promise<ModelsPage> {
-    const suffix = filter?.installed === undefined ? "" : `?installed=${filter.installed ? "true" : "false"}`;
+  async listModels(
+    filter?: { installed?: boolean },
+    signal?: AbortSignalLike,
+  ): Promise<ModelsPage> {
+    const suffix =
+      filter?.installed === undefined
+        ? ""
+        : `?installed=${filter.installed ? "true" : "false"}`;
     return this.request("GET", `/v1/models${suffix}`, { signal });
   }
 
   /** GET /v1/models/{id} — {model, prepare:{stage}}. */
   async getModel(id: string, signal?: AbortSignalLike): Promise<SingleModel> {
-    return this.request("GET", `/v1/models/${encodeURIComponent(id)}`, { signal });
+    return this.request("GET", `/v1/models/${encodeURIComponent(id)}`, {
+      signal,
+    });
   }
 
   /** GET /v1/models/{id}/downloads — read-only download status projection. */
-  async getDownload(id: string, signal?: AbortSignalLike): Promise<ModelDownloadStatus> {
-    return this.request("GET", `/v1/models/${encodeURIComponent(id)}/downloads`, { signal });
+  async getDownload(
+    id: string,
+    signal?: AbortSignalLike,
+  ): Promise<ModelDownloadStatus> {
+    return this.request(
+      "GET",
+      `/v1/models/${encodeURIComponent(id)}/downloads`,
+      { signal },
+    );
   }
 
   /** PUT /v1/models/selected — selection with an explicit eager/lazy load. */
-  async selectModel(id: string, load?: ModelSelectionLoad, signal?: AbortSignalLike): Promise<ModelSelection> {
+  async selectModel(
+    id: string,
+    load?: ModelSelectionLoad,
+    signal?: AbortSignalLike,
+  ): Promise<ModelSelection> {
     return this.request("PUT", "/v1/models/selected", {
       bodyJson: { model_id: id, load: load ?? "eager" },
       signal,
@@ -362,26 +407,46 @@ export class VoxixClient {
    * Starts (or converges on) the single in-flight download: `200` when the
    * model is already installed, `202` when accepted/already in flight.
    * Progress is polled at `GET /v1/models/{id}/downloads` (`getDownload`). */
-  async downloadModel(id: string, signal?: AbortSignalLike): Promise<ModelDownloadStatus> {
-    return this.request("POST", `/v1/models/${encodeURIComponent(id)}/download`, { signal });
+  async downloadModel(
+    id: string,
+    signal?: AbortSignalLike,
+  ): Promise<ModelDownloadStatus> {
+    return this.request(
+      "POST",
+      `/v1/models/${encodeURIComponent(id)}/download`,
+      { signal },
+    );
   }
 
   /** DELETE /v1/models/{id}/download — cancels an in-flight managed download
    * (v1.1 additive). Resolves on 204 (partials are kept for resume); throws
    * the tagged error classes otherwise (404 → ModelError, 422 nothing to
    * cancel → ServiceError, 503 unsupported → ServiceError). */
-  async cancelModelDownload(id: string, signal?: AbortSignalLike): Promise<void> {
-    return this.request("DELETE", `/v1/models/${encodeURIComponent(id)}/download`, { signal });
+  async cancelModelDownload(
+    id: string,
+    signal?: AbortSignalLike,
+  ): Promise<void> {
+    return this.request(
+      "DELETE",
+      `/v1/models/${encodeURIComponent(id)}/download`,
+      { signal },
+    );
   }
 
   /** Raw prepare SSE tap (additive power method; `prepareModel` wraps it). */
-  async *prepareEvents(id: string, signal?: AbortSignalLike): AsyncIterable<PrepareEvent> {
+  async *prepareEvents(
+    id: string,
+    signal?: AbortSignalLike,
+  ): AsyncIterable<PrepareEvent> {
     const token = await renderToken(this.token);
     const response = await this.rawFetch(
       joinUrl(this.baseUrl, `/v1/models/${encodeURIComponent(id)}/prepare`),
       {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}`, Accept: "text/event-stream" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "text/event-stream",
+        },
       },
       signal,
     );
@@ -436,7 +501,8 @@ export class VoxixClient {
         if (chunk.done) break;
         if (!chunk.value) continue;
         hold.push(chunk.value);
-        if (signal?.aborted) throw new CancelledError({ message: "prepare aborted" });
+        if (signal?.aborted)
+          throw new CancelledError({ message: "prepare aborted" });
         const whole = joinBytes(hold);
         hold.length = 0;
         let start = 0;
@@ -463,7 +529,10 @@ export class VoxixClient {
   }
 
   /** POST /v1/sessions — returns a VoxixSession wired to the created creds. */
-  async createSession(body: CreateSessionBody, signal?: AbortSignalLike): Promise<VoxixSession> {
+  async createSession(
+    body: CreateSessionBody,
+    signal?: AbortSignalLike,
+  ): Promise<VoxixSession> {
     const created = await this.request<CreatedSession>("POST", "/v1/sessions", {
       bodyJson: body,
       signal,
@@ -485,11 +554,19 @@ export class VoxixClient {
   }
 
   /** GET /v1/sessions/{id} — requires the per-session token header. */
-  async getSession(sessionId: string, sessionToken: string, signal?: AbortSignalLike): Promise<SessionView> {
-    return this.request("GET", `/v1/sessions/${encodeURIComponent(sessionId)}`, {
-      signal,
-      extraHeaders: { "X-Session-Token": sessionToken },
-    });
+  async getSession(
+    sessionId: string,
+    sessionToken: string,
+    signal?: AbortSignalLike,
+  ): Promise<SessionView> {
+    return this.request(
+      "GET",
+      `/v1/sessions/${encodeURIComponent(sessionId)}`,
+      {
+        signal,
+        extraHeaders: { "X-Session-Token": sessionToken },
+      },
+    );
   }
 
   /** POST /v1/transcriptions — raw WAV bytes; 202 with the job id. */
@@ -503,20 +580,36 @@ export class VoxixClient {
     } else {
       bytes = new Uint8Array(file as ArrayBuffer);
     }
-    return this.request("POST", "/v1/transcriptions", { bodyBytes: bytes, signal });
+    return this.request("POST", "/v1/transcriptions", {
+      bodyBytes: bytes,
+      signal,
+    });
   }
 
-  async getTranscription(jobId: string, signal?: AbortSignalLike): Promise<BatchJobStatus> {
-    return this.request("GET", `/v1/transcriptions/${encodeURIComponent(jobId)}`, { signal });
+  async getTranscription(
+    jobId: string,
+    signal?: AbortSignalLike,
+  ): Promise<BatchJobStatus> {
+    return this.request(
+      "GET",
+      `/v1/transcriptions/${encodeURIComponent(jobId)}`,
+      { signal },
+    );
   }
 
   /** Best-effort cancel; resolves false on 404/409 ("already terminal"). */
   async cancelTranscription(jobId: string): Promise<boolean> {
     try {
-      await this.request("DELETE", `/v1/transcriptions/${encodeURIComponent(jobId)}`);
+      await this.request(
+        "DELETE",
+        `/v1/transcriptions/${encodeURIComponent(jobId)}`,
+      );
       return true;
     } catch (error) {
-      if (error instanceof ServiceError && (error.status === 404 || error.status === 409)) {
+      if (
+        error instanceof ServiceError &&
+        (error.status === 404 || error.status === 409)
+      ) {
         return false;
       }
       throw error;
@@ -524,7 +617,10 @@ export class VoxixClient {
   }
 
   /** GET /v1/history?cursor&limit. */
-  async history(page?: { cursor?: number; limit?: number }, signal?: AbortSignalLike): Promise<HistoryPage> {
+  async history(
+    page?: { cursor?: number; limit?: number },
+    signal?: AbortSignalLike,
+  ): Promise<HistoryPage> {
     const params = new URLSearchParams();
     if (page?.cursor !== undefined) params.set("cursor", String(page.cursor));
     if (page?.limit !== undefined) params.set("limit", String(page.limit));
@@ -536,12 +632,18 @@ export class VoxixClient {
     return this.request("GET", "/v1/config", { signal });
   }
 
-  async patchConfig(patch: ServiceConfigPatch, signal?: AbortSignalLike): Promise<ServiceConfig> {
+  async patchConfig(
+    patch: ServiceConfigPatch,
+    signal?: AbortSignalLike,
+  ): Promise<ServiceConfig> {
     return this.request("PATCH", "/v1/config", { bodyJson: patch, signal });
   }
 
   /** POST /v1/auth/ws-ticket — one-use 60 s ticket for the WS upgrade. */
-  async mintTicket(sessionId?: string, signal?: AbortSignalLike): Promise<WsTicket> {
+  async mintTicket(
+    sessionId?: string,
+    signal?: AbortSignalLike,
+  ): Promise<WsTicket> {
     return this.request("POST", "/v1/auth/ws-ticket", {
       bodyJson: sessionId ? { session_id: sessionId } : {},
       signal,

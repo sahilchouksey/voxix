@@ -615,7 +615,9 @@ impl HistoryManager {
         let conn = self.get_connection()?;
         let mut stmt = conn.prepare("SELECT id, file_name FROM transcription_history")?;
         let entries: Vec<(i64, String)> = stmt
-            .query_map([], |row| Ok((row.get::<_, i64>(0)?, row.get::<_, String>(1)?)))?
+            .query_map([], |row| {
+                Ok((row.get::<_, i64>(0)?, row.get::<_, String>(1)?))
+            })?
             .collect::<std::result::Result<Vec<_>, _>>()?;
         drop(stmt);
         self.delete_entries_and_files(&entries)

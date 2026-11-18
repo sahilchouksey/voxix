@@ -25,7 +25,9 @@ import { ServiceError, VoxixError } from "../../packages/sdk/src/errors.js";
 const baseUrl = process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832";
 const token = process.env.VOXIX_TOKEN;
 if (!token) {
-  console.error("usage: VOXIX_TOKEN=vx_… bun examples/sdk/06-history.ts [LIMIT] [--all]");
+  console.error(
+    "usage: VOXIX_TOKEN=vx_… bun examples/sdk/06-history.ts [LIMIT] [--all]",
+  );
   process.exit(2);
 }
 const limitArg = process.argv.slice(2).find((a) => !a.startsWith("--"));
@@ -38,17 +40,28 @@ if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
 
 const client = new VoxixClient({ baseUrl, token });
 
-const fmtTime = (ms: number) => new Date(ms).toISOString().replace("T", " ").replace(/\..*$/, "Z");
-const clip = (s: string, n: number) => (s.length <= n ? s : `${s.slice(0, n - 1)}…`);
+const fmtTime = (ms: number) =>
+  new Date(ms).toISOString().replace("T", " ").replace(/\..*$/, "Z");
+const clip = (s: string, n: number) =>
+  s.length <= n ? s : `${s.slice(0, n - 1)}…`;
 
 let printed = 0;
 let cursor: number | undefined;
 try {
   for (;;) {
-    const page = await client.history({ limit, ...(cursor !== undefined ? { cursor } : {}) });
+    const page = await client.history({
+      limit,
+      ...(cursor !== undefined ? { cursor } : {}),
+    });
     for (const e of page.entries) {
       printed += 1;
-      const firstLine = clip(e.transcription_text.split("\n").find((l) => l.trim())?.trim() ?? "", 60);
+      const firstLine = clip(
+        e.transcription_text
+          .split("\n")
+          .find((l) => l.trim())
+          ?.trim() ?? "",
+        60,
+      );
       console.log(
         `#${e.id} · ${fmtTime(e.timestamp_ms)} · ${e.source} · ${e.duration_ms ?? "-"} ms · ${e.model_id ?? "-"} · ${e.language ?? "auto"}`,
       );
@@ -57,13 +70,21 @@ try {
     if (!all || !page.has_more || page.next_cursor == null) break;
     cursor = page.next_cursor;
   }
-  console.log(printed === 0 ? "history is empty (nothing transcribed with history on yet)" : `\n${printed} entr${printed === 1 ? "y" : "ies"}`);
+  console.log(
+    printed === 0
+      ? "history is empty (nothing transcribed with history on yet)"
+      : `\n${printed} entr${printed === 1 ? "y" : "ies"}`,
+  );
 } catch (error) {
   if (error instanceof ServiceError) {
     // 503 history_unavailable = capability signal (no history DB on this build).
-    console.error(`ServiceError: status=${error.status} remote=${error.remoteCode ?? "-"}\n  ${error.message}`);
+    console.error(
+      `ServiceError: status=${error.status} remote=${error.remoteCode ?? "-"}\n  ${error.message}`,
+    );
   } else if (error instanceof VoxixError) {
-    console.error(`${error.name}: code=${error.code} status=${error.status ?? "-"}\n  ${error.message}`);
+    console.error(
+      `${error.name}: code=${error.code} status=${error.status ?? "-"}\n  ${error.message}`,
+    );
   } else {
     console.error((error as Error).message);
   }

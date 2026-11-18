@@ -534,7 +534,6 @@ mod imp {
         state.cancel_requested.store(false, Ordering::SeqCst);
         schedule_reconcile(app);
     }
-
 }
 
 #[cfg(not(target_os = "macos"))]

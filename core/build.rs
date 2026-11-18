@@ -334,9 +334,8 @@ fn generate_tray_translations() {
         .collect();
 
     // Generate code
-    let mut out = String::from(
-        "// Auto-generated from ui/i18n/locales/*/translation.json - do not edit\n\n",
-    );
+    let mut out =
+        String::from("// Auto-generated from ui/i18n/locales/*/translation.json - do not edit\n\n");
 
     // Struct
     out.push_str("#[derive(Debug, Clone)]\npub struct TrayStrings {\n");

@@ -33,14 +33,14 @@ Coverage at a glance:
 
 Binary releases are built on every release in GitHub Actions for macOS (Apple Silicon and Intel), Linux (x86_64 and arm64 — deb, rpm, AppImage), and Windows (x64 and arm64). Downloads are attached to the releases page: <https://github.com/sahilchouksey/voxix/releases>
 
-| Platform | Downloads |
-| --- | --- |
-| macOS (Apple Silicon) | `.dmg` |
-| macOS (Intel) | `.dmg` |
-| Linux x86_64 | `.deb`, `.rpm`, `.AppImage` |
-| Linux arm64 | `.deb`, `.rpm`, `.AppImage` |
-| Windows x64 | `.msi`, NSIS `.exe` |
-| Windows arm64 | `.msi`, NSIS `.exe` |
+| Platform              | Downloads                   |
+| --------------------- | --------------------------- |
+| macOS (Apple Silicon) | `.dmg`                      |
+| macOS (Intel)         | `.dmg`                      |
+| Linux x86_64          | `.deb`, `.rpm`, `.AppImage` |
+| Linux arm64           | `.deb`, `.rpm`, `.AppImage` |
+| Windows x64           | `.msi`, NSIS `.exe`         |
+| Windows arm64         | `.msi`, NSIS `.exe`         |
 
 v0.1.0 is the first release built after the repository went public.
 
@@ -161,7 +161,6 @@ Typing into other applications depends on display-server support:
 ### Windows
 
 - Use the Windows paste method setting if the direct paste does not land in the focused application. Vulkan runtime is used for GPU acceleration of Whisper-family models.
-
 
 ## Contributing
 

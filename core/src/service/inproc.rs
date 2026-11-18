@@ -136,8 +136,7 @@ async fn transcribe_via(
             match code {
                 400 => format!("voxix service rejected the audio: {msg}"),
                 409 => {
-                    "speech engine is busy with another session; try again in a moment"
-                        .to_string()
+                    "speech engine is busy with another session; try again in a moment".to_string()
                 }
                 413 => "the recording exceeded the size limit (~10 minutes)".to_string(),
                 429 => {
@@ -152,19 +151,24 @@ async fn transcribe_via(
     struct BatchAccepted {
         status_url: String,
     }
-    let accepted: BatchAccepted = post.json().await.map_err(|e| {
-        (
-            false,
-            format!("voxix service response parse failed: {e}"),
-        )
-    })?;
+    let accepted: BatchAccepted = post
+        .json()
+        .await
+        .map_err(|e| (false, format!("voxix service response parse failed: {e}")))?;
     let status_url = format!("{base}{}", accepted.status_url);
 
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(90);
     loop {
         if std::time::Instant::now() >= deadline {
-            let _ = client.delete(&status_url).bearer_auth(plaintext).send().await;
-            return Err((false, "transcription timed out after 90 seconds".to_string()));
+            let _ = client
+                .delete(&status_url)
+                .bearer_auth(plaintext)
+                .send()
+                .await;
+            return Err((
+                false,
+                "transcription timed out after 90 seconds".to_string(),
+            ));
         }
         #[derive(serde::Deserialize)]
         struct JobStatus {
@@ -192,12 +196,10 @@ async fn transcribe_via(
             .map_err(|e| (false, format!("status parse failed: {e}")))?;
         match job.state.as_str() {
             "completed" => {
-                return job.result.map(|r| r.transcript).ok_or_else(|| {
-                    (
-                        false,
-                        "completed job carried no transcript".to_string(),
-                    )
-                });
+                return job
+                    .result
+                    .map(|r| r.transcript)
+                    .ok_or_else(|| (false, "completed job carried no transcript".to_string()));
             }
             "failed" => {
                 return Err((

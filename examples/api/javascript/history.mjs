@@ -26,7 +26,10 @@
 //
 // Expected output: a compact table of the newest entries (id, time, source, title).
 // Exit codes: 0 ok (including an empty history) · 1 request/503/404 failure · 2 usage
-const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(/\/+$/, "");
+const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(
+  /\/+$/,
+  "",
+);
 const token = process.env.VOXIX_TOKEN;
 const limit = process.argv[2] ?? "5";
 if (!token) {
@@ -34,7 +37,9 @@ if (!token) {
   process.exit(2);
 }
 if (!/^\d+$/.test(limit)) {
-  console.error("usage: history.mjs [LIMIT]  (LIMIT must be an integer; clamps to 1–100)");
+  console.error(
+    "usage: history.mjs [LIMIT]  (LIMIT must be an integer; clamps to 1–100)",
+  );
   process.exit(2);
 }
 
@@ -59,19 +64,29 @@ try {
 
   const entries = page.entries ?? [];
   if (entries.length === 0) {
-    console.log("(empty — nothing recorded yet; run a batch job or a stream with save_history on)");
+    console.log(
+      "(empty — nothing recorded yet; run a batch job or a stream with save_history on)",
+    );
   } else {
     console.log();
-    console.log(`${"ID".padStart(6)}  ${"WHEN".padEnd(19)}  ${"SRC".padEnd(6)}  TITLE`);
+    console.log(
+      `${"ID".padStart(6)}  ${"WHEN".padEnd(19)}  ${"SRC".padEnd(6)}  TITLE`,
+    );
     for (const e of entries) {
       const when = new Date(e.timestamp_ms ?? 0).toLocaleString("sv-SE"); // YYYY-MM-DD HH:MM:SS
-      console.log(`${String(e.id ?? "?").padStart(6)}  ${when.padEnd(19)}  ${String(e.source ?? "?").padEnd(6)}  ${String(e.title ?? "").slice(0, 60)}`);
+      console.log(
+        `${String(e.id ?? "?").padStart(6)}  ${when.padEnd(19)}  ${String(e.source ?? "?").padEnd(6)}  ${String(e.title ?? "").slice(0, 60)}`,
+      );
     }
     if (page.has_more) {
-      console.log(`(more entries — pass cursor=${page.next_cursor} to walk older pages)`);
+      console.log(
+        `(more entries — pass cursor=${page.next_cursor} to walk older pages)`,
+      );
     }
   }
 } catch (e) {
-  console.error(`error: cannot reach ${base} (${e.cause?.message ?? e.message})`);
+  console.error(
+    `error: cannot reach ${base} (${e.cause?.message ?? e.message})`,
+  );
   process.exit(1);
 }

@@ -35,7 +35,9 @@ import { VoxixError } from "../../packages/sdk/src/errors.js";
 const baseUrl = process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832";
 const token = process.env.VOXIX_TOKEN;
 if (!token) {
-  console.error("usage: VOXIX_TOKEN=vx_… bun examples/sdk/03-models.ts [--model ID] [--select ID [eager|lazy]] [--download ID] [--cancel-download ID]");
+  console.error(
+    "usage: VOXIX_TOKEN=vx_… bun examples/sdk/03-models.ts [--model ID] [--select ID [eager|lazy]] [--download ID] [--cancel-download ID]",
+  );
   process.exit(2);
 }
 
@@ -47,7 +49,10 @@ function flagValue(name: string): string | undefined {
 const modelFlag = flagValue("--model");
 const selectFlag = flagValue("--select");
 const selectIdx = argv.indexOf("--select");
-const selectLoad: "eager" | "lazy" = selectFlag && selectIdx >= 0 && argv[selectIdx + 2] === "lazy" ? "lazy" : "eager";
+const selectLoad: "eager" | "lazy" =
+  selectFlag && selectIdx >= 0 && argv[selectIdx + 2] === "lazy"
+    ? "lazy"
+    : "eager";
 const downloadFlag = flagValue("--download");
 const cancelFlag = flagValue("--cancel-download");
 
@@ -55,7 +60,9 @@ const client = new VoxixClient({ baseUrl, token });
 
 function explain(error: unknown): never {
   if (error instanceof VoxixError) {
-    console.error(`${error.name}: code=${error.code} status=${error.status ?? "-"} remote=${error.remoteCode ?? "-"}\n  ${error.message}`);
+    console.error(
+      `${error.name}: code=${error.code} status=${error.status ?? "-"} remote=${error.remoteCode ?? "-"}\n  ${error.message}`,
+    );
   } else {
     console.error((error as Error).message);
   }
@@ -65,9 +72,13 @@ function explain(error: unknown): never {
 try {
   console.log("--- listModels({ installed: true }) ---");
   const page = await client.listModels({ installed: true });
-  console.log(`selected=${page.selected_model_id ?? "<none>"} loaded=${page.loaded_model_id ?? "<none>"} installed=${page.models.length}`);
+  console.log(
+    `selected=${page.selected_model_id ?? "<none>"} loaded=${page.loaded_model_id ?? "<none>"} installed=${page.models.length}`,
+  );
   for (const m of page.models) {
-    console.log(`  ${m.id} · ${m.name} · ${m.size_mb} MB · streaming=${m.supports_streaming} · download=${m.download.state}`);
+    console.log(
+      `  ${m.id} · ${m.name} · ${m.size_mb} MB · streaming=${m.supports_streaming} · download=${m.download.state}`,
+    );
   }
 
   const inspectId = modelFlag ?? page.models[0]?.id;
@@ -78,7 +89,9 @@ try {
 
     console.log(`--- getDownload(${inspectId}) ---`);
     const dl = await client.getDownload(inspectId);
-    console.log(`state=${dl.state} bytes=${dl.downloaded_bytes}/${dl.total_bytes}${dl.percentage != null ? ` (${dl.percentage}%)` : ""}`);
+    console.log(
+      `state=${dl.state} bytes=${dl.downloaded_bytes}/${dl.total_bytes}${dl.percentage != null ? ` (${dl.percentage}%)` : ""}`,
+    );
   } else {
     console.log("(no installed models; skipping getModel/getDownload)");
   }
@@ -87,15 +100,21 @@ try {
     // MUTATES daemon state (eager load can take seconds; 409 during inference leases).
     console.log(`--- selectModel(${selectFlag}, ${selectLoad}) ---`);
     const selection = await client.selectModel(selectFlag, selectLoad);
-    console.log(`selected=${selection.model_id} load=${selection.load} loaded=${selection.loaded}`);
+    console.log(
+      `selected=${selection.model_id} load=${selection.load} loaded=${selection.loaded}`,
+    );
   }
 
   if (downloadFlag) {
     // STARTS or converges on a managed download (multi-GB; partial files kept for resume).
     console.log(`--- downloadModel(${downloadFlag}) ---`);
     const status = await client.downloadModel(downloadFlag);
-    console.log(`state=${status.state} bytes=${status.downloaded_bytes}/${status.total_bytes}`);
-    console.log("(poll progress via: getDownload() / GET /v1/models/{id}/downloads)");
+    console.log(
+      `state=${status.state} bytes=${status.downloaded_bytes}/${status.total_bytes}`,
+    );
+    console.log(
+      "(poll progress via: getDownload() / GET /v1/models/{id}/downloads)",
+    );
   }
 
   if (cancelFlag) {

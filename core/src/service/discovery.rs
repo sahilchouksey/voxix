@@ -32,7 +32,6 @@ pub struct DiscoveryDocument {
     pub token_fingerprint: String,
 }
 
-
 pub fn document_path(state_dir: &Path) -> PathBuf {
     state_dir.join(DISCOVERY_FILE_NAME)
 }
@@ -59,7 +58,6 @@ pub fn read_document(state_dir: &Path) -> Option<DiscoveryDocument> {
     let text = std::fs::read_to_string(path).ok()?;
     serde_json::from_str(&text).ok()
 }
-
 
 /// Publish the document atomically with 0600 permissions.
 pub fn publish(state_dir: &Path, doc: &DiscoveryDocument) -> Result<PathBuf, String> {

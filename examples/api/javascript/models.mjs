@@ -30,7 +30,10 @@
 //
 // Expected output: models list, one-model projection, download status.
 // Exit codes: 0 ok · 1 request failure · 2 usage
-const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(/\/+$/, "");
+const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(
+  /\/+$/,
+  "",
+);
 const token = process.env.VOXIX_TOKEN;
 if (!token) {
   console.error("error: VOXIX_TOKEN is not set");
@@ -85,8 +88,10 @@ try {
   const models = modelsDoc.models ?? [];
   const modelId = modelIdArg ?? select ?? models[0]?.id ?? null;
   if (!modelId) {
-    console.error("error: no installed models found and no MODEL_ID argument given\n" +
-                  "       (the daemon never implicitly downloads; install a model in the app first)");
+    console.error(
+      "error: no installed models found and no MODEL_ID argument given\n" +
+        "       (the daemon never implicitly downloads; install a model in the app first)",
+    );
     process.exit(2);
   }
   console.log(`(using MODEL_ID=${modelId})`);
@@ -101,14 +106,23 @@ try {
   if (select) {
     // PUT /v1/models/selected MUTATES daemon state (it eagerly loads the model on this
     // build, and 409s during an inference lease). Explicitly requested via --select.
-    console.log(`--- PUT /v1/models/selected {"model_id": "${select}", "load": "eager"} ---`);
-    [status, body] = await call("PUT", "/v1/models/selected", { model_id: select, load: "eager" });
+    console.log(
+      `--- PUT /v1/models/selected {"model_id": "${select}", "load": "eager"} ---`,
+    );
+    [status, body] = await call("PUT", "/v1/models/selected", {
+      model_id: select,
+      load: "eager",
+    });
     show("PUT /v1/models/selected", status, body);
     process.exit(status === 200 ? 0 : 1);
   } else {
-    console.log("(skipping PUT /v1/models/selected — pass --select MODEL_ID to run it; it loads the model)");
+    console.log(
+      "(skipping PUT /v1/models/selected — pass --select MODEL_ID to run it; it loads the model)",
+    );
   }
 } catch (e) {
-  console.error(`error: cannot reach ${base} (${e.cause?.message ?? e.message})`);
+  console.error(
+    `error: cannot reach ${base} (${e.cause?.message ?? e.message})`,
+  );
   process.exit(1);
 }

@@ -132,7 +132,11 @@ export const useServiceStore = create<ServiceStore>()((set, get) => ({
         set({ rotating: false, error: res.error });
         return false;
       }
-      set({ rotatedToken: res.data, rotating: false, sessionToken: res.data.token });
+      set({
+        rotatedToken: res.data,
+        rotating: false,
+        sessionToken: res.data.token,
+      });
       await get().refresh();
       return true;
     } catch (e) {

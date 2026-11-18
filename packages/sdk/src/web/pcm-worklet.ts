@@ -43,7 +43,9 @@ registerProcessor(${JSON.stringify(PCM_WORKLET_NAME)}, VxPcmCapture);
 
 /** Blob URL carrying the worklet module (inline, no extra fetch). */
 export function createWorkletBlobUrl(): string {
-  const blob = new Blob([PCM_WORKLET_SOURCE], { type: "application/javascript" });
+  const blob = new Blob([PCM_WORKLET_SOURCE], {
+    type: "application/javascript",
+  });
   return URL.createObjectURL(blob);
 }
 
@@ -60,7 +62,8 @@ export async function attachPcmWorklet(
   });
   node.port.onmessage = (event) => {
     const data = event.data as { type: string; mono?: Float32Array };
-    if (data?.type === "pcm" && data.mono instanceof Float32Array) onPcm(data.mono);
+    if (data?.type === "pcm" && data.mono instanceof Float32Array)
+      onPcm(data.mono);
   };
   return node;
 }

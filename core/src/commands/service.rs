@@ -415,7 +415,10 @@ pub async fn service_start(
         let stale = dir.join(format!("discovery.json.stale-{ts}"));
         match std::fs::rename(&doc_path, &stale) {
             Ok(()) => log::info!("sidelined stale discovery document to {}", stale.display()),
-            Err(e) => log::warn!("could not sideline stale discovery document {}: {e}", doc_path.display()),
+            Err(e) => log::warn!(
+                "could not sideline stale discovery document {}: {e}",
+                doc_path.display()
+            ),
         }
     }
 

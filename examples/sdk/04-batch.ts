@@ -35,10 +35,13 @@ const argv = process.argv.slice(2);
 const wavPath = argv.find((a) => !a.startsWith("--"));
 const doCancel = argv.includes("--cancel");
 const timeoutFlag = argv[argv.indexOf("--timeout-ms") + 1];
-const timeoutMs = timeoutFlag && !timeoutFlag.startsWith("--") ? Number(timeoutFlag) : 120_000;
+const timeoutMs =
+  timeoutFlag && !timeoutFlag.startsWith("--") ? Number(timeoutFlag) : 120_000;
 
 if (!wavPath || Number.isNaN(timeoutMs)) {
-  console.error("usage: VOXIX_TOKEN=vx_… bun examples/sdk/04-batch.ts ./speech.wav [--cancel] [--timeout-ms N]");
+  console.error(
+    "usage: VOXIX_TOKEN=vx_… bun examples/sdk/04-batch.ts ./speech.wav [--cancel] [--timeout-ms N]",
+  );
   process.exit(2);
 }
 const baseUrl = process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832";
@@ -51,7 +54,10 @@ if (!token) {
 const client = new VoxixClient({ baseUrl, token });
 
 const buf = await readFile(wavPath);
-const arrayBuffer = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+const arrayBuffer = buf.buffer.slice(
+  buf.byteOffset,
+  buf.byteOffset + buf.byteLength,
+);
 
 try {
   const job = await client.transcribeFile(arrayBuffer);
@@ -60,7 +66,11 @@ try {
   if (doCancel) {
     // Best-effort cancel: true = cancelled, false = already settled/unknown.
     const cancelled = await client.cancelTranscription(job.job_id);
-    console.log(cancelled ? "cancel requested (204)" : "job already terminal — nothing to cancel (404/409)");
+    console.log(
+      cancelled
+        ? "cancel requested (204)"
+        : "job already terminal — nothing to cancel (404/409)",
+    );
     // Fall through and poll once so the outcome is visible.
   }
 
@@ -72,7 +82,9 @@ try {
       process.exit(0);
     }
     if (status.state === "failed") {
-      console.error(`transcription failed: ${status.error?.code ?? "?"} ${status.error?.message ?? ""}`);
+      console.error(
+        `transcription failed: ${status.error?.code ?? "?"} ${status.error?.message ?? ""}`,
+      );
       process.exit(1);
     }
     if (status.state === "cancelled") {
@@ -80,7 +92,9 @@ try {
       process.exit(1);
     }
     if (Date.now() > deadline) {
-      console.error(`timed out after ${timeoutMs} ms (job still ${status.state})`);
+      console.error(
+        `timed out after ${timeoutMs} ms (job still ${status.state})`,
+      );
       process.exit(1);
     }
     process.stdout.write(".");
@@ -93,7 +107,9 @@ try {
       `ServiceError: status=${error.status} remote=${error.remoteCode ?? "-"} retryable=${error.retryable}\n  ${error.message}`,
     );
   } else if (error instanceof VoxixError) {
-    console.error(`${error.name}: code=${error.code} status=${error.status ?? "-"} remote=${error.remoteCode ?? "-"}\n  ${error.message}`);
+    console.error(
+      `${error.name}: code=${error.code} status=${error.status ?? "-"} remote=${error.remoteCode ?? "-"}\n  ${error.message}`,
+    );
   } else {
     console.error((error as Error).message);
   }

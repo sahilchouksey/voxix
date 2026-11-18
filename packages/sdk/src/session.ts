@@ -98,7 +98,12 @@ export type VoxixSessionOptions = VoxixSessionConfig;
 const HIGH_WATER_BYTES = 512 * 1024;
 const LOW_WATER_BYTES = 128 * 1024;
 
-const TERMINAL_PHASES: SessionPhase[] = ["stopped", "cancelled", "failed", "closed"];
+const TERMINAL_PHASES: SessionPhase[] = [
+  "stopped",
+  "cancelled",
+  "failed",
+  "closed",
+];
 
 /* ------------------------------------------------------------------ */
 
@@ -216,7 +221,9 @@ export class VoxixSession {
       return;
     }
     if (this.phase !== "new") {
-      throw new ProtocolError({ message: `connect() is invalid in phase ${this.phase}` });
+      throw new ProtocolError({
+        message: `connect() is invalid in phase ${this.phase}`,
+      });
     }
     const waiter = createDeferred<HelloPayload>();
     this.connectWaiter = waiter;
@@ -276,12 +283,19 @@ export class VoxixSession {
    * wire synchronously; the promise then observes bounded-buffer
    * backpressure (strictly post-send, keeping call ordering FIFO).
    */
-  async pushAudio(frame: Int16Array | Uint8Array, durationMs: FrameDurationMs): Promise<void> {
+  async pushAudio(
+    frame: Int16Array | Uint8Array,
+    durationMs: FrameDurationMs,
+  ): Promise<void> {
     if (!isLegalDuration(durationMs)) {
-      throw new ProtocolError({ message: `durationMs ${durationMs} must be one of 10|20|30|40|60` });
+      throw new ProtocolError({
+        message: `durationMs ${durationMs} must be one of 10|20|30|40|60`,
+      });
     }
     if (this.phase !== "streaming") {
-      throw new ProtocolError({ message: `pushAudio is invalid in phase ${this.phase}` });
+      throw new ProtocolError({
+        message: `pushAudio is invalid in phase ${this.phase}`,
+      });
     }
     if (this.negotiatedAudio.codec === "opus") {
       // The v1 SDK client encodes pcm_s16le frames only; the negotiated opus
@@ -296,7 +310,8 @@ export class VoxixSession {
       throw new TransportError({ message: "the media socket is not open" });
     }
     const expected = samplesFor(durationMs);
-    const sampleCount = frame instanceof Int16Array ? frame.length : Math.floor(frame.length / 2);
+    const sampleCount =
+      frame instanceof Int16Array ? frame.length : Math.floor(frame.length / 2);
     if (sampleCount !== expected) {
       throw new ProtocolError({
         message: `payload length does not match duration: expected ${expected} samples, got ${sampleCount}`,
@@ -305,7 +320,10 @@ export class VoxixSession {
     const wire = encodeAudioFrame(frame, durationMs, this.audioSeq);
     socket.send(wire);
     this.audioSeq++;
-    if (socket.bufferedAmount !== undefined && socket.bufferedAmount >= HIGH_WATER_BYTES) {
+    if (
+      socket.bufferedAmount !== undefined &&
+      socket.bufferedAmount >= HIGH_WATER_BYTES
+    ) {
       const deadline = Date.now() + this.finalMs;
       while (
         socket.bufferedAmount > LOW_WATER_BYTES &&
@@ -322,16 +340,25 @@ export class VoxixSession {
    * post-pause 1008). Resolves with `paused.last_audio_seq`. */
   async pause(): Promise<number> {
     if (this.phase !== "streaming") {
-      throw new ProtocolError({ message: `pause() is invalid in phase ${this.phase}` });
+      throw new ProtocolError({
+        message: `pause() is invalid in phase ${this.phase}`,
+      });
     }
     const waiter = createDeferred<number>();
     this.pauseWaiter = waiter;
     this.phase = "paused"; // reject new pushAudio immediately
     this.sendJson({ type: "pause", payload: {} });
     try {
-      const through = await this.raceTimeout(waiter.promise, this.finalMs, "paused");
+      const through = await this.raceTimeout(
+        waiter.promise,
+        this.finalMs,
+        "paused",
+      );
       this.phase = "paused";
-      this.events.push({ type: "paused", payload: { last_audio_seq: through } });
+      this.events.push({
+        type: "paused",
+        payload: { last_audio_seq: through },
+      });
       return through;
     } catch (cause) {
       if (this.phase === "paused") this.phase = "streaming";
@@ -345,7 +372,9 @@ export class VoxixSession {
    * client-synthesized `resumed` (documented). */
   async resume(): Promise<void> {
     if (this.phase !== "paused") {
-      throw new ProtocolError({ message: `resume() is invalid in phase ${this.phase}` });
+      throw new ProtocolError({
+        message: `resume() is invalid in phase ${this.phase}`,
+      });
     }
     this.sendJson({ type: "resume", payload: {} });
     this.phase = "streaming";
@@ -359,7 +388,9 @@ export class VoxixSession {
    * decode; resolves with the exactly-one `final`. */
   async stop(reason?: "user" | "vad" | "end_of_stream"): Promise<FinalResult> {
     if (this.phase !== "streaming") {
-      throw new ProtocolError({ message: `stop() is invalid in phase ${this.phase}` });
+      throw new ProtocolError({
+        message: `stop() is invalid in phase ${this.phase}`,
+      });
     }
     const waiter = createDeferred<FinalResult>();
     this.stopWaiter = waiter;
@@ -380,9 +411,14 @@ export class VoxixSession {
     }
     if (this.isTerminal) {
       if (this.phase === "cancelled" || this.phase === "closed") return;
-      throw new ProtocolError({ message: `cancel() is invalid in phase ${this.phase}` });
+      throw new ProtocolError({
+        message: `cancel() is invalid in phase ${this.phase}`,
+      });
     }
-    if (this.ws === undefined && (this.phase === "connecting" || this.phase === "new")) {
+    if (
+      this.ws === undefined &&
+      (this.phase === "connecting" || this.phase === "new")
+    ) {
       // Nothing to cancel on the wire; treat as a local close.
       this.close();
       return;
@@ -414,7 +450,9 @@ export class VoxixSession {
     this.phase = "closed";
     this.teardownSocket();
     const abort = new CancelledError({
-      message: wasTerminal ? "session already terminal" : "session closed locally",
+      message: wasTerminal
+        ? "session already terminal"
+        : "session closed locally",
     });
     this.connectWaiter?.reject(abort);
     this.connectWaiter = undefined;
@@ -440,7 +478,9 @@ export class VoxixSession {
       if (this.ticketFallback) {
         const ticket = await this.client.internal_ticket();
         if (typeof ticket === "string" && ticket.length > 0) {
-          url += (url.includes("?") ? "&" : "?") + `ticket=${encodeURIComponent(ticket)}`;
+          url +=
+            (url.includes("?") ? "&" : "?") +
+            `ticket=${encodeURIComponent(ticket)}`;
         }
       } else {
         headers.Authorization = `Bearer ${await this.client.internal_bearer()}`;
@@ -456,7 +496,8 @@ export class VoxixSession {
     }
     let socket: WebSocketLike;
     try {
-      const factory: WebSocketFactory = this.factory ?? defaultWebSocketFactory();
+      const factory: WebSocketFactory =
+        this.factory ?? defaultWebSocketFactory();
       socket = factory(url, { headers });
     } catch (cause) {
       this.failSync(wrapTransportFailure(cause));
@@ -513,11 +554,15 @@ export class VoxixSession {
     try {
       parsed = JSON.parse(raw);
     } catch {
-      this.failSync(new ProtocolError({ message: "inbound frame is not JSON" }));
+      this.failSync(
+        new ProtocolError({ message: "inbound frame is not JSON" }),
+      );
       return;
     }
     if (!isEnvelope(parsed)) {
-      this.failSync(new ProtocolError({ message: "inbound frame is not a v1 envelope" }));
+      this.failSync(
+        new ProtocolError({ message: "inbound frame is not a v1 envelope" }),
+      );
       return;
     }
     const envelope = parsed as Envelope<never>;
@@ -536,7 +581,10 @@ export class VoxixSession {
       case "started":
         {
           const started = payload as unknown as StartedPayload;
-          this.lastResume = { resume_token: started.resume_token, resume_epoch: started.resume_epoch };
+          this.lastResume = {
+            resume_token: started.resume_token,
+            resume_epoch: started.resume_epoch,
+          };
           const waiter = this.startWaiter;
           this.startWaiter = undefined;
           waiter?.resolve(undefined);
@@ -609,7 +657,11 @@ export class VoxixSession {
       }
       return;
     }
-    if (this.phase === "streaming" || this.phase === "starting" || this.phase === "connected") {
+    if (
+      this.phase === "streaming" ||
+      this.phase === "starting" ||
+      this.phase === "connected"
+    ) {
       const waiter = this.startWaiter;
       this.startWaiter = undefined;
       waiter?.reject(error);
@@ -688,7 +740,8 @@ export class VoxixSession {
         socket.onmessage = null;
         socket.onerror = null;
         socket.onopen = null;
-        if (socket.readyState === 0 || socket.readyState === 1) socket.close(1000, "local close");
+        if (socket.readyState === 0 || socket.readyState === 1)
+          socket.close(1000, "local close");
       } catch {
         /* socket already gone */
       }
@@ -699,7 +752,11 @@ export class VoxixSession {
   private armPings(): void {
     this.pingTimerClear();
     this.pingTimer = setInterval(() => {
-      if (this.ws && this.ws.readyState === 1 && !TERMINAL_PHASES.includes(this.phase)) {
+      if (
+        this.ws &&
+        this.ws.readyState === 1 &&
+        !TERMINAL_PHASES.includes(this.phase)
+      ) {
         this.nonce += 1;
         const n = this.nonce;
         try {
@@ -734,12 +791,18 @@ export class VoxixSession {
   ): Promise<T> {
     return await new Promise<T>((resolve, reject) => {
       const timer = setTimeout(() => {
-        reject(new TransportError({ message: `${what} timed out after ${timeoutMs}ms`, retryable: true }));
+        reject(
+          new TransportError({
+            message: `${what} timed out after ${timeoutMs}ms`,
+            retryable: true,
+          }),
+        );
       }, timeoutMs);
       promise.then(
         (value) => {
           clearTimeout(timer);
-          if (signal?.aborted) reject(new CancelledError({ message: `${what} aborted` }));
+          if (signal?.aborted)
+            reject(new CancelledError({ message: `${what} aborted` }));
           else resolve(value);
         },
         (cause) => {
@@ -754,7 +817,9 @@ export class VoxixSession {
 /* ------------------------------------------------------------------ */
 
 function isLegalDuration(value: FrameDurationMs): value is FrameDurationMs {
-  return value === 10 || value === 20 || value === 30 || value === 40 || value === 60;
+  return (
+    value === 10 || value === 20 || value === 30 || value === 40 || value === 60
+  );
 }
 
 function isEnvelope(value: unknown): value is Envelope<unknown> {
@@ -768,7 +833,9 @@ function isEnvelope(value: unknown): value is Envelope<unknown> {
 }
 
 function toWsUrl(baseUrl: string, wsPath: string): string {
-  const http = baseUrl.replace(/\/+$/, "") + (wsPath.startsWith("/") ? wsPath : `/${wsPath}`);
+  const http =
+    baseUrl.replace(/\/+$/, "") +
+    (wsPath.startsWith("/") ? wsPath : `/${wsPath}`);
   return http.replace(/^http:\/\//, "ws://").replace(/^https:\/\//, "wss://");
 }
 
@@ -781,14 +848,18 @@ export function closeError(
   code: number,
   reason: string,
 ): TransportError | AuthError | ProtocolError | ServiceError {
-  const message = reason.trim().length > 0 ? reason : `media socket closed ${code}`;
+  const message =
+    reason.trim().length > 0 ? reason : `media socket closed ${code}`;
   switch (code) {
     case 1000:
       return new TransportError({
         message: `closed 1000 without a terminal event (${message})`,
       });
     case 1001:
-      return new TransportError({ message: `daemon shut down (${message})`, retryable: true });
+      return new TransportError({
+        message: `daemon shut down (${message})`,
+        retryable: true,
+      });
     case 1013:
       return new ServiceError({
         message: `overloaded: outbound backpressure or admission refused (${message})`,
@@ -808,7 +879,9 @@ export function closeError(
         retryable: true,
       });
     case 4002:
-      return new ProtocolError({ message: `protocol version mismatch (${message})` });
+      return new ProtocolError({
+        message: `protocol version mismatch (${message})`,
+      });
     case 4003:
       return new ServiceError({
         message: `resume credentials stale or expired (${message}) — reconnect with a fresh session`,
@@ -820,7 +893,9 @@ export function closeError(
     case 1008:
       return new ProtocolError({ message: `policy violation (${message})` });
     default:
-      return new ProtocolError({ message: `unexpected close code ${code} (${message})` });
+      return new ProtocolError({
+        message: `unexpected close code ${code} (${message})`,
+      });
   }
 }
 

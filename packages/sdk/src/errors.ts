@@ -38,7 +38,10 @@ export class VoxixError extends Error {
   readonly retryable: boolean;
 
   constructor(init: VoxixErrorInit) {
-    super(init.message, init.cause !== undefined ? { cause: init.cause } : undefined);
+    super(
+      init.message,
+      init.cause !== undefined ? { cause: init.cause } : undefined,
+    );
     this.name = `${VOXIX_ERROR_CODE_NODE}-${init.code}`;
     this.code = init.code;
     this.status = init.status;
@@ -100,7 +103,12 @@ export function wrapTransportFailure(cause: unknown): VoxixError {
     return new CancelledError({ message: "aborted", cause });
   }
   return new TransportError({
-    message: cause instanceof Error ? cause.message : typeof cause === "string" ? cause : "network request failed",
+    message:
+      cause instanceof Error
+        ? cause.message
+        : typeof cause === "string"
+          ? cause
+          : "network request failed",
     retryable: true,
     cause,
   });

@@ -615,8 +615,7 @@ pub fn start_voxix_keys_recording(app: AppHandle, binding_id: String) -> Result<
         None => {
             let s = VoxixKeysState::new(app.clone())?;
             app.manage(s);
-            app
-                .try_state::<VoxixKeysState>()
+            app.try_state::<VoxixKeysState>()
                 .ok_or("failed to manage voxix-keys capture state")?
         }
     };

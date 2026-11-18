@@ -33,9 +33,12 @@ export class RtResampler {
     if (!(this.sourceRateHz > 0) || this.sourceRateHz >= 384_000) {
       throw new Error(`unsupported source rate ${this.sourceRateHz}`);
     }
-    if (!(this.targetRateHz > 0)) throw new Error(`unsupported target rate ${this.targetRateHz}`);
+    if (!(this.targetRateHz > 0))
+      throw new Error(`unsupported target rate ${this.targetRateHz}`);
     this.ratio = this.sourceRateHz / this.targetRateHz;
-    this.targetChunkSamples = Math.round((SAMPLE_RATE_HZ * this.chunkMs) / 1000);
+    this.targetChunkSamples = Math.round(
+      (SAMPLE_RATE_HZ * this.chunkMs) / 1000,
+    );
   }
 
   /**
@@ -80,7 +83,10 @@ export class RtResampler {
 }
 
 /** One-shot whole-buffer resample into fixed-size Int16Array frames. */
-export function downmixAndResample(mono: Float32Array, options: ResamplerOptions): Int16Array[] {
+export function downmixAndResample(
+  mono: Float32Array,
+  options: ResamplerOptions,
+): Int16Array[] {
   const resampler = new RtResampler(options);
   const frames = resampler.push(mono);
   const tail = resampler.flush();

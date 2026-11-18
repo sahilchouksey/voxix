@@ -85,7 +85,9 @@ export const TransformsTab = () => {
       caption="Rules applied to every transcript before it is pasted."
     >
       <div>
-        <div className="voxix-section-title">{t("voxix.transforms.preview")}</div>
+        <div className="voxix-section-title">
+          {t("voxix.transforms.preview")}
+        </div>
         <div
           className="voxix-card"
           style={{
@@ -178,7 +180,9 @@ export const TransformsTab = () => {
       </div>
 
       <div>
-        <div className="voxix-section-title">{t("voxix.transforms.wordRules")}</div>
+        <div className="voxix-section-title">
+          {t("voxix.transforms.wordRules")}
+        </div>
         <div style={{ marginBottom: 12 }}>
           <Segmented
             options={[
@@ -274,7 +278,9 @@ export const TransformsTab = () => {
           <Group caption="Replace matching text. Replacements are applied in order.">
             {remappings.length === 0 ? (
               <div className="voxix-row" style={{ justifyContent: "center" }}>
-                <span className="voxix-cap">{t("voxix.transforms.noReplacements")}</span>
+                <span className="voxix-cap">
+                  {t("voxix.transforms.noReplacements")}
+                </span>
               </div>
             ) : (
               remappings.map((r, i) => {

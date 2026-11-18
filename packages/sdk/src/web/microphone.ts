@@ -32,7 +32,10 @@ const QUEUE_FRAME_CAP = 64; // ~1.28 s at 20 ms — memory bound, drop-oldest
 /** One microphone capture session; consume `frames` once and stop it. */
 export class MicrophonePcm16 {
   private readonly chunkMs: 10 | 20 | 30 | 40 | 60;
-  private readonly trackConstraints: Omit<MediaTrackConstraints, "deviceId"> | boolean | undefined;
+  private readonly trackConstraints:
+    | Omit<MediaTrackConstraints, "deviceId">
+    | boolean
+    | undefined;
   private stream: MediaStream | undefined;
   private context: AudioContext | undefined;
   private node: AudioWorkletNode | undefined;
@@ -64,9 +67,15 @@ export class MicrophonePcm16 {
 
   /** Mic permission + AudioContext (device rate) + worklet wiring. */
   async start(): Promise<void> {
-    if (this.running) throw new Error("the microphone capture is already running");
-    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
-      throw new Error("getUserMedia is unavailable — capture requires HTTPS/localhost");
+    if (this.running)
+      throw new Error("the microphone capture is already running");
+    if (
+      typeof navigator === "undefined" ||
+      !navigator.mediaDevices?.getUserMedia
+    ) {
+      throw new Error(
+        "getUserMedia is unavailable — capture requires HTTPS/localhost",
+      );
     }
     this.running = true;
     try {

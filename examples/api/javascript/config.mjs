@@ -24,7 +24,10 @@
 // Exit codes: 0 ok · 1 request failure (incl. 422 on daemons predating M3 PATCH) · 2 usage
 // Note: protocol-v1.md §4 lists GET /v1/config as a "read-only projection (M1)";
 // the PATCH route landed with M3 and is live on this build — wire reality wins.
-const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(/\/+$/, "");
+const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(
+  /\/+$/,
+  "",
+);
 const token = process.env.VOXIX_TOKEN;
 if (!token) {
   console.error("error: VOXIX_TOKEN is not set");
@@ -65,15 +68,21 @@ try {
 
   // Extract current max_audio_seconds (throws if the shape ever changes — fail loudly).
   const current = config.max_audio_seconds;
-  console.log(`--- PATCH /v1/config {"max_audio_seconds": ${current}}  (same-value no-op) ---`);
+  console.log(
+    `--- PATCH /v1/config {"max_audio_seconds": ${current}}  (same-value no-op) ---`,
+  );
 
   // Note: PATCH is NOT idempotent for read-only builds of the daemon; if your
   // build still rejects PATCH it answers 422 invalid_request and this step fails —
   // that is the signal the daemon predates M3 config.
-  [status, body] = await call("PATCH", "/v1/config", { max_audio_seconds: current });
+  [status, body] = await call("PATCH", "/v1/config", {
+    max_audio_seconds: current,
+  });
   show("PATCH /v1/config", status, body);
   process.exit(status === 200 ? 0 : 1);
 } catch (e) {
-  console.error(`error: cannot reach ${base} (${e.cause?.message ?? e.message})`);
+  console.error(
+    `error: cannot reach ${base} (${e.cause?.message ?? e.message})`,
+  );
   process.exit(1);
 }

@@ -30,7 +30,10 @@
 //
 // Expected output: the 201 status and redacted ticket metadata (or the ticket itself).
 // Exit codes: 0 ok · 1 request failure · 2 usage
-const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(/\/+$/, "");
+const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(
+  /\/+$/,
+  "",
+);
 const token = process.env.VOXIX_TOKEN;
 if (!token) {
   console.error("error: VOXIX_TOKEN is not set");
@@ -49,11 +52,16 @@ const sessionId = rest[0];
 try {
   const res = await fetch(`${base}/v1/auth/ws-ticket`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(sessionId ? { session_id: sessionId } : {}),
   });
   const body = await res.text();
-  console.log(`--- POST /v1/auth/ws-ticket → HTTP ${res.status} (201 expected) ---`);
+  console.log(
+    `--- POST /v1/auth/ws-ticket → HTTP ${res.status} (201 expected) ---`,
+  );
   let doc;
   try {
     doc = JSON.parse(body);
@@ -68,11 +76,18 @@ try {
   if (printToken) {
     console.log(JSON.stringify(doc, null, 2));
   } else {
-    const redacted = { ...doc, ticket: `${String(doc.ticket ?? "").slice(0, 6)}… (redacted — pass --print-token to reveal)` };
+    const redacted = {
+      ...doc,
+      ticket: `${String(doc.ticket ?? "").slice(0, 6)}… (redacted — pass --print-token to reveal)`,
+    };
     console.log(JSON.stringify(redacted, null, 2));
   }
-  console.log("(note: the ticket is single-use and dies in 60 s — do not retry it)");
+  console.log(
+    "(note: the ticket is single-use and dies in 60 s — do not retry it)",
+  );
 } catch (e) {
-  console.error(`error: cannot reach ${base} (${e.cause?.message ?? e.message})`);
+  console.error(
+    `error: cannot reach ${base} (${e.cause?.message ?? e.message})`,
+  );
   process.exit(1);
 }

@@ -34,13 +34,18 @@ import { readFile } from "node:fs/promises";
 import { VoxixClient } from "../../packages/sdk/src/client.js";
 import { VoxixError } from "../../packages/sdk/src/errors.js";
 import { wavToMonoPcm16 } from "../../packages/sdk/src/node/file.js";
-import { samplesFor, type FrameDurationMs } from "../../packages/sdk/src/protocol/audio.js";
+import {
+  samplesFor,
+  type FrameDurationMs,
+} from "../../packages/sdk/src/protocol/audio.js";
 
 const wavPath = process.argv[2];
 const baseUrl = process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832";
 const token = process.env.VOXIX_TOKEN;
 if (!wavPath) {
-  console.error("usage: VOXIX_TOKEN=vx_… bun examples/sdk/05-streaming.ts ./speech.wav");
+  console.error(
+    "usage: VOXIX_TOKEN=vx_… bun examples/sdk/05-streaming.ts ./speech.wav",
+  );
   process.exit(2);
 }
 if (!token) {
@@ -53,19 +58,27 @@ const client = new VoxixClient({ baseUrl, token });
 // Fail fast with a readable message when the daemon is down or the token is wrong.
 try {
   const health = await client.health();
-  console.log(`daemon ${health.engine_version} · protocol v${health.protocol_version} · ready=${health.ready}`);
+  console.log(
+    `daemon ${health.engine_version} · protocol v${health.protocol_version} · ready=${health.ready}`,
+  );
 } catch (error) {
-  console.error(`daemon unreachable at ${baseUrl}: ${(error as Error).message}`);
+  console.error(
+    `daemon unreachable at ${baseUrl}: ${(error as Error).message}`,
+  );
   process.exit(1);
 }
 
 const bytes = await readFile(wavPath);
 const { samples, sampleRateHz } = wavToMonoPcm16(bytes);
 if (sampleRateHz !== 16_000) {
-  console.error(`input is ${sampleRateHz} Hz — the v1 audio profile is 16 kHz mono s16le; resample first`);
+  console.error(
+    `input is ${sampleRateHz} Hz — the v1 audio profile is 16 kHz mono s16le; resample first`,
+  );
   process.exit(1);
 }
-console.log(`decoded ${samples.length} samples (${Math.round((samples.length / 16_000) * 1000)} ms)`);
+console.log(
+  `decoded ${samples.length} samples (${Math.round((samples.length / 16_000) * 1000)} ms)`,
+);
 
 // --- create -------------------------------------------------------------
 // Server-side VAD auto-segments speech; client treats input as speech-only;
@@ -76,28 +89,36 @@ const session = await client.createSession({
   partial_results: true,
 });
 await session.connect(); // hello barrier: no start before hello
-await session.start();   // started barrier: NO AUDIO BEFORE THIS LINE
-console.log(`session ${session.id} · negotiated ${JSON.stringify(session.negotiatedAudio)}`);
+await session.start(); // started barrier: NO AUDIO BEFORE THIS LINE
+console.log(
+  `session ${session.id} · negotiated ${JSON.stringify(session.negotiatedAudio)}`,
+);
 
 // --- observe -------------------------------------------------------------
 let finalCount = 0;
 const render = (async () => {
   for await (const event of session.events) {
     if (event.type === "partial") {
-      process.stdout.write(`\r› ${event.payload.committed}${event.payload.tentative}`);
+      process.stdout.write(
+        `\r› ${event.payload.committed}${event.payload.tentative}`,
+      );
     } else if (event.type === "final") {
       finalCount += 1;
       // history_id: string | number | null — null on this build unless history is enabled.
       console.log(`\n✓ final (#${finalCount} of the 1 expected)`);
       console.log(`  text: ${event.payload.text}`);
-      console.log(`  duration_ms=${event.payload.duration_ms} language=${event.payload.language} model_id=${event.payload.model_id}`);
+      console.log(
+        `  duration_ms=${event.payload.duration_ms} language=${event.payload.language} model_id=${event.payload.model_id}`,
+      );
       console.log(`  history_id=${event.payload.history_id ?? "null"}`);
     } else if (event.type === "speech_start") {
       process.stdout.write("\n[speech_start] ");
     } else if (event.type === "speech_end") {
       process.stdout.write("\n[speech_end] ");
     } else if (event.type === "error") {
-      console.error(`\n✗ server event ${event.payload.code}: ${event.payload.message} (retryable=${event.payload.retryable})`);
+      console.error(
+        `\n✗ server event ${event.payload.code}: ${event.payload.message} (retryable=${event.payload.retryable})`,
+      );
     }
   }
 })();
@@ -109,7 +130,10 @@ const chunkMs: FrameDurationMs = 20;
 const chunkSamples = samplesFor(chunkMs);
 try {
   for (let offset = 0; offset < samples.length; offset += chunkSamples) {
-    const slice = samples.subarray(offset, Math.min(offset + chunkSamples, samples.length));
+    const slice = samples.subarray(
+      offset,
+      Math.min(offset + chunkSamples, samples.length),
+    );
     const frame = new Int16Array(chunkSamples); // zero-padded tail
     frame.set(slice);
     await session.pushAudio(frame, chunkMs); // synchronous encode+send; seq from 0
@@ -120,7 +144,9 @@ try {
   // FIFO barrier: every pre-stop frame is fed before the decode starts; stop
   // resolves after the server emits its single terminal `final` (close 1000 follows).
   const final = await session.stop("user");
-  console.log(`stop resolved · streamed ~${Math.round(samples.length / 16_000 * 1000)} ms audio · server saw ${final.duration_ms} ms`);
+  console.log(
+    `stop resolved · streamed ~${Math.round((samples.length / 16_000) * 1000)} ms audio · server saw ${final.duration_ms} ms`,
+  );
 } catch (error) {
   if (error instanceof VoxixError) {
     console.error(

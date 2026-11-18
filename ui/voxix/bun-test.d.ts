@@ -5,7 +5,10 @@
  */
 declare module "bun:test" {
   export const describe: (name: string, factory: () => void) => void;
-  export const test: (name: string, factory: () => void | Promise<void>) => void;
+  export const test: (
+    name: string,
+    factory: () => void | Promise<void>,
+  ) => void;
   export const expect: <T>(actual: T) => {
     toBe: (expected: T) => void;
     toEqual: <E>(expected: E) => void;

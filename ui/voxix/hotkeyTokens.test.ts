@@ -51,7 +51,9 @@ describe("composeTokens", () => {
   test("modifier-only chords stay modifier-only", () => {
     const tokens = composeTokens(["alt", "shift"]);
     expect(tokens).toEqual(["alt", "shift"]);
-    expect(tokens.every((t) => ["ctrl", "alt", "shift", "super"].includes(t))).toBe(true);
+    expect(
+      tokens.every((t) => ["ctrl", "alt", "shift", "super"].includes(t)),
+    ).toBe(true);
   });
 });
 

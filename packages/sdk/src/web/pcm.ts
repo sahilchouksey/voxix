@@ -22,7 +22,10 @@ export function packPcm16FromFloat(samples: Float32Array): Int16Array {
 }
 
 /** Merge interleaved multi-channel input into a single mono f32 frame. */
-export function downmixToMono(interleaved: Float32Array, channels: number): Float32Array {
+export function downmixToMono(
+  interleaved: Float32Array,
+  channels: number,
+): Float32Array {
   const frames = interleaved.length / channels;
   const mono = new Float32Array(frames);
   for (let i = 0; i < frames; i++) {

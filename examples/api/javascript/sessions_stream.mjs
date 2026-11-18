@@ -40,11 +40,16 @@
 import { readFile } from "node:fs/promises";
 
 if (typeof globalThis.WebSocket !== "function") {
-  console.error("error: requires node ≥22 global WebSocket; see sdk/05-streaming.ts and protocol §11");
+  console.error(
+    "error: requires node ≥22 global WebSocket; see sdk/05-streaming.ts and protocol §11",
+  );
   process.exit(1);
 }
 
-const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(/\/+$/, "");
+const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(
+  /\/+$/,
+  "",
+);
 const token = process.env.VOXIX_TOKEN;
 if (!token) {
   console.error("error: VOXIX_TOKEN is not set");
@@ -52,7 +57,9 @@ if (!token) {
 }
 const wavPath = process.argv[2];
 if (!wavPath) {
-  console.error("usage: sessions_stream.mjs <file.wav>   (16 kHz mono 16-bit PCM)");
+  console.error(
+    "usage: sessions_stream.mjs <file.wav>   (16 kHz mono 16-bit PCM)",
+  );
   process.exit(2);
 }
 
@@ -60,11 +67,16 @@ const SAMPLE_RATE = 16_000;
 const FRAME_MS = 20;
 const SAMPLES_PER_FRAME = (SAMPLE_RATE * FRAME_MS) / 1000; // 320
 
-const wsUrl = (b, p) => b.replace(/^http:\/\//, "ws://").replace(/^https:\/\//, "wss://") + p;
+const wsUrl = (b, p) =>
+  b.replace(/^http:\/\//, "ws://").replace(/^https:\/\//, "wss://") + p;
 
 // Minimal RIFF/WAVE parser — just enough to enforce the v1 audio profile.
 const parseWav = (buf) => {
-  if (buf.length < 12 || buf.toString("ascii", 0, 4) !== "RIFF" || buf.toString("ascii", 8, 12) !== "WAVE") {
+  if (
+    buf.length < 12 ||
+    buf.toString("ascii", 0, 4) !== "RIFF" ||
+    buf.toString("ascii", 8, 12) !== "WAVE"
+  ) {
     throw new Error("not a RIFF/WAVE file");
   }
   let off = 12;
@@ -88,21 +100,33 @@ const parseWav = (buf) => {
     off = body + size + (size % 2); // chunks are word-aligned
   }
   if (!fmt || !data) throw new Error("missing fmt or data chunk");
-  if (fmt.audioFormat !== 1) throw new Error(`audioFormat ${fmt.audioFormat} — only PCM (1) is supported; convert first`);
-  if (fmt.sampleRate !== SAMPLE_RATE) throw new Error(`input is ${fmt.sampleRate} Hz — the v1 audio profile is 16 kHz mono s16le; resample first`);
-  if (fmt.channels !== 1) throw new Error(`input has ${fmt.channels} channels — the v1 audio profile is mono; downmix first`);
-  if (fmt.bitsPerSample !== 16) throw new Error(`input is ${fmt.bitsPerSample}-bit — the v1 audio profile is 16-bit signed PCM; convert first`);
+  if (fmt.audioFormat !== 1)
+    throw new Error(
+      `audioFormat ${fmt.audioFormat} — only PCM (1) is supported; convert first`,
+    );
+  if (fmt.sampleRate !== SAMPLE_RATE)
+    throw new Error(
+      `input is ${fmt.sampleRate} Hz — the v1 audio profile is 16 kHz mono s16le; resample first`,
+    );
+  if (fmt.channels !== 1)
+    throw new Error(
+      `input has ${fmt.channels} channels — the v1 audio profile is mono; downmix first`,
+    );
+  if (fmt.bitsPerSample !== 16)
+    throw new Error(
+      `input is ${fmt.bitsPerSample}-bit — the v1 audio profile is 16-bit signed PCM; convert first`,
+    );
   return data; // little-endian i16 samples, mono
 };
 
 const encodeFrame = (seq, pcm) => {
   const out = Buffer.alloc(12 + pcm.length);
   out.write("VX", 0, "ascii");
-  out.writeUInt8(1, 2);   // version 1
-  out.writeUInt8(1, 3);   // codec 1 = pcm_s16le
-  out.writeUInt32BE(seq >>> 0, 4);          // u32 BE audio sequence, starts at 0
-  out.writeUInt16BE(FRAME_MS, 8);           // u16 BE duration
-  out.writeUInt16BE(0, 10);                 // u16 BE flags (bit 0 = discontinuity; unset)
+  out.writeUInt8(1, 2); // version 1
+  out.writeUInt8(1, 3); // codec 1 = pcm_s16le
+  out.writeUInt32BE(seq >>> 0, 4); // u32 BE audio sequence, starts at 0
+  out.writeUInt16BE(FRAME_MS, 8); // u16 BE duration
+  out.writeUInt16BE(0, 10); // u16 BE flags (bit 0 = discontinuity; unset)
   pcm.copy(out, 12);
   return out;
 };
@@ -124,12 +148,17 @@ try {
   console.error(`error: ${e.message}`);
   process.exit(2);
 }
-console.log(`decoded ${pcm.length / 2} samples (${Math.round(pcm.length / 2 / SAMPLE_RATE)} ms) from ${wavPath}`);
+console.log(
+  `decoded ${pcm.length / 2} samples (${Math.round(pcm.length / 2 / SAMPLE_RATE)} ms) from ${wavPath}`,
+);
 
 // --- create ------------------------------------------------------------------
 // Server-side VAD auto-segments speech; partial_results surfaces `partial` events
 // (final_only models emit exactly one `final`).
-let [status, body] = await httpJson("POST", "/v1/sessions", { vad: { mode: "server" }, partial_results: true });
+let [status, body] = await httpJson("POST", "/v1/sessions", {
+  vad: { mode: "server" },
+  partial_results: true,
+});
 if (status !== 201) {
   console.error(`create failed: HTTP ${status} ${body}`);
   process.exit(1);
@@ -137,7 +166,9 @@ if (status !== 201) {
 const created = JSON.parse(body);
 const sessionId = created.session_id;
 const sessionToken = created.session_token;
-console.log(`session ${sessionId} · streaming_mode=${created.streaming_mode} · negotiated=${JSON.stringify(created.negotiated_audio)}`);
+console.log(
+  `session ${sessionId} · streaming_mode=${created.streaming_mode} · negotiated=${JSON.stringify(created.negotiated_audio)}`,
+);
 
 // --- message pump with an internal queue --------------------------------------
 const pending = [];
@@ -148,7 +179,10 @@ const pushMessage = (msg) => {
 };
 const nextMessage = (timeoutMs, what) =>
   new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`${what} timed out after ${timeoutMs} ms`)), timeoutMs);
+    const timer = setTimeout(
+      () => reject(new Error(`${what} timed out after ${timeoutMs} ms`)),
+      timeoutMs,
+    );
     const take = (msg) => {
       clearTimeout(timer);
       resolve(msg);
@@ -164,34 +198,53 @@ let socket;
 try {
   // undici extension: object form supplies handshake headers (browsers cannot).
   socket = new WebSocket(url, {
-    headers: { Authorization: `Bearer ${token}`, "X-Session-Token": sessionToken },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "X-Session-Token": sessionToken,
+    },
   });
 } catch (e) {
   console.error(`error: cannot open WebSocket (${e.message})`);
-  console.error("requires node ≥22 global WebSocket; see sdk/05-streaming.ts and protocol §11");
+  console.error(
+    "requires node ≥22 global WebSocket; see sdk/05-streaming.ts and protocol §11",
+  );
   process.exit(1);
 }
 
-socket.addEventListener("message", (ev) => pushMessage(typeof ev.data === "string" ? ev.data : null));
+socket.addEventListener("message", (ev) =>
+  pushMessage(typeof ev.data === "string" ? ev.data : null),
+);
 socket.addEventListener("close", (ev) => pushMessage(null));
 socket.addEventListener("error", () => pushMessage(null));
 
 const opened = new Promise((resolve, reject) => {
   socket.addEventListener("open", resolve, { once: true });
-  socket.addEventListener("error", () => reject(new Error("WebSocket upgrade failed")), { once: true });
+  socket.addEventListener(
+    "error",
+    () => reject(new Error("WebSocket upgrade failed")),
+    { once: true },
+  );
 });
 
 try {
   await opened;
   // hello barrier — the server speaks first; no start before hello.
   const hello = JSON.parse(await nextMessage(10_000, "hello"));
-  if (hello?.type !== "hello") throw new Error(`protocol error: expected hello, got ${hello?.type}`);
-  console.log(`hello · protocol_version=${hello.payload?.protocol_version} heartbeat_ms=${hello.payload?.heartbeat_ms}`);
+  if (hello?.type !== "hello")
+    throw new Error(`protocol error: expected hello, got ${hello?.type}`);
+  console.log(
+    `hello · protocol_version=${hello.payload?.protocol_version} heartbeat_ms=${hello.payload?.heartbeat_ms}`,
+  );
   // started barrier — NO AUDIO BEFORE THIS LINE.
   socket.send(JSON.stringify({ type: "start", payload: {} }));
   const started = JSON.parse(await nextMessage(10_000, "started"));
-  if (started?.type !== "started") throw new Error(`protocol error: expected started, got ${started?.type}: ${JSON.stringify(started)}`);
-  console.log(`started · model_id=${started.payload?.model_id} backend=${started.payload?.backend}`);
+  if (started?.type !== "started")
+    throw new Error(
+      `protocol error: expected started, got ${started?.type}: ${JSON.stringify(started)}`,
+    );
+  console.log(
+    `started · model_id=${started.payload?.model_id} backend=${started.payload?.backend}`,
+  );
 
   // Pump frames: zero-padded tail, real-time pacing (~20 ms per frame).
   const frameBytes = SAMPLES_PER_FRAME * 2;
@@ -207,7 +260,9 @@ try {
     seq += 1;
     await new Promise((r) => setTimeout(r, FRAME_MS));
   }
-  console.log(`\npumped ${seq} frames (~${seq * FRAME_MS} ms of audio) — sending stop`);
+  console.log(
+    `\npumped ${seq} frames (~${seq * FRAME_MS} ms of audio) — sending stop`,
+  );
   socket.send(JSON.stringify({ type: "stop", payload: { reason: "user" } }));
 
   // stop resolves after the server emits its single terminal `final`;
@@ -225,7 +280,9 @@ try {
         finals.push(p);
         console.log(`\n✓ final (#${finals.length} of the 1 expected)`);
         console.log(`  text: ${p.text}`);
-        console.log(`  duration_ms=${p.duration_ms} language=${p.language} model_id=${p.model_id}`);
+        console.log(
+          `  duration_ms=${p.duration_ms} language=${p.language} model_id=${p.model_id}`,
+        );
         console.log(`  history_id=${p.history_id ?? "null"}`);
         break;
       case "speech_start":
@@ -235,7 +292,9 @@ try {
         process.stdout.write("\n[speech_end] ");
         break;
       case "error":
-        console.error(`\n✗ server event ${p.code}: ${p.message} (retryable=${p.retryable})`);
+        console.error(
+          `\n✗ server event ${p.code}: ${p.message} (retryable=${p.retryable})`,
+        );
         break;
       default:
         break; // audio_ack / pong / unknown: observed and ignored

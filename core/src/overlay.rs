@@ -392,7 +392,13 @@ pub fn summarize_error(err: &str) -> String {
         // Flatten control characters and whitespace so a multi-line error
         // never renders as raw garbage in the single-line pill.
         err.chars()
-            .map(|c| if c.is_control() || c.is_whitespace() { ' ' } else { c })
+            .map(|c| {
+                if c.is_control() || c.is_whitespace() {
+                    ' '
+                } else {
+                    c
+                }
+            })
             .take(80)
             .collect()
     }
@@ -412,7 +418,11 @@ pub fn show_error_overlay(app_handle: &AppHandle, message: &str) {
             let _ = win.emit("overlay-error-message", short_msg);
         }
     });
-    show_overlay_state(app_handle, "error", Some(estimate_error_height(&short).max(80.0)));
+    show_overlay_state(
+        app_handle,
+        "error",
+        Some(estimate_error_height(&short).max(80.0)),
+    );
     let hide_handle = app_handle.clone();
     std::thread::spawn(move || {
         std::thread::sleep(std::time::Duration::from_secs(5));
@@ -675,9 +685,9 @@ fn current_overlay_logical_size(window: &tauri::webview::WebviewWindow) -> Optio
 }
 
 #[cfg(target_os = "windows")]
-use std::sync::atomic::AtomicU8;
-#[cfg(target_os = "windows")]
 use std::sync::atomic::AtomicU32;
+#[cfg(target_os = "windows")]
+use std::sync::atomic::AtomicU8;
 
 #[cfg(target_os = "windows")]
 static WINDOWS_OVERLAY_MODE: AtomicU8 = AtomicU8::new(0);
@@ -886,8 +896,8 @@ fn show_overlay_state(app_handle: &AppHandle, state: &str, error_height: Option<
     // inline when already on the main thread, so this never deadlocks.
     let handle = app_handle.clone();
     let state = state.to_string();
-    let _ =
-        app_handle.run_on_main_thread(move || show_overlay_state_on_main(&handle, &state, error_height));
+    let _ = app_handle
+        .run_on_main_thread(move || show_overlay_state_on_main(&handle, &state, error_height));
 }
 
 fn show_overlay_state_on_main(app_handle: &AppHandle, state: &str, error_height: Option<f64>) {
@@ -1390,11 +1400,15 @@ mod tests {
         // "audio"/"position"/"motion"/"permission" all contain "io" as a
         // substring; none of them may hit the service-unreachable bucket.
         assert_ne!(
-            summarize_error("failed to configure audio input: position out of range for motion event"),
+            summarize_error(
+                "failed to configure audio input: position out of range for motion event"
+            ),
             "Transcription failed — service unreachable"
         );
         assert_eq!(
-            summarize_error("failed to configure audio input: position out of range for motion event"),
+            summarize_error(
+                "failed to configure audio input: position out of range for motion event"
+            ),
             "failed to configure audio input: position out of range for motion event"
         );
     }

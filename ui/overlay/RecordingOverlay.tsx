@@ -3,7 +3,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { commands } from "@/bindings";
 import "./RecordingOverlay.css";
 
-type OverlayState = "recording" | "streaming" | "transcribing" | "processing" | "error";
+type OverlayState =
+  | "recording"
+  | "streaming"
+  | "transcribing"
+  | "processing"
+  | "error";
 
 const RecordingOverlay: React.FC = () => {
   const [visible, setVisible] = useState(false);

@@ -343,7 +343,12 @@ export interface BatchJobStatus {
   job_id: string;
   state: "processing" | "completed" | "failed" | "cancelled";
   result?: { transcript: string; duration_ms: number };
-  error?: { code: string; message: string; retryable: boolean; details?: unknown };
+  error?: {
+    code: string;
+    message: string;
+    retryable: boolean;
+    details?: unknown;
+  };
 }
 
 /* -- history --------------------------------------------------------- */

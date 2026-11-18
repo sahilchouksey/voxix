@@ -22,7 +22,9 @@ export class BoundedTap<T> {
 
   constructor(capacity = 512) {
     if (!Number.isInteger(capacity) || capacity < 1) {
-      throw new Error(`tap capacity must be a positive integer, got ${capacity}`);
+      throw new Error(
+        `tap capacity must be a positive integer, got ${capacity}`,
+      );
     }
     this.capacity = capacity;
   }
@@ -80,14 +82,20 @@ export class BoundedTap<T> {
     const iterator: AsyncIterator<T> = {
       next(): Promise<IteratorResult<T>> {
         if (tap.buffer.length > 0) {
-          return Promise.resolve({ done: false, value: tap.buffer.shift() as T });
+          return Promise.resolve({
+            done: false,
+            value: tap.buffer.shift() as T,
+          });
         }
-        if (tap.failureCause !== undefined) return Promise.reject(tap.failureCause);
-        if (tap.closed) return Promise.resolve({ done: true, value: undefined as never });
+        if (tap.failureCause !== undefined)
+          return Promise.reject(tap.failureCause);
+        if (tap.closed)
+          return Promise.resolve({ done: true, value: undefined as never });
         return new Promise<IteratorResult<T>>((resolve, reject) => {
           tap.waiters.push({
             resolve: (signal) => {
-              if (signal.done) resolve({ done: true, value: undefined as never });
+              if (signal.done)
+                resolve({ done: true, value: undefined as never });
               else resolve({ done: false, value: tap.buffer.shift() as T });
             },
             reject,

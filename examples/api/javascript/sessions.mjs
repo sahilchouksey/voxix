@@ -36,7 +36,10 @@
 // nothing is allocated), then the 201 envelope, the GET projection, the PATCH
 // result, and the two idempotent DELETEs.
 // Exit codes: 0 ok · 1 request failure · 2 usage
-const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(/\/+$/, "");
+const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(
+  /\/+$/,
+  "",
+);
 const token = process.env.VOXIX_TOKEN;
 if (!token) {
   console.error("error: VOXIX_TOKEN is not set");
@@ -66,11 +69,17 @@ const show = (label, status, body) => {
 
 try {
   // --- POST /v1/sessions with an UNKNOWN field — 422, nothing is allocated ---
-  console.log('--- POST /v1/sessions {"model_idd": "typo"} (unknown field → 422) ---');
-  let [status, body] = await call("POST", "/v1/sessions", { model_idd: "typo" });
+  console.log(
+    '--- POST /v1/sessions {"model_idd": "typo"} (unknown field → 422) ---',
+  );
+  let [status, body] = await call("POST", "/v1/sessions", {
+    model_idd: "typo",
+  });
   show("POST /v1/sessions (unknown field)", status, body);
   if (status !== 422) {
-    console.error(`note: expected 422 for unknown field, got ${status} — is this an M3+ build?`);
+    console.error(
+      `note: expected 422 for unknown field, got ${status} — is this an M3+ build?`,
+    );
   }
 
   // --- POST /v1/sessions — the real create ----------------------------------
@@ -86,19 +95,36 @@ try {
   const sessionToken = created.session_token; // shown once; the projection never carries it
 
   // --- GET /v1/sessions/{id} --------------------------------------------------
-  [status, body] = await call("GET", `/v1/sessions/${sessionId}`, undefined, sessionToken);
+  [status, body] = await call(
+    "GET",
+    `/v1/sessions/${sessionId}`,
+    undefined,
+    sessionToken,
+  );
   show("GET /v1/sessions/{id} (echo before PATCH)", status, body);
   if (status !== 200) process.exit(1);
 
   // --- PATCH /v1/sessions/{id} {"state":"completed"} → 200 projection ---------
-  [status, body] = await call("PATCH", `/v1/sessions/${sessionId}`, { state: "completed" }, sessionToken);
+  [status, body] = await call(
+    "PATCH",
+    `/v1/sessions/${sessionId}`,
+    { state: "completed" },
+    sessionToken,
+  );
   show('PATCH /v1/sessions/{id} {"state":"completed"}', status, body);
   if (status !== 200) process.exit(1);
 
   // --- DELETE /v1/sessions/{id} — idempotent cancel, twice -------------------
   for (const attempt of [1, 2]) {
-    [status, body] = await call("DELETE", `/v1/sessions/${sessionId}`, undefined, sessionToken);
-    console.log(`--- DELETE /v1/sessions/{id} (attempt ${attempt}) → HTTP ${status} (204 expected, idempotent) ---`);
+    [status, body] = await call(
+      "DELETE",
+      `/v1/sessions/${sessionId}`,
+      undefined,
+      sessionToken,
+    );
+    console.log(
+      `--- DELETE /v1/sessions/{id} (attempt ${attempt}) → HTTP ${status} (204 expected, idempotent) ---`,
+    );
     if (status !== 204) {
       console.error(body);
       process.exit(1);
@@ -106,6 +132,8 @@ try {
   }
   console.log("done — session completed and delete is idempotent");
 } catch (e) {
-  console.error(`error: cannot reach ${base} (${e.cause?.message ?? e.message})`);
+  console.error(
+    `error: cannot reach ${base} (${e.cause?.message ?? e.message})`,
+  );
   process.exit(1);
 }

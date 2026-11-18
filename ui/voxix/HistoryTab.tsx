@@ -6,7 +6,17 @@ import { toast } from "sonner";
 import { commands, events, type HistoryEntry } from "@/bindings";
 import { useSettingsStore } from "@/stores/settingsStore";
 import { Btn, Screen, useEscape } from "./ui";
-import { ClockIcon, CopyIcon, CheckIcon, PlayIcon, PauseIcon, TrashIcon, RefreshIcon, XIcon, ExclamationTriangle } from "./icons";
+import {
+  ClockIcon,
+  CopyIcon,
+  CheckIcon,
+  PlayIcon,
+  PauseIcon,
+  TrashIcon,
+  RefreshIcon,
+  XIcon,
+  ExclamationTriangle,
+} from "./icons";
 
 const relDate = (ts: number): string => {
   const d = new Date(ts * 1000);
@@ -103,7 +113,10 @@ const MiniPlayer = ({
       style={{ flex: 1, accentColor: "var(--accent)", minWidth: 0 }}
       aria-label="Seek"
     />
-    <span className="voxix-cap" style={{ width: 34, flexShrink: 0, textAlign: "right" }}>
+    <span
+      className="voxix-cap"
+      style={{ width: 34, flexShrink: 0, textAlign: "right" }}
+    >
       {fmtClock(progress.dur)}
     </span>
     <button
@@ -138,7 +151,9 @@ export const HistoryTab = () => {
           [...res.data.entries].sort((a, b) => b.timestamp - a.timestamp),
         );
       else
-        toast.error("Failed to load history", { description: String(res.error) });
+        toast.error("Failed to load history", {
+          description: String(res.error),
+        });
     } catch (e) {
       toast.error("Failed to load history", {
         description: e instanceof Error ? e.message : String(e),
@@ -195,7 +210,9 @@ export const HistoryTab = () => {
       active?.pause();
       audioRef.current = null;
       if (!entry.file_name) {
-        toast.error("No audio file for this entry", { id: `audio-${entry.id}` });
+        toast.error("No audio file for this entry", {
+          id: `audio-${entry.id}`,
+        });
         return;
       }
       const res = await commands.getAudioFilePath(entry.file_name);
@@ -211,7 +228,10 @@ export const HistoryTab = () => {
       }
       const el = new Audio(convertFileSrc(res.data));
       el.onloadedmetadata = () =>
-        setProgress({ cur: 0, dur: Number.isFinite(el.duration) ? el.duration : 0 });
+        setProgress({
+          cur: 0,
+          dur: Number.isFinite(el.duration) ? el.duration : 0,
+        });
       el.ontimeupdate = () =>
         setProgress((p) => ({ ...p, cur: el.currentTime }));
       el.onended = () => stopPlayer();
@@ -395,7 +415,9 @@ const Card = ({
   onDeleted: (entry: HistoryEntry) => void;
 }) => {
   const { t } = useTranslation();
-  const [copyState, setCopyState] = useState<"idle" | "success" | "error">("idle");
+  const [copyState, setCopyState] = useState<"idle" | "success" | "error">(
+    "idle",
+  );
   const [retrying, setRetrying] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const blank = !entry.transcription_text?.trim();
@@ -559,7 +581,11 @@ const Card = ({
         >
           <div
             className="voxix-card"
-            style={{ padding: 16, width: 320, boxShadow: "0 20px 60px rgba(0,0,0,0.5)" }}
+            style={{
+              padding: 16,
+              width: 320,
+              boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+            }}
             onClick={(ev) => ev.stopPropagation()}
           >
             <div style={{ fontSize: "var(--text-base)", fontWeight: 600 }}>
@@ -569,7 +595,12 @@ const Card = ({
               {t("voxix.history.deleteBody")}
             </div>
             <div
-              style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 8,
+                marginTop: 12,
+              }}
             >
               <Btn onClick={() => setConfirmDelete(false)}>
                 {t("voxix.history.cancel")}

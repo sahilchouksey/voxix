@@ -118,7 +118,9 @@ interface GlobalWithFetch {
 interface WebSocketCtorLike {
   new (
     url: string | URL,
-    options?: string[] | { headers?: Record<string, string>; protocols?: string | string[] },
+    options?:
+      | string[]
+      | { headers?: Record<string, string>; protocols?: string | string[] },
   ): WebSocketLike;
 }
 
@@ -147,8 +149,11 @@ interface TextDecoderStructural {
   decode(input?: Uint8Array): string;
 }
 
-const GLOBAL_TEXT_DECODER = (globalThis as { TextDecoder?: new (constructorArg?: string) => TextDecoderStructural })
-  .TextDecoder;
+const GLOBAL_TEXT_DECODER = (
+  globalThis as {
+    TextDecoder?: new (constructorArg?: string) => TextDecoderStructural;
+  }
+).TextDecoder;
 
 /** Decode UTF-8 where a TextDecoder exists; latin1 fallback otherwise
  * (ASCII content — SSE/JSON frames without multi-byte characters — is

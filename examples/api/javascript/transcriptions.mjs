@@ -30,7 +30,10 @@
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 
-const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(/\/+$/, "");
+const base = (process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832").replace(
+  /\/+$/,
+  "",
+);
 const token = process.env.VOXIX_TOKEN;
 const [wavPath, ...flagArgs] = process.argv.slice(2);
 const flags = flagArgs;
@@ -38,7 +41,11 @@ if (!token) {
   console.error("error: VOXIX_TOKEN is not set");
   process.exit(2);
 }
-if (!wavPath || !existsSync(wavPath) || flags.some((f) => f !== "--cancel-after-start")) {
+if (
+  !wavPath ||
+  !existsSync(wavPath) ||
+  flags.some((f) => f !== "--cancel-after-start")
+) {
   console.error("usage: transcriptions.mjs <file.wav> [--cancel-after-start]");
   process.exit(2);
 }
@@ -76,7 +83,9 @@ try {
       method: "DELETE",
       headers: auth,
     });
-    console.log(`DELETE → HTTP ${del.status} (204 = cancelled while processing, 409 = already settled, 404 = unknown)`);
+    console.log(
+      `DELETE → HTTP ${del.status} (204 = cancelled while processing, 409 = already settled, 404 = unknown)`,
+    );
     process.exit(del.status === 204 || del.status === 409 ? 0 : 1);
   }
 
@@ -84,7 +93,9 @@ try {
   console.log(`--- GET /v1/transcriptions/${accepted.job_id} (polling) ---`);
   const deadline = Date.now() + 300_000;
   for (;;) {
-    const res = await fetch(`${base}/v1/transcriptions/${accepted.job_id}`, { headers: auth });
+    const res = await fetch(`${base}/v1/transcriptions/${accepted.job_id}`, {
+      headers: auth,
+    });
     if (!res.ok) {
       show("GET /v1/transcriptions/{job}", res.status, await res.text());
       process.exit(1);
@@ -98,17 +109,23 @@ try {
     }
     if (s.state === "failed" || s.state === "cancelled") {
       show("job ended", res.status, JSON.stringify(s));
-      console.error(`job ${s.state}: ${s.error?.code ?? "?"} ${s.error?.message ?? ""}`);
+      console.error(
+        `job ${s.state}: ${s.error?.code ?? "?"} ${s.error?.message ?? ""}`,
+      );
       process.exit(1);
     }
     if (Date.now() > deadline) {
-      console.error(`timed out after 300 s (job is still processing; retry or DELETE ${accepted.job_id})`);
+      console.error(
+        `timed out after 300 s (job is still processing; retry or DELETE ${accepted.job_id})`,
+      );
       process.exit(1);
     }
     console.log(`  … ${s.state}`);
     await new Promise((r) => setTimeout(r, 250));
   }
 } catch (e) {
-  console.error(`error: cannot reach ${base} (${e.cause?.message ?? e.message})`);
+  console.error(
+    `error: cannot reach ${base} (${e.cause?.message ?? e.message})`,
+  );
   process.exit(1);
 }

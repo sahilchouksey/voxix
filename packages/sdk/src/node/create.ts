@@ -100,17 +100,25 @@ export function parseReadyLine(line: string): ReadyLine {
     throw new ProtocolError({ message: "ready line is not an object" });
   }
   if (parsed.type !== "ready") {
-    throw new ProtocolError({ message: `ready line type is ${String(parsed.type)} ("ready" expected)` });
+    throw new ProtocolError({
+      message: `ready line type is ${String(parsed.type)} ("ready" expected)`,
+    });
   }
   const url = typeof parsed.url === "string" ? parsed.url : "";
   if (!LOOPBACK_URL.test(url)) {
-    throw new ProtocolError({ message: `ready url is not the loopback contract: ${url}` });
+    throw new ProtocolError({
+      message: `ready url is not the loopback contract: ${url}`,
+    });
   }
   const token = typeof parsed.token === "string" ? parsed.token : "";
   if (!token.startsWith("vx_")) {
     throw new ProtocolError({ message: "ready token lacks the vx_ prefix" });
   }
-  if (typeof parsed.pid !== "number" || !Number.isInteger(parsed.pid) || parsed.pid <= 0) {
+  if (
+    typeof parsed.pid !== "number" ||
+    !Number.isInteger(parsed.pid) ||
+    parsed.pid <= 0
+  ) {
     throw new ProtocolError({ message: "ready pid is not a positive integer" });
   }
   const apiVersion = parsed.apiVersion;
@@ -120,7 +128,9 @@ export function parseReadyLine(line: string): ReadyLine {
     apiVersion === "1" ||
     (apiVersionInt === undefined && apiVersion === undefined);
   if (!supported) {
-    throw new ProtocolError({ message: "ready line carries an unsupported api_version" });
+    throw new ProtocolError({
+      message: "ready line carries an unsupported api_version",
+    });
   }
   return {
     type: "ready",
@@ -136,12 +146,13 @@ export function parseReadyLine(line: string): ReadyLine {
 
 async function defaultSpawn(): Promise<SpawnLike> {
   const moduleName = "node:child_process";
-  const mod = (await import(/* @vite-ignore */ moduleName).catch(() => undefined)) as
-    | { spawn?: unknown }
-    | undefined;
+  const mod = (await import(/* @vite-ignore */ moduleName).catch(
+    () => undefined,
+  )) as { spawn?: unknown } | undefined;
   if (typeof mod?.spawn !== "function") {
     throw new TransportError({
-      message: "no spawn implementation available (supply the `spawn` option outside Node/Bun)",
+      message:
+        "no spawn implementation available (supply the `spawn` option outside Node/Bun)",
       retryable: false,
     });
   }
@@ -165,7 +176,9 @@ function pump(stream: ReadableLike, sink: (chunk: string) => void): void {
  * rejecting, while an already-aborted request never closes a healthy child
  * (§15 G24).
  */
-export async function create(options: CreateOptions = {}): Promise<EmbeddedClient> {
+export async function create(
+  options: CreateOptions = {},
+): Promise<EmbeddedClient> {
   const spawnFn = options.spawn ?? (await defaultSpawn());
   const [command, extra] = Array.isArray(options.command)
     ? [options.command[0], options.command.slice(1)]
@@ -204,7 +217,10 @@ export async function create(options: CreateOptions = {}): Promise<EmbeddedClien
 
   const spawnDiagnostic = (message: string): TransportError =>
     new TransportError({
-      message: stderrHead.length > 0 ? `${message} — stderr head: ${stderrHead.slice(0, 512)}` : message,
+      message:
+        stderrHead.length > 0
+          ? `${message} — stderr head: ${stderrHead.slice(0, 512)}`
+          : message,
       retryable: false,
     });
 
@@ -217,7 +233,11 @@ export async function create(options: CreateOptions = {}): Promise<EmbeddedClien
         fn();
       };
       child.onExit(() => {
-        finish(() => reject(spawnDiagnostic("the child exited before emitting the ready line")));
+        finish(() =>
+          reject(
+            spawnDiagnostic("the child exited before emitting the ready line"),
+          ),
+        );
       });
       pump(child.stdout, (chunk) => {
         if (lineSeen) return;
@@ -225,7 +245,9 @@ export async function create(options: CreateOptions = {}): Promise<EmbeddedClien
         const nl = stdoutBuffer.indexOf("\n");
         if (nl < 0) {
           if (stdoutBuffer.length > READY_MAX_BYTES) {
-            finish(() => reject(spawnDiagnostic("ready line spilled past the byte cap")));
+            finish(() =>
+              reject(spawnDiagnostic("ready line spilled past the byte cap")),
+            );
           }
           return;
         }
@@ -234,7 +256,11 @@ export async function create(options: CreateOptions = {}): Promise<EmbeddedClien
         stdoutBuffer = "";
         try {
           const parsed = parseReadyLine(line);
-          if (typeof child.pid === "number" && child.pid > 0 && parsed.pid !== child.pid) {
+          if (
+            typeof child.pid === "number" &&
+            child.pid > 0 &&
+            parsed.pid !== child.pid
+          ) {
             finish(() =>
               reject(
                 new ProtocolError({
@@ -250,7 +276,9 @@ export async function create(options: CreateOptions = {}): Promise<EmbeddedClien
         }
       });
       if (options.signal?.aborted) {
-        finish(() => reject(new ProtocolError({ message: "create() aborted" })));
+        finish(() =>
+          reject(new ProtocolError({ message: "create() aborted" })),
+        );
       }
     });
   } catch (cause) {
@@ -272,7 +300,8 @@ export async function create(options: CreateOptions = {}): Promise<EmbeddedClien
 
   if (options.model) {
     try {
-      if (options.signal?.aborted) throw new ProtocolError({ message: "create() aborted" });
+      if (options.signal?.aborted)
+        throw new ProtocolError({ message: "create() aborted" });
       await client.prepareModel(options.model, options.onPrepare);
     } catch (cause) {
       await client.dispose();

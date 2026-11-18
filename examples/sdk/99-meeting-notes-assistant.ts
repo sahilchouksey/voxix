@@ -48,16 +48,21 @@ import { ServiceError, VoxixError } from "../../packages/sdk/src/errors.js";
 const argv = process.argv.slice(2);
 const folderArg = argv.find((a) => !a.startsWith("--"));
 const selectArg = argv[argv.indexOf("--select") + 1];
-const selectModel = selectArg && !selectArg.startsWith("--") ? selectArg : undefined;
+const selectModel =
+  selectArg && !selectArg.startsWith("--") ? selectArg : undefined;
 const outArg = argv[argv.indexOf("--out") + 1];
-const outPath = outArg && !outArg.startsWith("--") ? resolve(outArg) : undefined;
+const outPath =
+  outArg && !outArg.startsWith("--") ? resolve(outArg) : undefined;
 const timeoutArg = argv[argv.indexOf("--timeout-ms") + 1];
-const timeoutMs = timeoutArg && !timeoutArg.startsWith("--") ? Number(timeoutArg) : 300_000;
+const timeoutMs =
+  timeoutArg && !timeoutArg.startsWith("--") ? Number(timeoutArg) : 300_000;
 
 const token = process.env.VOXIX_TOKEN;
 const baseUrl = process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832";
 if (!folderArg || Number.isNaN(timeoutMs)) {
-  console.error("usage: VOXIX_TOKEN=vx_… bun examples/sdk/99-meeting-notes-assistant.ts <folder> [--select MODEL_ID] [--out FILE] [--timeout-ms N]");
+  console.error(
+    "usage: VOXIX_TOKEN=vx_… bun examples/sdk/99-meeting-notes-assistant.ts <folder> [--select MODEL_ID] [--out FILE] [--timeout-ms N]",
+  );
   process.exit(2);
 }
 if (!token) {
@@ -123,7 +128,12 @@ async function writeReport(): Promise<void> {
     lines.push(r.transcript ?? `**FAILED:** ${r.error}`, "");
   }
   if (failed.length > 0) {
-    lines.push("## Failed files", "", ...failed.map((r) => `- ${r.file}: ${r.error}`), "");
+    lines.push(
+      "## Failed files",
+      "",
+      ...failed.map((r) => `- ${r.file}: ${r.error}`),
+      "",
+    );
   }
   await writeFile(reportPath, lines.join("\n"), "utf8");
 }
@@ -132,8 +142,12 @@ try {
   // --- (a) preflight -------------------------------------------------------
   const status = await client.status();
   console.log("--- preflight: status() ---");
-  console.log(`mode=${status.mode} · model_state=${status.model_state} · active=${status.active_model_id ?? "<none>"} · backend=${status.backend ?? "<?>"}`);
-  console.log(`lease_held=${status.lease_held} · active_sessions=${status.active_sessions} · max_streams=${status.capabilities.max_concurrent_streams}`);
+  console.log(
+    `mode=${status.mode} · model_state=${status.model_state} · active=${status.active_model_id ?? "<none>"} · backend=${status.backend ?? "<?>"}`,
+  );
+  console.log(
+    `lease_held=${status.lease_held} · active_sessions=${status.active_sessions} · max_streams=${status.capabilities.max_concurrent_streams}`,
+  );
 
   if (selectModel) {
     // Opt-in mutation: pin the active model (eager load). 409 model_not_ready
@@ -147,9 +161,14 @@ try {
   console.log("--- catalog: listModels({ installed: true }) ---");
   const page = await client.listModels({ installed: true });
   if (page.models.length === 0) {
-    fail("no installed models — the daemon never downloads implicitly; install one in the app first");
+    fail(
+      "no installed models — the daemon never downloads implicitly; install one in the app first",
+    );
   }
-  for (const m of page.models) console.log(`  ✓ ${m.id} (${m.size_mb} MB, streaming=${m.supports_streaming})`);
+  for (const m of page.models)
+    console.log(
+      `  ✓ ${m.id} (${m.size_mb} MB, streaming=${m.supports_streaming})`,
+    );
   const chosen = status.active_model_id ?? page.models[0].id;
   console.log(`using model: ${chosen}`);
 
@@ -166,21 +185,33 @@ try {
     const filePath = join(folder, name);
     try {
       const buf = await readFile(filePath);
-      const arrayBuffer = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+      const arrayBuffer = buf.buffer.slice(
+        buf.byteOffset,
+        buf.byteOffset + buf.byteLength,
+      );
       const job = await client.transcribeFile(arrayBuffer);
       console.log(`▸ ${name} → job ${job.job_id}`);
       const deadline = Date.now() + timeoutMs;
       for (;;) {
         const st = await client.getTranscription(job.job_id);
         if (st.state === "completed") {
-          results.push({ file: name, transcript: st.result?.transcript ?? "", durationMs: st.result?.duration_ms });
+          results.push({
+            file: name,
+            transcript: st.result?.transcript ?? "",
+            durationMs: st.result?.duration_ms,
+          });
           console.log(`  ✓ completed (${st.result?.duration_ms ?? "?"} ms)`);
           break;
         }
         if (st.state === "failed" || st.state === "cancelled") {
-          throw new Error(`job ${st.state}: ${st.error?.code ?? "?"} ${st.error?.message ?? ""}`);
+          throw new Error(
+            `job ${st.state}: ${st.error?.code ?? "?"} ${st.error?.message ?? ""}`,
+          );
         }
-        if (Date.now() > deadline) throw new Error(`timed out after ${timeoutMs} ms (state=${st.state})`);
+        if (Date.now() > deadline)
+          throw new Error(
+            `timed out after ${timeoutMs} ms (state=${st.state})`,
+          );
         await new Promise((r) => setTimeout(r, 500));
       }
     } catch (error) {
@@ -201,12 +232,16 @@ try {
   try {
     const hist = await client.history({ limit: 5 });
     for (const e of hist.entries) {
-      console.log(`  #${e.id} · ${new Date(e.timestamp_ms).toISOString()} · ${e.source} · ${e.duration_ms ?? "-"} ms`);
+      console.log(
+        `  #${e.id} · ${new Date(e.timestamp_ms).toISOString()} · ${e.source} · ${e.duration_ms ?? "-"} ms`,
+      );
     }
-    if (hist.entries.length === 0) console.log("  (history is empty — nothing persisted yet)");
+    if (hist.entries.length === 0)
+      console.log("  (history is empty — nothing persisted yet)");
   } catch (error) {
     // History is best-effort here: do not fail the run over the DB.
-    const msg = error instanceof VoxixError ? error.message : (error as Error).message;
+    const msg =
+      error instanceof VoxixError ? error.message : (error as Error).message;
     console.log(`  (history unavailable: ${msg})`);
   }
 
@@ -215,17 +250,27 @@ try {
   const failed = results.filter((r) => r.error !== undefined);
   console.log(`\n✓ meeting-notes.md written → ${reportPath}`);
   console.log("next steps:");
-  console.log("  1. edit the key points — heuristic bullets are scaffolding, not prose");
-  console.log("  2. failed files (if any) can be re-run with the same command; completed jobs are history rows");
-  console.log("  3. grep the report for names and attach it to your 1:1 tracker");
+  console.log(
+    "  1. edit the key points — heuristic bullets are scaffolding, not prose",
+  );
+  console.log(
+    "  2. failed files (if any) can be re-run with the same command; completed jobs are history rows",
+  );
+  console.log(
+    "  3. grep the report for names and attach it to your 1:1 tracker",
+  );
   if (failed.length > 0) {
-    console.error(`\n✗ ${failed.length} of ${results.length} file(s) failed — see above; partial results are saved`);
+    console.error(
+      `\n✗ ${failed.length} of ${results.length} file(s) failed — see above; partial results are saved`,
+    );
     process.exit(1);
   }
   process.exit(0);
 } catch (error) {
   if (error instanceof VoxixError) {
-    fail(`${error.name}: code=${error.code} status=${error.status ?? "-"} remote=${error.remoteCode ?? "-"} — ${error.message}`);
+    fail(
+      `${error.name}: code=${error.code} status=${error.status ?? "-"} remote=${error.remoteCode ?? "-"} — ${error.message}`,
+    );
   }
   fail((error as Error).message);
 }

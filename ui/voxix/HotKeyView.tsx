@@ -71,7 +71,10 @@ export const HotKeyView = ({ id, hint }: { id: string; hint?: string }) => {
       await stopCapture();
       if (!tokens.length) return;
 
-      if (tokens.every((t) => MOD_TOKENS.has(t)) && keyboardImpl !== "voxix_keys") {
+      if (
+        tokens.every((t) => MOD_TOKENS.has(t)) &&
+        keyboardImpl !== "voxix_keys"
+      ) {
         // The Tauri backend requires a main key; voxix-keys binds bare
         // modifier chords, so only refuse when the engine cannot do them.
         setPending(tokens);
@@ -158,14 +161,12 @@ export const HotKeyView = ({ id, hint }: { id: string; hint?: string }) => {
         return;
       }
 
-      await commands
-        .startVoxixKeysRecording(id)
-        .catch((e) => {
-          toast.error("Could not start shortcut capture", {
-            description: e instanceof Error ? e.message : String(e),
-          });
-          stopCapture();
+      await commands.startVoxixKeysRecording(id).catch((e) => {
+        toast.error("Could not start shortcut capture", {
+          description: e instanceof Error ? e.message : String(e),
         });
+        stopCapture();
+      });
     })();
 
     return () => {

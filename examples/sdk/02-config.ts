@@ -36,7 +36,10 @@ if (!token) {
 
 const client = new VoxixClient({ baseUrl, token });
 
-function printConfig(label: string, cfg: Awaited<ReturnType<typeof client.config>>): void {
+function printConfig(
+  label: string,
+  cfg: Awaited<ReturnType<typeof client.config>>,
+): void {
   console.log(`--- ${label} ---`);
   console.log(JSON.stringify(cfg, null, 2));
 }
@@ -46,8 +49,13 @@ try {
   printConfig("GET /v1/config (before)", before);
 
   // Same-value patch: validates the wire path without changing daemon state.
-  const after = await client.patchConfig({ max_audio_seconds: before.max_audio_seconds });
-  printConfig(`PATCH /v1/config {max_audio_seconds: ${before.max_audio_seconds}} (no-op)`, after);
+  const after = await client.patchConfig({
+    max_audio_seconds: before.max_audio_seconds,
+  });
+  printConfig(
+    `PATCH /v1/config {max_audio_seconds: ${before.max_audio_seconds}} (no-op)`,
+    after,
+  );
 
   if (after.max_audio_seconds === before.max_audio_seconds) {
     console.log("\npatch round-tripped; daemon config unchanged");
@@ -57,7 +65,9 @@ try {
   }
 } catch (error) {
   if (error instanceof VoxixError) {
-    console.error(`${error.name}: code=${error.code} status=${error.status ?? "-"} remote=${error.remoteCode ?? "-"}\n  ${error.message}`);
+    console.error(
+      `${error.name}: code=${error.code} status=${error.status ?? "-"} remote=${error.remoteCode ?? "-"}\n  ${error.message}`,
+    );
   } else {
     console.error((error as Error).message);
   }

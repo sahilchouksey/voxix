@@ -19,7 +19,9 @@ function fakeResponse(
   return {
     ok: status >= 200 && status < 300,
     status,
-    headers: { get: () => (status >= 200 && status < 300 ? "application/json" : null) },
+    headers: {
+      get: () => (status >= 200 && status < 300 ? "application/json" : null),
+    },
     text: async () => body ?? "",
     arrayBuffer: async () => new ArrayBuffer(0),
     json: async () => (body ? JSON.parse(body) : undefined),
@@ -53,7 +55,14 @@ describe("error model", () => {
     for (const code of ["model_not_found", "model_not_ready", "prepare-busy"]) {
       const response = fakeResponse(
         409,
-        JSON.stringify({ error: { code, message: "m", retryable: code === "prepare-busy", request_id: "r" } }),
+        JSON.stringify({
+          error: {
+            code,
+            message: "m",
+            retryable: code === "prepare-busy",
+            request_id: "r",
+          },
+        }),
       );
       const error = await errorFromResponse(response, await response.text());
       expect(error).toBeInstanceOf(ModelError);
@@ -70,7 +79,9 @@ describe("error model", () => {
   });
 
   test("2xx returns no error", async () => {
-    expect(await errorFromResponse(fakeResponse(200, "{}"), "{}")).toBeUndefined();
+    expect(
+      await errorFromResponse(fakeResponse(200, "{}"), "{}"),
+    ).toBeUndefined();
   });
 
   test("fetch throw → TransportError retryable with cause", () => {
@@ -82,7 +93,9 @@ describe("error model", () => {
   });
 
   test("AbortError → CancelledError", () => {
-    const cause = Object.assign(new Error("The operation was aborted"), { name: "AbortError" });
+    const cause = Object.assign(new Error("The operation was aborted"), {
+      name: "AbortError",
+    });
     const error = wrapTransportFailure(cause);
     expect(error).toBeInstanceOf(CancelledError);
   });

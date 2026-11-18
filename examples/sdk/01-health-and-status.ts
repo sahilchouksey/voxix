@@ -25,7 +25,9 @@ import { VoxixError } from "../../packages/sdk/src/errors.js";
 const baseUrl = process.env.VOXIX_BASE_URL ?? "http://127.0.0.1:47832";
 const token = process.env.VOXIX_TOKEN;
 if (!token) {
-  console.error("usage: VOXIX_TOKEN=vx_… bun examples/sdk/01-health-and-status.ts");
+  console.error(
+    "usage: VOXIX_TOKEN=vx_… bun examples/sdk/01-health-and-status.ts",
+  );
   process.exit(2);
 }
 
@@ -35,7 +37,9 @@ try {
   const alive = await client.alive();
   console.log(`alive=${alive}`);
   if (!alive) {
-    console.error(`daemon did not answer /alive at ${baseUrl} — is it running?`);
+    console.error(
+      `daemon did not answer /alive at ${baseUrl} — is it running?`,
+    );
     process.exit(1);
   }
 
@@ -59,7 +63,9 @@ try {
 } catch (error) {
   if (error instanceof VoxixError) {
     // Auth failures are 401 + empty body; everything else carries the service envelope.
-    console.error(`${error.name}: code=${error.code} status=${error.status ?? "-"} remote=${error.remoteCode ?? "-"}\n  ${error.message}`);
+    console.error(
+      `${error.name}: code=${error.code} status=${error.status ?? "-"} remote=${error.remoteCode ?? "-"}\n  ${error.message}`,
+    );
   } else {
     console.error((error as Error).message);
   }

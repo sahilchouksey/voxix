@@ -46,7 +46,7 @@ describe("VoxixClient over the fake daemon (real HTTP)", () => {
     expect(await client.alive()).toBe(true);
     const health = await client.health();
     expect(health.protocol_version).toBe(1);
-    expect(health.engine_version).toContain("0.9.4");
+    expect(health.engine_version).toContain("0.1.0");
     const status = await client.status();
     expect(status.capabilities.max_concurrent_streams).toBe(1);
     expect(status.active_model_id).toBe("tiny-16k");

@@ -1,6 +1,6 @@
 [package]
 name = "voxix"
-version = "0.9.4"
+version = "0.1.0"
 description = "voxix speech to text"
 authors = ["Sahil Chouksey"]
 edition = "2021"

@@ -43,7 +43,7 @@ pub enum ModelState {
 /// M2 adds the media-plane hooks (stream lifecycle, lazy load + benchmark,
 /// final-only batch decode).
 pub trait EngineRuntime: Send + Sync {
-    /// Build version + short git SHA (§15 G6/G21), e.g. `0.9.4+0a1b2c3`.
+    /// Build version + short git SHA (§15 G6/G21), e.g. `0.1.0+0a1b2c3`.
     fn engine_version(&self) -> String;
     fn capabilities(&self) -> Capabilities;
     fn status(&self) -> EngineRuntimeStatus;

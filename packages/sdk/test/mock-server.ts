@@ -476,8 +476,8 @@ export function startHarness(options: HarnessOptions = {}): Promise<Harness> {
     if (path === "/v1/health" && method === "GET") {
       return json(200, {
         status: "ok",
-        version: "0.9.4",
-        engine_version: "0.9.4+local",
+        version: "0.1.0",
+        engine_version: "0.1.0+local",
         protocol_version: 1,
         uptime_ms: nowMs() % 100_000,
         ready: true,

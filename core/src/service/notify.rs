@@ -18,6 +18,10 @@
 /// A self-check over the scheduling attributes the OS exposes cheaply:
 /// nice level must remain at the default (0) — a negative/positive nice would
 /// indicate background-class pressure or voluntary down-prioritization.
+/// Windows has no nice(2) equivalent; the spawn/embed rule is evaluated and
+/// this check is a pass-through there (the no-background-throttling claim is
+/// untestable without an OS-level nice).
+#[cfg(unix)]
 pub fn check_self_policy() -> Result<ProcessPolicyReport, String> {
     let nice = unsafe { libc::getpriority(libc::PRIO_PROCESS, 0) };
     if nice > 0 {
@@ -27,6 +31,14 @@ pub fn check_self_policy() -> Result<ProcessPolicyReport, String> {
     }
     Ok(ProcessPolicyReport {
         nice,
+        interactive: true,
+    })
+}
+
+#[cfg(windows)]
+pub fn check_self_policy() -> Result<ProcessPolicyReport, String> {
+    Ok(ProcessPolicyReport {
+        nice: 0,
         interactive: true,
     })
 }

@@ -148,7 +148,8 @@ pub async fn bind_listener(cfg: &ServiceConfig) -> Result<tokio::net::TcpListene
         .map_err(|e| format!("failed to bind {addr}: {e}"))
 }
 
-/// SIGINT/SIGTERM shutdown trigger.
+/// SIGINT/SIGTERM shutdown trigger (Unix).
+#[cfg(unix)]
 pub async fn terminate_signal() {
     use tokio::signal::unix::{signal, SignalKind};
     let mut sigint = signal(SignalKind::interrupt()).expect("SIGINT handler");
@@ -157,6 +158,13 @@ pub async fn terminate_signal() {
         _ = sigint.recv() => {}
         _ = sigterm.recv() => {}
     }
+}
+
+/// CTRL+C shutdown trigger (Windows).
+#[cfg(windows)]
+pub async fn terminate_signal() {
+    let mut ctrl_c = tokio::signal::windows::ctrl_c().expect("CTRL+C handler");
+    ctrl_c.recv().await;
 }
 
 /// Standalone daemon lifecycle: token storage/disclosure, instance lock,

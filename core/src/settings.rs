@@ -1035,6 +1035,7 @@ pub(crate) mod file_settings {
     use serde_json::json;
     use std::fs::{self, File};
     use std::io::Write;
+    #[cfg(unix)]
     use std::os::unix::fs::PermissionsExt;
     use std::path::Path;
 

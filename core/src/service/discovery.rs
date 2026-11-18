@@ -46,10 +46,33 @@ fn sync_parent_dir(path: &Path) {
 }
 
 /// Another pid is alive?
+#[cfg(unix)]
 fn pid_alive(pid: u32) -> bool {
     // Fallback to POSIX kill(0) — a signal-free liveness check.
     let result = unsafe { libc::kill(pid as i32, 0) };
     result == 0
+}
+
+/// Another pid is alive? (Windows)
+#[cfg(windows)]
+fn pid_alive(pid: u32) -> bool {
+    // tasklist is always present on Windows and exits 0 with the process
+    // line on stdout when found; parsing the CSV output is the cheapest
+    // dependency-free answer.
+    std::process::Command::new("tasklist")
+        .args([
+            "/FI",
+            &format!("PID eq {pid}"),
+            "/NH",
+            "/FO",
+            "CSV",
+        ])
+        .output()
+        .map(|o| {
+            let text = String::from_utf8_lossy(&o.stdout);
+            text.contains(&format!("\"{pid}\""))
+        })
+        .unwrap_or(false)
 }
 
 /// Read the existing document, if parseable and alive-ish.

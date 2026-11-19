@@ -379,9 +379,15 @@ jobs:
           echo "ORT_LIB_LOCATION=$ORT_DIR" >> $GITHUB_ENV
           echo "ORT_PREFER_DYNAMIC_LINK=1" >> $GITHUB_ENV
           # Bundle the versioned dylib (matches the install name @rpath/libonnxruntime.1.23.2.dylib)
+          # Debug only on Intel-mac: dump the capi dir and the frameworks JSON so
+          # we can see why tauri's bundler says 'Library not found'.
+          echo "=== ort-dist listing ===" >&2; find ort-dist >&2
+          echo "=== ORT_DIR contents ===" >&2; ls -la "$ORT_DIR" >&2
+          echo "=== frameworks before patch ===" >&2; jq '.bundle.macOS' core/tauri.conf.json >&2
           jq --arg lib "$(ls "$ORT_DIR"/libonnxruntime*.dylib)" \
             '.bundle.macOS.frameworks = [$lib]' \
             core/tauri.conf.json > tmp.json && mv tmp.json core/tauri.conf.json
+          echo "=== frameworks after patch ===" >&2; jq '.bundle.macOS' core/tauri.conf.json >&2
 
       - name: Install ONNX Runtime (x86_64 Linux, Ubuntu 22.04)
         if: contains(inputs.platform, 'ubuntu-22.04') && inputs.target == 'x86_64-unknown-linux-gnu'

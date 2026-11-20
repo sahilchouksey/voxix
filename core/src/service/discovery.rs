@@ -61,13 +61,7 @@ fn pid_alive(pid: u32) -> bool {
     // line on stdout when found; parsing the CSV output is the cheapest
     // dependency-free answer.
     std::process::Command::new("tasklist")
-        .args([
-            "/FI",
-            &format!("PID eq {pid}"),
-            "/NH",
-            "/FO",
-            "CSV",
-        ])
+        .args(["/FI", &format!("PID eq {pid}"), "/NH", "/FO", "CSV"])
         .output()
         .map(|o| {
             let text = String::from_utf8_lossy(&o.stdout);

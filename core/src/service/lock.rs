@@ -57,7 +57,9 @@ mod unix {
 #[cfg(windows)]
 mod windows {
     use std::path::Path;
-    use windows::Win32::Foundation::{CloseHandle, GetLastError, ERROR_ALREADY_EXISTS, WAIT_OBJECT_0, WAIT_TIMEOUT};
+    use windows::Win32::Foundation::{
+        CloseHandle, GetLastError, ERROR_ALREADY_EXISTS, WAIT_OBJECT_0, WAIT_TIMEOUT,
+    };
     use windows::Win32::System::Threading::{CreateMutexW, WaitForSingleObject};
 
     pub struct InstanceLockImpl {
@@ -80,7 +82,8 @@ mod windows {
         let _ = std::fs::create_dir_all(state_dir);
         let name = mutex_name_for(state_dir);
         let handle = unsafe {
-            CreateMutexW(None, true, &name).map_err(|e| format!("cannot create instance mutex: {e}"))?
+            CreateMutexW(None, true, &name)
+                .map_err(|e| format!("cannot create instance mutex: {e}"))?
         };
         if unsafe { GetLastError() } == ERROR_ALREADY_EXISTS {
             // The mutex already existed — check whether it is currently owned.

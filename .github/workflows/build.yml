@@ -373,21 +373,18 @@ jobs:
           ORT_DIR="$(pwd)/ort-dist/onnxruntime/capi"
           # The PyPI wheel ships only libonnxruntime.1.23.2.dylib; create the
           # plain `libonnxruntime.dylib` ld name so `-lonnxruntime` resolves.
-          REAL_NAME=$(basename "$(ls "$ORT_DIR"/libonnxruntime.*.dylib | head -1)")
-          ln -sf "$REAL_NAME" "$ORT_DIR/libonnxruntime.dylib"
-          ln -sf "$REAL_NAME" "$ORT_DIR/libonnxruntime.$ORT_VERSION.dylib"
+          REAL_LIB="$ORT_DIR/libonnxruntime.$ORT_VERSION.dylib"
+          if [[ ! -f "$REAL_LIB" || -L "$REAL_LIB" ]]; then
+            echo "Expected a regular ONNX Runtime dylib: $REAL_LIB" >&2
+            exit 1
+          fi
+          ln -sf "$(basename "$REAL_LIB")" "$ORT_DIR/libonnxruntime.dylib"
           echo "ORT_LIB_LOCATION=$ORT_DIR" >> $GITHUB_ENV
           echo "ORT_PREFER_DYNAMIC_LINK=1" >> $GITHUB_ENV
           # Bundle the versioned dylib (matches the install name @rpath/libonnxruntime.1.23.2.dylib)
-          # Debug only on Intel-mac: dump the capi dir and the frameworks JSON so
-          # we can see why tauri's bundler says 'Library not found'.
-          echo "=== ort-dist listing ===" >&2; find ort-dist >&2
-          echo "=== ORT_DIR contents ===" >&2; ls -la "$ORT_DIR" >&2
-          echo "=== frameworks before patch ===" >&2; jq '.bundle.macOS' core/tauri.conf.json >&2
-          jq --arg lib "$(ls "$ORT_DIR"/libonnxruntime*.dylib)" \
+          jq --arg lib "$REAL_LIB" \
             '.bundle.macOS.frameworks = [$lib]' \
             core/tauri.conf.json > tmp.json && mv tmp.json core/tauri.conf.json
-          echo "=== frameworks after patch ===" >&2; jq '.bundle.macOS' core/tauri.conf.json >&2
 
       - name: Install ONNX Runtime (x86_64 Linux, Ubuntu 22.04)
         if: contains(inputs.platform, 'ubuntu-22.04') && inputs.target == 'x86_64-unknown-linux-gnu'
@@ -402,9 +399,9 @@ jobs:
           echo "$SHA256  ort.whl" | sha256sum -c -
           python3 -c "import zipfile; zipfile.ZipFile('ort.whl').extractall('ort-dist')"
           ORT_DIR="$(pwd)/ort-dist/onnxruntime/capi"
-          # The PyPI wheel ships only libonnxruntime.so.1.23.2 (no SONAME and
-          # no ld-search name). Fabricate both so `-lonnxruntime` resolves:
-          # `.so.1` for the dynamic loader, `.so` for the linker.
+          # The PyPI wheel ships only libonnxruntime.so.1.23.2 (its ELF SONAME
+          # is libonnxruntime.so.1, but neither symlink is present). Create
+          # `.so.1` for the dynamic loader and `.so` for the linker.
           REAL_NAME=$(basename "$(ls "$ORT_DIR"/libonnxruntime.so.1.* | head -1)")
           ln -sf "$REAL_NAME" "$ORT_DIR/libonnxruntime.so.1"
           ln -sf "libonnxruntime.so.1" "$ORT_DIR/libonnxruntime.so"
@@ -419,7 +416,7 @@ jobs:
             '.bundle.linux.deb.files["/usr/lib/voxix/libonnxruntime.so.1"] = $so1' \
             core/tauri.conf.json > tmp.json && mv tmp.json core/tauri.conf.json
 
-      # Windows x64 links a BASELINE ONNX Runtime dynamically instead of statically
+      # Windows links a BASELINE ONNX Runtime dynamically instead of statically
       # embedding pyke's default download-binaries build, which is compiled with a
       # global /arch:AVX2 baseline and executes BMI2/AVX in a C++ static initializer
       # — crashing at process startup on any pre-Haswell CPU (Sandy/Ivy Bridge, older
@@ -427,8 +424,8 @@ jobs:
       # MLAS runtime CPU dispatch, so it runs everywhere and dispatches to AVX2/AVX-512
       # kernels when present (perf parity on capable CPUs). build.rs stages
       # onnxruntime.dll into transcribe-libs/, which tauri.windows.conf.json bundles
-      # beside voxix.exe. ARM64 is excluded (all modern CPUs; keeps its static
-      # ORT posture).
+      # beside voxix.exe. ARM64 uses the first native wheel available (1.24.4),
+      # while x64 stays on 1.23.2.
       - name: Install ONNX Runtime (Windows)
         if: contains(inputs.platform, 'windows')
         shell: pwsh

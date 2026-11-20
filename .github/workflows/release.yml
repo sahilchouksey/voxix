@@ -2,6 +2,10 @@ name: "Release"
 
 on: workflow_dispatch
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   create-release:
     permissions:
@@ -27,16 +31,36 @@ jobs:
         uses: actions/github-script@v9
         with:
           script: |
-            const { data } = await github.rest.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: `v${{ steps.get-version.outputs.version }}`,
-              name: `v${{ steps.get-version.outputs.version }}`,
-              draft: true,
-              prerelease: false,
-              generate_release_notes: true
-            })
-            return data.id
+            const tag = `v${{ steps.get-version.outputs.version }}`;
+            try {
+              const { data } = await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tag,
+                target_commitish: context.sha,
+                name: tag,
+                draft: true,
+                prerelease: false,
+                generate_release_notes: true
+              });
+              return data.id;
+            } catch (err) {
+              // 422 already_exists: a previous dispatch already created a draft for this
+              // tag. Fetch and return the existing draft's ID so the build jobs can
+              // upload assets into it rather than failing the whole pipeline.
+              if (err.status === 422) {
+                const releases = await github.paginate(
+                  github.rest.repos.listReleases,
+                  { owner: context.repo.owner, repo: context.repo.repo, per_page: 100 }
+                );
+                const existing = releases.find(r => r.tag_name === tag && r.draft);
+                if (existing) {
+                  core.info(`Draft for ${tag} already exists (id=${existing.id}); reusing it.`);
+                  return existing.id;
+                }
+              }
+              throw err;
+            }
 
   publish-tauri:
     permissions:
@@ -49,7 +73,7 @@ jobs:
           - platform: "macos-26" # for Arm based macs (M1 and above). Uses macOS 26 for Apple Intelligence SDK.
             args: "--target aarch64-apple-darwin"
             target: "aarch64-apple-darwin"
-          - platform: "macos-latest" # for Intel based macs.
+          - platform: "macos-latest-large" # for Intel based macs. macos-latest resolves to ARM64 since July 2026; use -large for x64.
             args: "--target x86_64-apple-darwin"
             target: "x86_64-apple-darwin"
           - platform: "ubuntu-22.04" # Build .deb on 22.04
@@ -83,7 +107,7 @@ jobs:
     secrets: inherit
 
   verify:
-    needs: publish-tauri
+    needs: [create-release, publish-tauri]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -93,19 +117,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Resolve tag
-        id: tag
-        run: |
-          VERSION=$(grep -o '"version": "[^"]*"' core/tauri.conf.json | cut -d'"' -f4)
-          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
-
       - name: Download all release assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.create-release.outputs.release-id }}
         run: |
           mkdir -p assets
-          gh release download "${{ steps.tag.outputs.tag }}" \
-            --repo "${{ github.repository }}" --dir assets
+          gh api --paginate \
+            "repos/${{ github.repository }}/releases/$RELEASE_ID/assets?per_page=100" \
+            --jq '.[].id' | while read -r asset_id; do
+              asset_name=$(gh api \
+                "repos/${{ github.repository }}/releases/assets/$asset_id" \
+                --jq '.name')
+              case "$asset_name" in
+                SHA256SUMS|*.minisig) continue ;;
+              esac
+              gh api -H "Accept: application/octet-stream" \
+                "repos/${{ github.repository }}/releases/assets/$asset_id" \
+                > "assets/$asset_name"
+            done
           ls -la assets
 
       - name: Generate SHA256SUMS
@@ -134,11 +164,27 @@ jobs:
       - name: Upload SHA256SUMS and signatures
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.create-release.outputs.release-id }}
         working-directory: assets
         run: |
-          gh release upload "${{ steps.tag.outputs.tag }}" \
-            --repo "${{ github.repository }}" \
-            SHA256SUMS *.minisig --clobber
+          existing_assets=$(mktemp)
+          gh api --paginate \
+            "repos/${{ github.repository }}/releases/$RELEASE_ID/assets?per_page=100" \
+            > "$existing_assets"
+          for asset in SHA256SUMS *.minisig; do
+            asset_name=$(basename "$asset")
+            jq -r --arg name "$asset_name" \
+              '.[] | select(.name == $name) | .id' "$existing_assets" |
+            while read -r asset_id; do
+              gh api --method DELETE \
+                "repos/${{ github.repository }}/releases/assets/$asset_id"
+            done
+            gh api --method POST \
+              -H "Content-Type: application/octet-stream" \
+              "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets" \
+              -f "name=$asset_name" \
+              --input "$asset" >/dev/null
+          done
 
       # Attestations require a public repository on a free plan; keep this
       # non-blocking so the verify job stays green before going public.

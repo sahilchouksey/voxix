@@ -150,6 +150,75 @@ fn set_webview_transparent(overlay_window: &tauri::webview::WebviewWindow) {
     });
 }
 
+/// Opaque counterpart of [`set_webview_transparent`] for the X11 fallback.
+///
+/// When gtk-layer-shell is unavailable the overlay runs as a plain X11 window,
+/// and on some setups (Hyprland/XWayland) an RGBA-composited webview renders
+/// nothing at all. An opaque dark background gives WebKit a normal paint
+/// target, matching the proven path used by the main window; the page's pill
+/// uses the same `--bg` colour so the window reads as one dark pill.
+#[cfg(target_os = "linux")]
+fn set_webview_opaque_background(overlay_window: &tauri::webview::WebviewWindow) {
+    #[repr(C)]
+    #[derive(Clone, Copy)]
+    struct GdkRGBA {
+        red: f64,
+        green: f64,
+        blue: f64,
+        alpha: f64,
+    }
+
+    #[link(name = "webkit2gtk-4.1")]
+    extern "C" {
+        fn webkit_web_view_set_background_color(
+            web_view: *mut std::ffi::c_void,
+            rgba: *const GdkRGBA,
+        );
+    }
+
+    let window_clone = overlay_window.clone();
+    let _ = overlay_window.run_on_main_thread(move || {
+        let Ok(gtk_win) = window_clone.gtk_window() else {
+            return;
+        };
+
+        fn find_and_paint(widget: &gtk::Widget, rgba: &GdkRGBA) -> bool {
+            let name = widget.widget_name().to_string();
+            if name.to_lowercase().contains("webview") || name.to_lowercase().contains("webkit") {
+                unsafe {
+                    webkit_web_view_set_background_color(
+                        widget.as_ptr() as *mut std::ffi::c_void,
+                        rgba,
+                    );
+                }
+                return true;
+            }
+            if let Some(container) = widget.downcast_ref::<gtk::Container>() {
+                for child in container.children() {
+                    if find_and_paint(&child, rgba) {
+                        return true;
+                    }
+                }
+            }
+            false
+        }
+
+        // Matches --bg in RecordingOverlay.css (#0a0a0a).
+        let rgba = GdkRGBA {
+            red: 10.0 / 255.0,
+            green: 10.0 / 255.0,
+            blue: 10.0 / 255.0,
+            alpha: 1.0,
+        };
+
+        if find_and_paint(gtk_win.upcast_ref::<gtk::Widget>(), &rgba) {
+            log::info!("overlay: opaque webview background applied (X11 fallback)");
+        } else {
+            log::warn!("overlay: WebKitWebView widget not found for opaque background");
+        }
+    });
+}
+
 /// Set X11 always-on-top and all-desktops properties on the overlay window.
 /// Must be called on the main thread. These properties take effect when the
 /// window is mapped — set BEFORE `show()`.
@@ -811,6 +880,29 @@ pub fn create_recording_overlay(app_handle: &AppHandle) {
     .focused(false)
     .visible(false);
 
+    // Diagnostic/fallback switch: an RGBA-composited webview can render
+    // nothing at all on some setups (observed on Hyprland/XWayland), so the
+    // window builds fully transparent. Setting VOXIX_OVERLAY_OPAQUE=1 forces
+    // an opaque window with a dark background instead — the same proven paint
+    // path as the main window — trading the floating look for reliability.
+    #[cfg(target_os = "linux")]
+    let force_opaque = std::env::var("VOXIX_OVERLAY_OPAQUE")
+        .map(|v| {
+            matches!(
+                v.trim().to_ascii_lowercase().as_str(),
+                "1" | "true" | "yes" | "on"
+            )
+        })
+        .unwrap_or(false);
+
+    #[cfg(target_os = "linux")]
+    {
+        if force_opaque && !gtk_layer_shell::is_supported() {
+            builder = builder.transparent(false);
+            log::info!("overlay: opaque overlay window requested (X11 fallback)");
+        }
+    }
+
     if let Some(data_dir) = crate::portable::data_dir() {
         builder = builder.data_directory(data_dir.join("webview"));
     }
@@ -823,12 +915,18 @@ pub fn create_recording_overlay(app_handle: &AppHandle) {
                 // Try to initialize GTK layer shell, ignore errors if compositor doesn't support it
                 if init_gtk_layer_shell(&window) {
                     debug!("GTK layer shell initialized for overlay window");
+                    // Set WebKitGTK background to fully transparent so picom
+                    // can composite the pill without any opaque background tint.
+                    set_webview_transparent(&window);
+                } else if force_opaque {
+                    debug!("GTK layer shell not available, using opaque overlay fallback");
+                    set_webview_opaque_background(&window);
                 } else {
                     debug!("GTK layer shell not available, falling back to regular window");
+                    // Set WebKitGTK background to fully transparent so picom
+                    // can composite the pill without any opaque background tint.
+                    set_webview_transparent(&window);
                 }
-                // Set WebKitGTK background to fully transparent so picom
-                // can composite the pill without any opaque background tint.
-                set_webview_transparent(&window);
             }
 
             debug!("Recording overlay window created successfully (hidden)");

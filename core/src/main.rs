@@ -51,19 +51,51 @@ fn main() {
 
     #[cfg(target_os = "linux")]
     {
-        // DMABUF renderer causes crashes on various GPU/display server configurations
-        // See: https://github.com/tauri-apps/tauri/issues/9394
-        std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
-        // Disable WebKitGTK's own compositing so transparent windows use the
-        // compositor's RGBA pipeline instead of WebKit's internal buffer.
-        std::env::set_var("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
-        // Force X11 backend for the overlay webview: WebKitGTK does not render
-        // content inside GTK layer shell windows on Wayland. X11/Xwayland
-        // renders correctly and X11 properties handle all-desktops,
-        // always-on-top, and no-focus.
-        let session_type = std::env::var("XDG_SESSION_TYPE").unwrap_or_default();
-        if session_type == "wayland" || session_type == "tty" {
-            std::env::set_var("GDK_BACKEND", "x11");
+        // Escape hatch for diagnosing renderer/backend issues on unusual
+        // setups: VOXIX_WEBKIT_TWEAKS=off leaves every WebKit/GDK variable
+        // untouched (the caller's environment, if any, wins).
+        let tweaks_off = std::env::var("VOXIX_WEBKIT_TWEAKS")
+            .map(|v| {
+                matches!(
+                    v.trim().to_ascii_lowercase().as_str(),
+                    "0" | "false" | "no" | "off"
+                )
+            })
+            .unwrap_or(false);
+        if !tweaks_off {
+            let flag = |name: &str| {
+                std::env::var(name)
+                    .map(|v| {
+                        matches!(
+                            v.trim().to_ascii_lowercase().as_str(),
+                            "1" | "true" | "yes" | "on"
+                        )
+                    })
+                    .unwrap_or(false)
+            };
+
+            // WebKitGTK's compositing + DMABUF pipeline is what actually paints
+            // RGBA/transparent webviews (e.g. the recording overlay). Disabling
+            // either produced a blank overlay on X11/XWayland (Hyprland), so
+            // both are now opt-out via env for setups that hit driver bugs
+            // (see https://github.com/tauri-apps/tauri/issues/9394).
+            if flag("VOXIX_WEBKIT_NO_DMABUF") {
+                std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+            }
+            if flag("VOXIX_WEBKIT_NO_COMPOSITING") {
+                std::env::set_var("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
+            }
+
+            // Force X11 backend for the overlay webview: WebKitGTK does not render
+            // content inside GTK layer shell windows on Wayland. X11/Xwayland
+            // renders correctly and X11 properties handle all-desktops,
+            // always-on-top, and no-focus.
+            let session_type = std::env::var("XDG_SESSION_TYPE").unwrap_or_default();
+            if (session_type == "wayland" || session_type == "tty")
+                && std::env::var_os("GDK_BACKEND").is_none()
+            {
+                std::env::set_var("GDK_BACKEND", "x11");
+            }
         }
     }
 

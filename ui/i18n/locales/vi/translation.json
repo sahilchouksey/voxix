@@ -31,7 +31,8 @@
       "cancel": "Hủy",
       "startedToast": "Dịch vụ đã khởi động",
       "alreadyRunningToast": "Dịch vụ đang chạy",
-      "stoppedToast": "Dịch vụ đã dừng"
+      "stoppedToast": "Dịch vụ đã dừng",
+      "stoppedHint": "Start the service to accept clients."
     },
     "fingerprint": {
       "label": "Dấu vân tay mã thông báo",
@@ -40,7 +41,7 @@
     },
     "token": {
       "groupTitle": "Mã thông báo truy cập",
-      "memoryNote": "Chỉ giữ trong bộ nhớ — không bao giờ ghi xuống đĩa hay nhật ký.",
+      "memoryNote": "Stored locally in gui-client.json (owner-only). Never logged.",
       "inMemory": "Có mã thông báo trong bộ nhớ",
       "pasteLabel": "Mã thông báo dịch vụ",
       "pastePlaceholder": "vx_…",
@@ -57,15 +58,28 @@
       "copied": "Đã sao chép",
       "copyFailed": "Không thể sao chép",
       "dismiss": "Xong",
-      "rotatedToast": "Đã xoay mã thông báo — các client đang kết nối đã bị đóng"
+      "rotatedToast": "Đã xoay mã thông báo — các client đang kết nối đã bị đóng",
+      "serviceTokenLabel": "Service token",
+      "serviceTokenCaption": "Use as: Authorization: Bearer <token>",
+      "serviceTokenHidden": "Token hidden",
+      "serviceTokenShow": "Show token",
+      "serviceTokenHide": "Hide token",
+      "copyToken": "Copy token",
+      "tokenCopied": "Copied",
+      "connectionUrlLabel": "Connection URL",
+      "connectionUrlCaption": "⚠ Token in URL — prefer the Authorization header for scripts.",
+      "copyUrl": "Copy URL",
+      "urlCopied": "Copied",
+      "noTokenYet": "Start the service to load the token"
     },
     "sessions": {
       "groupTitle": "Phiên đang mở",
-      "caption": "Dịch vụ chỉ báo cáo phiên đang giữ lease suy luận; danh sách đầy đủ không thuộc giao thức.",
+      "caption": "Live WebSocket sessions holding the inference lease. Batch transcriptions do not appear here.",
       "openSessions": "Phiên đang mở",
       "leaseHolder": "Chủ lease",
       "noLease": "Không có lease nào được giữ",
-      "worstRealtimeFactor": "Hệ số realtime tệ nhất"
+      "worstRealtimeFactor": "Hệ số realtime tệ nhất",
+      "realtimeFactor": "Realtime factor"
     },
     "errors": {
       "noToken": "Không có mã thông báo trong bộ nhớ — hãy dán một mã ở trên để gọi các route đã xác thực.",
@@ -75,10 +89,28 @@
       "unknown": "Lỗi không mong đợi"
     },
     "examples": {
-      "embedTitle": "Embed token in examples",
-      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
       "repoLinkLabel": "Transcribe examples",
-      "repoLinkAction": "Open on GitHub"
+      "repoLinkAction": "Open on GitHub",
+      "groupTitle": "Use this service",
+      "repoLinkCaption": "Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
+    },
+    "engine": {
+      "groupTitle": "Engine",
+      "activeModel": "Active model",
+      "backend": "Backend",
+      "capabilities": "Capabilities",
+      "noModel": "No model loaded"
+    },
+    "connection": {
+      "groupTitle": "Connection",
+      "baseUrl": "Base URL",
+      "baseUrlCaption": "Reachable from this machine. Every /v1 route needs the bearer token.",
+      "withToken": "URL with token",
+      "withTokenCaption": "Handy for scripts and mobile clients. Tokens in URLs can appear in logs — prefer the Authorization header.",
+      "showUrl": "Show URL",
+      "hideUrl": "Hide URL",
+      "copyBaseUrl": "Copy base URL",
+      "copyUrlWithToken": "Copy URL with token"
     }
   },
   "tray": {

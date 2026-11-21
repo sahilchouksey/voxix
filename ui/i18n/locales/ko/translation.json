@@ -31,7 +31,8 @@
       "cancel": "취소",
       "startedToast": "서비스가 시작되었습니다",
       "alreadyRunningToast": "서비스가 이미 실행 중입니다",
-      "stoppedToast": "서비스가 중지되었습니다"
+      "stoppedToast": "서비스가 중지되었습니다",
+      "stoppedHint": "Start the service to accept clients."
     },
     "fingerprint": {
       "label": "토큰 지문",
@@ -40,7 +41,7 @@
     },
     "token": {
       "groupTitle": "액세스 토큰",
-      "memoryNote": "메모리에만 보관되며 — 디스크나 로그에 절대 기록되지 않습니다.",
+      "memoryNote": "Stored locally in gui-client.json (owner-only). Never logged.",
       "inMemory": "메모리에 토큰 있음",
       "pasteLabel": "서비스 토큰",
       "pastePlaceholder": "vx_…",
@@ -57,15 +58,28 @@
       "copied": "복사됨",
       "copyFailed": "복사하지 못했습니다",
       "dismiss": "완료",
-      "rotatedToast": "토큰이 교체되었습니다 — 연결된 클라이언트가 종료되었습니다"
+      "rotatedToast": "토큰이 교체되었습니다 — 연결된 클라이언트가 종료되었습니다",
+      "serviceTokenLabel": "Service token",
+      "serviceTokenCaption": "Use as: Authorization: Bearer <token>",
+      "serviceTokenHidden": "Token hidden",
+      "serviceTokenShow": "Show token",
+      "serviceTokenHide": "Hide token",
+      "copyToken": "Copy token",
+      "tokenCopied": "Copied",
+      "connectionUrlLabel": "Connection URL",
+      "connectionUrlCaption": "⚠ Token in URL — prefer the Authorization header for scripts.",
+      "copyUrl": "Copy URL",
+      "urlCopied": "Copied",
+      "noTokenYet": "Start the service to load the token"
     },
     "sessions": {
       "groupTitle": "열린 세션",
-      "caption": "서비스는 추론 lease를 보유한 세션만 보고합니다. 전체 세션 목록은 프로토콜에 포함되지 않습니다.",
+      "caption": "Live WebSocket sessions holding the inference lease. Batch transcriptions do not appear here.",
       "openSessions": "열린 세션",
       "leaseHolder": "Lease 보유자",
       "noLease": "보유 중인 lease 없음",
-      "worstRealtimeFactor": "최악의 실시간 계수"
+      "worstRealtimeFactor": "최악의 실시간 계수",
+      "realtimeFactor": "Realtime factor"
     },
     "errors": {
       "noToken": "메모리에 토큰이 없습니다 — 인증된 경로를 호출하려면 위에 토큰을 붙여넣으세요.",
@@ -75,10 +89,28 @@
       "unknown": "예상치 못한 오류"
     },
     "examples": {
-      "embedTitle": "Embed token in examples",
-      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
       "repoLinkLabel": "Transcribe examples",
-      "repoLinkAction": "Open on GitHub"
+      "repoLinkAction": "Open on GitHub",
+      "groupTitle": "Use this service",
+      "repoLinkCaption": "Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
+    },
+    "engine": {
+      "groupTitle": "Engine",
+      "activeModel": "Active model",
+      "backend": "Backend",
+      "capabilities": "Capabilities",
+      "noModel": "No model loaded"
+    },
+    "connection": {
+      "groupTitle": "Connection",
+      "baseUrl": "Base URL",
+      "baseUrlCaption": "Reachable from this machine. Every /v1 route needs the bearer token.",
+      "withToken": "URL with token",
+      "withTokenCaption": "Handy for scripts and mobile clients. Tokens in URLs can appear in logs — prefer the Authorization header.",
+      "showUrl": "Show URL",
+      "hideUrl": "Hide URL",
+      "copyBaseUrl": "Copy base URL",
+      "copyUrlWithToken": "Copy URL with token"
     }
   },
   "tray": {

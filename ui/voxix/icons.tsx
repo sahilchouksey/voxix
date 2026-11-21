@@ -2,6 +2,8 @@ import {
   ArrowDownCircle as LucideArrowDownCircle,
   AudioWaveform,
   Bird,
+  Eye,
+  EyeOff,
   Box,
   Brain,
   Check,
@@ -10,12 +12,14 @@ import {
   CircleEllipsis,
   Clock,
   ClipboardCopy,
+  Code,
   Copy,
   Cpu,
   Globe,
   Hand,
   Info,
   Layers,
+  Link,
   Lock,
   Mic,
   Moon,
@@ -62,6 +66,8 @@ export const HandTapIcon = sized(Hand);
 export const VolumeIcon = sized(Volume2);
 export const MuteIcon = sized(VolumeX);
 export const CopyIcon = sized(Copy);
+export const EyeIcon = sized(Eye);
+export const EyeOffIcon = sized(EyeOff);
 export const ClipboardIcon = sized(ClipboardCopy);
 export const PlayIcon = sized(Play);
 export const PauseIcon = sized(Pause);
@@ -82,3 +88,6 @@ export const NemotronIcon = sized(Cpu);
 export const GenericModelIcon = sized(Box);
 export const MenuIcon = sized(Menu);
 export const XIcon = sized(X);
+export const CpuIcon = sized(Cpu);
+export const LinkIcon = sized(Link);
+export const CodeIcon = sized(Code);

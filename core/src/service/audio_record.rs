@@ -83,6 +83,8 @@ pub fn save_gui_history_entry(
     data_dir: &Path,
     file_name: &str,
     transcription_text: &str,
+    client_label: Option<&str>,
+    client_icon: Option<&str>,
 ) -> Result<(), String> {
     let db_path = data_dir.join("history.db");
     let conn = Connection::open(&db_path)
@@ -100,7 +102,9 @@ pub fn save_gui_history_entry(
             transcription_text TEXT NOT NULL,
             post_processed_text TEXT,
             post_process_prompt TEXT,
-            post_process_requested BOOLEAN NOT NULL DEFAULT 0
+            post_process_requested BOOLEAN NOT NULL DEFAULT 0,
+            client_label TEXT,
+            client_icon TEXT
         );",
     )
     .map_err(|e| format!("cannot ensure transcription_history schema: {e}"))?;
@@ -121,6 +125,16 @@ pub fn save_gui_history_entry(
             ));
         }
     }
+    // Idempotently add new optional columns for pre-existing DBs.
+    for (col, ty) in [("client_label", "TEXT"), ("client_icon", "TEXT")] {
+        if !columns.contains(col) {
+            conn.execute(
+                &format!("ALTER TABLE transcription_history ADD COLUMN {col} {ty}"),
+                [],
+            )
+            .map_err(|e| format!("history.db migration failed: {e}"))?;
+        }
+    }
 
     let timestamp = Utc::now().timestamp(); // seconds, matches save_entry
     let title = gui_title(timestamp);
@@ -133,8 +147,10 @@ pub fn save_gui_history_entry(
             transcription_text,
             post_processed_text,
             post_process_prompt,
-            post_process_requested
-        ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+            post_process_requested,
+            client_label,
+            client_icon
+        ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
         params![
             file_name,
             timestamp,
@@ -144,6 +160,8 @@ pub fn save_gui_history_entry(
             Option::<String>::None,
             Option::<String>::None,
             false,
+            client_label,
+            client_icon,
         ],
     )
     .map_err(|e| format!("history.db insert failed: {e}"))?;

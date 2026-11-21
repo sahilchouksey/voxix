@@ -31,7 +31,8 @@
       "cancel": "取消",
       "startedToast": "服务已启动",
       "alreadyRunningToast": "服务已在运行",
-      "stoppedToast": "服务已停止"
+      "stoppedToast": "服务已停止",
+      "stoppedHint": "Start the service to accept clients."
     },
     "fingerprint": {
       "label": "令牌指纹",
@@ -40,7 +41,7 @@
     },
     "token": {
       "groupTitle": "访问令牌",
-      "memoryNote": "仅保存在内存中——绝不写入磁盘或日志。",
+      "memoryNote": "Stored locally in gui-client.json (owner-only). Never logged.",
       "inMemory": "内存中有令牌",
       "pasteLabel": "服务令牌",
       "pastePlaceholder": "vx_…",
@@ -57,15 +58,28 @@
       "copied": "已复制",
       "copyFailed": "无法复制",
       "dismiss": "完成",
-      "rotatedToast": "令牌已轮换——已连接的客户端已关闭"
+      "rotatedToast": "令牌已轮换——已连接的客户端已关闭",
+      "serviceTokenLabel": "Service token",
+      "serviceTokenCaption": "Use as: Authorization: Bearer <token>",
+      "serviceTokenHidden": "Token hidden",
+      "serviceTokenShow": "Show token",
+      "serviceTokenHide": "Hide token",
+      "copyToken": "Copy token",
+      "tokenCopied": "Copied",
+      "connectionUrlLabel": "Connection URL",
+      "connectionUrlCaption": "⚠ Token in URL — prefer the Authorization header for scripts.",
+      "copyUrl": "Copy URL",
+      "urlCopied": "Copied",
+      "noTokenYet": "Start the service to load the token"
     },
     "sessions": {
       "groupTitle": "打开的会话",
-      "caption": "服务仅报告持有推理租约的会话；完整的会话列表不是协议的一部分。",
+      "caption": "Live WebSocket sessions holding the inference lease. Batch transcriptions do not appear here.",
       "openSessions": "打开的会话",
       "leaseHolder": "租约持有者",
       "noLease": "未持有租约",
-      "worstRealtimeFactor": "最差实时因子"
+      "worstRealtimeFactor": "最差实时因子",
+      "realtimeFactor": "Realtime factor"
     },
     "errors": {
       "noToken": "内存中没有令牌——请在上方粘贴一个以查询需认证的路由。",
@@ -75,10 +89,28 @@
       "unknown": "意外错误"
     },
     "examples": {
-      "embedTitle": "Embed token in examples",
-      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
       "repoLinkLabel": "Transcribe examples",
-      "repoLinkAction": "Open on GitHub"
+      "repoLinkAction": "Open on GitHub",
+      "groupTitle": "Use this service",
+      "repoLinkCaption": "Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
+    },
+    "engine": {
+      "groupTitle": "Engine",
+      "activeModel": "Active model",
+      "backend": "Backend",
+      "capabilities": "Capabilities",
+      "noModel": "No model loaded"
+    },
+    "connection": {
+      "groupTitle": "Connection",
+      "baseUrl": "Base URL",
+      "baseUrlCaption": "Reachable from this machine. Every /v1 route needs the bearer token.",
+      "withToken": "URL with token",
+      "withTokenCaption": "Handy for scripts and mobile clients. Tokens in URLs can appear in logs — prefer the Authorization header.",
+      "showUrl": "Show URL",
+      "hideUrl": "Hide URL",
+      "copyBaseUrl": "Copy base URL",
+      "copyUrlWithToken": "Copy URL with token"
     }
   },
   "tray": {

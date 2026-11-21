@@ -222,6 +222,126 @@ fn quarantine_history_db(app_handle: &AppHandle) {
     }
 }
 
+/// Best-effort auto-start of the voxix service daemon at GUI launch.
+///
+/// If the daemon is already running (discovery.json present and /alive
+/// returns 200), this is a no-op. If not, it spawns `<this-binary> serve
+/// --token-stdout always` and waits briefly for the discovery document to
+/// appear. Failure is non-fatal — the user can still start it manually.
+///
+/// On Unix, the child's nice level is reset to 0 via `pre_exec` before exec
+/// so the daemon is never penalized for the GUI's scheduling class.
+fn auto_start_service_daemon(app_handle: &AppHandle) {
+    use std::io::{BufRead, BufReader};
+
+    let state_dir = match crate::portable::app_data_dir(app_handle)
+        .map(|d| d.join("state"))
+        .map_err(|e| format!("cannot resolve state dir: {e}"))
+    {
+        Ok(d) => d,
+        Err(e) => {
+            log::warn!("auto-start: {e}");
+            return;
+        }
+    };
+
+    // Check if the daemon is already running.
+    if let Some(doc) = service::discovery::read_document(&state_dir) {
+        if service::discovery::alive_probe(doc.port) {
+            log::info!("auto-start: daemon already running on port {}", doc.port);
+            return;
+        }
+    }
+
+    let exe = match std::env::current_exe() {
+        Ok(e) => e,
+        Err(e) => {
+            log::warn!("auto-start: cannot resolve current executable: {e}");
+            return;
+        }
+    };
+
+    let mut cmd = std::process::Command::new(&exe);
+    cmd.arg("serve")
+        .arg("--token-stdout")
+        .arg("always")
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped());
+
+    // Reset the child's nice level to 0 so the daemon is not penalized for
+    // the GUI's scheduling class (SSH sessions may inherit nice 1–9).
+    #[cfg(unix)]
+    unsafe {
+        use std::os::unix::process::CommandExt;
+        cmd.pre_exec(|| {
+            libc::setpriority(libc::PRIO_PROCESS, 0, 0);
+            Ok(())
+        });
+    }
+
+    let mut child = match cmd.spawn() {
+        Ok(c) => c,
+        Err(e) => {
+            log::warn!("auto-start: failed to spawn daemon: {e}");
+            return;
+        }
+    };
+
+    // Drain stdout: capture first-run token and seed the holder if needed.
+    if let Some(stdout) = child.stdout.take() {
+        if let Some(holder) = app_handle.try_state::<commands::service::ServiceTokenHolder>() {
+            let token_slot = std::sync::Arc::clone(&holder.0);
+            std::thread::spawn(move || {
+                let reader = BufReader::new(stdout);
+                for line in reader.lines() {
+                    let Ok(line) = line else { break };
+                    let trimmed = line.trim();
+                    if trimmed.starts_with("vx_") {
+                        let mut guard = token_slot.lock().unwrap_or_else(|e| e.into_inner());
+                        // Only update if the holder is still empty (the
+                        // gui-client token from ensure_client_for_gui() is
+                        // preferred and was already seeded above).
+                        if guard.is_none() {
+                            *guard = Some(trimmed.to_string());
+                            log::info!("auto-start: captured first-run daemon token");
+                        }
+                        break;
+                    }
+                }
+            });
+        }
+    }
+
+    // Drain stderr so the child never blocks on a full pipe.
+    if let Some(stderr) = child.stderr.take() {
+        std::thread::spawn(move || {
+            for line in BufReader::new(stderr).lines() {
+                match line {
+                    Ok(line) => log::debug!("auto-start serve: {line}"),
+                    Err(_) => break,
+                }
+            }
+        });
+    }
+
+    // Wait (bounded) for the daemon to publish its discovery document.
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    loop {
+        if let Some(doc) = service::discovery::read_document(&state_dir) {
+            if service::discovery::alive_probe(doc.port) {
+                log::info!("auto-start: daemon ready on port {}", doc.port);
+                return;
+            }
+        }
+        if std::time::Instant::now() >= deadline {
+            log::warn!("auto-start: daemon did not become ready within 10 s");
+            return;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+}
+
 fn initialize_core_logic(app_handle: &AppHandle) {
     // Note: Enigo (keyboard/mouse simulation) is NOT initialized here.
     // The frontend is responsible for calling the `initialize_enigo` command
@@ -262,10 +382,26 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     // path as the phone and any SDK client; no in-process service anymore.
     match service::inproc::ensure_client_for_gui() {
         Ok((base, token)) => {
+            // Push the gui-client token into ServiceTokenHolder so the GUI
+            // can probe /v1/health and /v1/status immediately without the
+            // user ever pasting a token.
+            if let Some(holder) = app_handle.try_state::<commands::service::ServiceTokenHolder>() {
+                if let Ok(mut guard) = holder.0.lock() {
+                    *guard = Some(token.clone());
+                    log::info!("gui-client token seeded into ServiceTokenHolder");
+                }
+            }
             app_handle.manage(service::inproc::GuiClientState(std::sync::Mutex::new(
                 Some((base, token)),
             )));
             log::info!("voxix service client registered (url recorded; bearer in state dir)");
+
+            // Auto-start the daemon if it is not already running. This is a
+            // best-effort background attempt; failure is non-fatal.
+            let auto_start_handle = app_handle.clone();
+            std::thread::spawn(move || {
+                auto_start_service_daemon(&auto_start_handle);
+            });
         }
         Err(e) => {
             log::warn!("voxix service client registration failed: {e}")
@@ -759,6 +895,7 @@ pub fn run(cli_args: CliArgs) {
             commands::service::service_start,
             commands::service::service_stop,
             commands::service::service_set_token,
+            commands::service::service_get_gui_token,
             commands::service::service_rotate_token,
             commands::audio::update_microphone_mode,
             commands::audio::get_available_microphones,

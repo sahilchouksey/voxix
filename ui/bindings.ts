@@ -586,6 +586,23 @@ async serviceSetToken(token: string | null) : Promise<Result<null, string>> {
 }
 },
 /**
+ * Read the gui-client token from disk (`state/gui-client.json`, 0600) and
+ * return the plaintext. The token is stable across daemon restarts and primary
+ * token rotations — the GUI has its own independent credential.
+ * 
+ * This is a Tauri IPC command: callable only from the GUI process, not over
+ * the network. The token is already on disk at the same path the GUI process
+ * has read access to; this command is a convenience accessor.
+ */
+async serviceGetGuiToken() : Promise<Result<string, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("service_get_gui_token") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
  * Rotate the primary bearer via `POST /v1/auth/tokens` (`rotate_primary`).
  * The daemon responds 201 with the plaintext exactly once; it replaces the
  * in-memory bearer and is returned to the GUI (memory-only) for one-time
@@ -780,17 +797,17 @@ export type EngineType =
  * the file, so this one variant covers the whole transcribe-cpp family.
  */
 "TranscribeCpp" | "Parakeet" | "Moonshine" | "MoonshineStreaming" | "SenseVoice" | "GigaAM" | "Canary" | "Cohere"
-export type HistoryEntry = { id: number; file_name: string; timestamp: number; saved: boolean; title: string; transcription_text: string; post_processed_text: string | null; post_process_prompt: string | null; post_process_requested: boolean }
+export type HistoryEntry = { id: number; file_name: string; timestamp: number; saved: boolean; title: string; transcription_text: string; post_processed_text: string | null; post_process_prompt: string | null; post_process_requested: boolean; client_label: string | null; client_icon: string | null }
 export type HistoryUpdatePayload = { action: "added"; entry: HistoryEntry } | { action: "updated"; entry: HistoryEntry } | { action: "deleted"; id: number } | { action: "toggled"; id: number }
 export type KeyboardImplementation = "tauri" | "voxix_keys"
 export type LLMPrompt = { id: string; name: string; prompt: string }
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error"
-export type ModelInfo = { id: string; name: string; description: string; filename: string; source: ModelSource; size_mb: number; is_downloaded: boolean; is_downloading: boolean; partial_size: number; is_directory: boolean; engine_type: EngineType; accuracy_score: number; speed_score: number; supports_translation: boolean; is_recommended: boolean; supported_languages: string[]; supports_language_selection: boolean; is_custom: boolean; supports_streaming: boolean; supports_language_detection: boolean; quant_files: QuantFileInfo[] }
+export type ModelInfo = { id: string; name: string; description: string; filename: string; source: ModelSource; size_mb: number; is_downloaded: boolean; is_downloading: boolean; partial_size: number; is_directory: boolean; engine_type: EngineType; accuracy_score: number; speed_score: number; supports_translation: boolean; is_recommended: boolean; supported_languages: string[]; supports_language_selection: boolean; is_custom: boolean; supports_streaming: boolean; supports_language_detection: boolean; 
 /**
- * One downloadable quantization of a catalog model (empty list on non-catalog
- * entries — the UI shows no quant picker).
+ * Downloadable quantizations for catalog models (empty for custom /
+ * probed / legacy entries, so the UI shows no quant picker).
  */
-export type QuantFileInfo = { filename: string; quant: string; size_mb: number }
+quant_files: QuantFileInfo[] }
 /**
  * Where a model comes from and how voxix obtains it — the routing discriminant
  * for downloading and on-disk resolution.
@@ -829,6 +846,11 @@ export type OverlayStyle = "none" | "minimal" | "live"
 export type PaginatedHistory = { entries: HistoryEntry[]; has_more: boolean }
 export type PasteMethod = "ctrl_v" | "direct" | "none" | "shift_insert" | "ctrl_shift_v" | "external_script"
 export type PostProcessProvider = { id: string; label: string; base_url: string; allow_base_url_edit?: boolean; models_endpoint?: string | null; supports_structured_output?: boolean }
+/**
+ * One downloadable quantization of a catalog model, surfaced to the frontend
+ * so it can offer a quant picker. A stripped-down [`QuantFile`].
+ */
+export type QuantFileInfo = { filename: string; quant: string; size_mb: number }
 export type RecordingRetentionPeriod = "never" | "preserve_limit" | "days_3" | "weeks_2" | "months_3"
 export type SecretMap = Partial<{ [key in string]: string }>
 export type ServiceCapabilities = { requires_server_vad: boolean; prefers_auto_gain: boolean; prefers_noise_reduction: boolean; max_concurrent_streams: number }

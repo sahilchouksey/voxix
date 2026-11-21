@@ -31,7 +31,8 @@
       "cancel": "Avbryt",
       "startedToast": "Tjänsten startad",
       "alreadyRunningToast": "Tjänsten körs redan",
-      "stoppedToast": "Tjänsten stoppad"
+      "stoppedToast": "Tjänsten stoppad",
+      "stoppedHint": "Start the service to accept clients."
     },
     "fingerprint": {
       "label": "Tokenavtryck",
@@ -40,7 +41,7 @@
     },
     "token": {
       "groupTitle": "Åtkomsttoken",
-      "memoryNote": "Lagras endast i minnet — skrivs aldrig till disk eller loggar.",
+      "memoryNote": "Stored locally in gui-client.json (owner-only). Never logged.",
       "inMemory": "Token i minnet",
       "pasteLabel": "Tjänsttoken",
       "pastePlaceholder": "vx_…",
@@ -57,15 +58,28 @@
       "copied": "Kopierad",
       "copyFailed": "Kunde inte kopiera",
       "dismiss": "Klar",
-      "rotatedToast": "Token roterad — anslutna klienter stängdes"
+      "rotatedToast": "Token roterad — anslutna klienter stängdes",
+      "serviceTokenLabel": "Service token",
+      "serviceTokenCaption": "Use as: Authorization: Bearer <token>",
+      "serviceTokenHidden": "Token hidden",
+      "serviceTokenShow": "Show token",
+      "serviceTokenHide": "Hide token",
+      "copyToken": "Copy token",
+      "tokenCopied": "Copied",
+      "connectionUrlLabel": "Connection URL",
+      "connectionUrlCaption": "⚠ Token in URL — prefer the Authorization header for scripts.",
+      "copyUrl": "Copy URL",
+      "urlCopied": "Copied",
+      "noTokenYet": "Start the service to load the token"
     },
     "sessions": {
       "groupTitle": "Öppna sessioner",
-      "caption": "Tjänsten rapporterar endast sessionen som håller inferensleasen; en fullständig sessionlista ingår inte i protokollet.",
+      "caption": "Live WebSocket sessions holding the inference lease. Batch transcriptions do not appear here.",
       "openSessions": "Öppna sessioner",
       "leaseHolder": "Leaseinnehavare",
       "noLease": "Ingen lease innehas",
-      "worstRealtimeFactor": "Sämsta realtidsfaktor"
+      "worstRealtimeFactor": "Sämsta realtidsfaktor",
+      "realtimeFactor": "Realtime factor"
     },
     "errors": {
       "noToken": "Ingen token i minnet — klistra in en ovan för att fråga de autentiserade rutterna.",
@@ -75,10 +89,28 @@
       "unknown": "Oväntat fel"
     },
     "examples": {
-      "embedTitle": "Embed token in examples",
-      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
       "repoLinkLabel": "Transcribe examples",
-      "repoLinkAction": "Open on GitHub"
+      "repoLinkAction": "Open on GitHub",
+      "groupTitle": "Use this service",
+      "repoLinkCaption": "Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
+    },
+    "engine": {
+      "groupTitle": "Engine",
+      "activeModel": "Active model",
+      "backend": "Backend",
+      "capabilities": "Capabilities",
+      "noModel": "No model loaded"
+    },
+    "connection": {
+      "groupTitle": "Connection",
+      "baseUrl": "Base URL",
+      "baseUrlCaption": "Reachable from this machine. Every /v1 route needs the bearer token.",
+      "withToken": "URL with token",
+      "withTokenCaption": "Handy for scripts and mobile clients. Tokens in URLs can appear in logs — prefer the Authorization header.",
+      "showUrl": "Show URL",
+      "hideUrl": "Hide URL",
+      "copyBaseUrl": "Copy base URL",
+      "copyUrlWithToken": "Copy URL with token"
     }
   },
   "tray": {

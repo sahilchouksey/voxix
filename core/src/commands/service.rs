@@ -567,6 +567,28 @@ pub fn service_set_token(
     Ok(())
 }
 
+/// Read the gui-client token from disk (`state/gui-client.json`, 0600) and
+/// return the plaintext. The token is stable across daemon restarts and primary
+/// token rotations — the GUI has its own independent credential.
+///
+/// This is a Tauri IPC command: callable only from the GUI process, not over
+/// the network. The token is already on disk at the same path the GUI process
+/// has read access to; this command is a convenience accessor.
+#[tauri::command]
+#[specta::specta]
+pub fn service_get_gui_token(app: AppHandle) -> Result<String, String> {
+    let dir = state_dir(&app)?;
+    let path = dir.join("gui-client.json");
+    let text = std::fs::read_to_string(&path)
+        .map_err(|e| format!("gui-client.json not found (service may not have run yet): {e}"))?;
+    let body: serde_json::Value =
+        serde_json::from_str(&text).map_err(|e| format!("gui-client.json parse error: {e}"))?;
+    body.get("token")
+        .and_then(|v| v.as_str())
+        .map(str::to_string)
+        .ok_or_else(|| "gui-client.json missing 'token' field".to_string())
+}
+
 /// Rotate the primary bearer via `POST /v1/auth/tokens` (`rotate_primary`).
 /// The daemon responds 201 with the plaintext exactly once; it replaces the
 /// in-memory bearer and is returned to the GUI (memory-only) for one-time

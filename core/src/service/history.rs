@@ -25,6 +25,10 @@ pub struct ServiceHistoryRow {
     pub language: Option<String>,
     /// "batch" | "stream"
     pub source: String,
+    /// Display name of the client that submitted this transcription (e.g. "voxix-gui (macos)").
+    pub client_label: Option<String>,
+    /// Emoji, unicode character, or image URL for the client's icon.
+    pub client_icon: Option<String>,
 }
 
 /// Write request submitted by batch/stream completion paths.
@@ -36,6 +40,10 @@ pub struct HistoryWriteRequest {
     pub language: Option<String>,
     /// "batch" or "stream"
     pub source: &'static str,
+    /// Display name of the submitting client (from X-Client-Label header).
+    pub client_label: Option<String>,
+    /// Client icon (from X-Client-Icon header): emoji, unicode, or image URL.
+    pub client_icon: Option<String>,
 }
 
 /// Service-owned history store. Thread-safe via an internal `Mutex<Connection>`.
@@ -77,7 +85,22 @@ impl ServiceHistory {
             );
             ",
         )
-        .map_err(|e| format!("service_history migration failed: {e}"))
+        .map_err(|e| format!("service_history migration failed: {e}"))?;
+        // Additive migration: add client_label and client_icon columns if absent.
+        // ALTER TABLE ADD COLUMN fails with SQLITE_ERROR when the column already
+        // exists; we match on that code and treat it as a no-op.
+        for stmt in [
+            "ALTER TABLE service_history ADD COLUMN client_label TEXT",
+            "ALTER TABLE service_history ADD COLUMN client_icon TEXT",
+        ] {
+            match conn.execute(stmt, []) {
+                Ok(_) => {}
+                Err(rusqlite::Error::SqliteFailure(err, _))
+                    if err.code == rusqlite::ErrorCode::Unknown => {}
+                Err(e) => return Err(format!("service_history migration failed: {e}")),
+            }
+        }
+        Ok(())
     }
 
     /// Append a new entry. Errors are non-fatal — callers log and continue.
@@ -92,8 +115,9 @@ impl ServiceHistory {
             .unwrap_or_else(|| format!("Recording {now_ms}"));
         conn.execute(
             "INSERT INTO service_history
-                (timestamp_ms, title, transcription_text, duration_ms, model_id, language, source)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+                (timestamp_ms, title, transcription_text, duration_ms, model_id, language, source,
+                 client_label, client_icon)
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
             params![
                 now_ms,
                 title,
@@ -102,6 +126,8 @@ impl ServiceHistory {
                 req.model_id.as_deref(),
                 req.language.as_deref(),
                 req.source,
+                req.client_label.as_deref(),
+                req.client_icon.as_deref(),
             ],
         )
         .map_err(|e| format!("service_history insert failed: {e}"))?;
@@ -123,7 +149,8 @@ impl ServiceHistory {
             let mut stmt = conn
                 .prepare(
                     "SELECT id, timestamp_ms, title, transcription_text,
-                            duration_ms, model_id, language, source
+                            duration_ms, model_id, language, source,
+                            client_label, client_icon
                      FROM service_history WHERE id < ?1
                      ORDER BY id DESC LIMIT ?2",
                 )
@@ -136,7 +163,8 @@ impl ServiceHistory {
             let mut stmt = conn
                 .prepare(
                     "SELECT id, timestamp_ms, title, transcription_text,
-                            duration_ms, model_id, language, source
+                            duration_ms, model_id, language, source,
+                            client_label, client_icon
                      FROM service_history ORDER BY id DESC LIMIT ?1",
                 )
                 .map_err(|e| e.to_string())?;
@@ -162,6 +190,8 @@ impl ServiceHistory {
             model_id: row.get("model_id").map_err(|e| e.to_string())?,
             language: row.get("language").map_err(|e| e.to_string())?,
             source: row.get("source").map_err(|e| e.to_string())?,
+            client_label: row.get("client_label").map_err(|e| e.to_string())?,
+            client_icon: row.get("client_icon").map_err(|e| e.to_string())?,
         })
     }
 
@@ -170,7 +200,8 @@ impl ServiceHistory {
         let conn = self.conn.lock().unwrap_or_else(|e| e.into_inner());
         let result = conn.query_row(
             "SELECT id, timestamp_ms, title, transcription_text,
-                    duration_ms, model_id, language, source
+                    duration_ms, model_id, language, source,
+                    client_label, client_icon
              FROM service_history WHERE id = ?1",
             params![id],
             |row| {
@@ -183,6 +214,8 @@ impl ServiceHistory {
                     model_id: row.get("model_id")?,
                     language: row.get("language")?,
                     source: row.get("source")?,
+                    client_label: row.get("client_label")?,
+                    client_icon: row.get("client_icon")?,
                 })
             },
         );
@@ -205,6 +238,8 @@ impl ServiceHistoryRow {
             model_id: self.model_id.clone(),
             language: self.language.clone(),
             source: self.source.clone(),
+            client_label: self.client_label.clone(),
+            client_icon: self.client_icon.clone(),
         }
     }
 }
@@ -232,6 +267,8 @@ mod tests {
                 model_id: Some("tiny".into()),
                 language: Some("en".into()),
                 source: "batch",
+                client_label: Some("voxix-gui (macos)".into()),
+                client_icon: None,
             })
             .expect("append");
         assert!(id > 0);
@@ -240,6 +277,8 @@ mod tests {
         assert_eq!(rows.len(), 1);
         assert!(!has_more);
         assert_eq!(rows[0].transcription_text, "hello world");
+        assert_eq!(rows[0].client_label.as_deref(), Some("voxix-gui (macos)"));
+        assert!(rows[0].client_icon.is_none());
 
         let row = h.get(id).expect("get").expect("exists");
         assert_eq!(row.source, "batch");
@@ -256,6 +295,8 @@ mod tests {
                 model_id: None,
                 language: None,
                 source: "stream",
+                client_label: None,
+                client_icon: None,
             })
             .expect("append");
         }
@@ -272,5 +313,79 @@ mod tests {
     fn get_unknown_id_returns_none() {
         let h = mem_history();
         assert!(h.get(9999).expect("no err").is_none());
+    }
+
+    #[test]
+    fn client_label_and_icon_round_trip() {
+        let h = mem_history();
+        let id = h
+            .append(&HistoryWriteRequest {
+                transcription_text: "test with client".into(),
+                duration_ms: None,
+                model_id: None,
+                language: None,
+                source: "batch",
+                client_label: Some("my-sdk-client".into()),
+                client_icon: Some("🎙".into()),
+            })
+            .expect("append");
+        let row = h.get(id).expect("get").expect("exists");
+        assert_eq!(row.client_label.as_deref(), Some("my-sdk-client"));
+        assert_eq!(row.client_icon.as_deref(), Some("🎙"));
+    }
+
+    #[test]
+    fn migration_adds_columns_to_legacy_schema() {
+        // Simulate a database that was created without the client columns.
+        let conn = Connection::open_in_memory().expect("in-memory db");
+        conn.execute_batch(
+            "
+            CREATE TABLE service_history (
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp_ms    INTEGER NOT NULL,
+                title           TEXT    NOT NULL,
+                transcription_text TEXT NOT NULL,
+                duration_ms     INTEGER,
+                model_id        TEXT,
+                language        TEXT,
+                source          TEXT    NOT NULL DEFAULT 'service'
+            );
+            ",
+        )
+        .expect("create legacy table");
+        // Seed a legacy row (no client columns).
+        conn.execute(
+            "INSERT INTO service_history (timestamp_ms, title, transcription_text, source) VALUES (1, 'Old', 'old text', 'batch')",
+            [],
+        )
+        .expect("seed legacy row");
+
+        let h = ServiceHistory {
+            conn: std::sync::Mutex::new(conn),
+        };
+        // Running migrate() on the legacy table must succeed.
+        h.migrate().expect("migrate legacy db");
+
+        // Legacy row reads back with None for client fields.
+        let (rows, _) = h.list(None, 10).expect("list");
+        assert_eq!(rows.len(), 1);
+        assert_eq!(rows[0].transcription_text, "old text");
+        assert!(rows[0].client_label.is_none());
+        assert!(rows[0].client_icon.is_none());
+
+        // New row with client fields writes and reads back correctly.
+        let new_id = h
+            .append(&HistoryWriteRequest {
+                transcription_text: "new entry".into(),
+                duration_ms: None,
+                model_id: None,
+                language: None,
+                source: "batch",
+                client_label: Some("test-client".into()),
+                client_icon: None,
+            })
+            .expect("append after migration");
+        let new_row = h.get(new_id).expect("get").expect("exists");
+        assert_eq!(new_row.client_label.as_deref(), Some("test-client"));
     }
 }

@@ -31,7 +31,8 @@
       "cancel": "ביטול",
       "startedToast": "השירות הופעל",
       "alreadyRunningToast": "השירות כבר פועל",
-      "stoppedToast": "השירות נעצר"
+      "stoppedToast": "השירות נעצר",
+      "stoppedHint": "Start the service to accept clients."
     },
     "fingerprint": {
       "label": "טביעת אצבע של אסימון",
@@ -40,7 +41,7 @@
     },
     "token": {
       "groupTitle": "אסימון גישה",
-      "memoryNote": "נשמר בזיכרון בלבד — לעולם אינו נכתב לדיסק או ללוגים.",
+      "memoryNote": "Stored locally in gui-client.json (owner-only). Never logged.",
       "inMemory": "אסימון בזיכרון",
       "pasteLabel": "אסימון שירות",
       "pastePlaceholder": "vx_…",
@@ -57,15 +58,28 @@
       "copied": "הועתק",
       "copyFailed": "ההעתקה נכשלה",
       "dismiss": "סיום",
-      "rotatedToast": "האסימון הוחלף — לקוחות מחוברים נסגרו"
+      "rotatedToast": "האסימון הוחלף — לקוחות מחוברים נסגרו",
+      "serviceTokenLabel": "Service token",
+      "serviceTokenCaption": "Use as: Authorization: Bearer <token>",
+      "serviceTokenHidden": "Token hidden",
+      "serviceTokenShow": "Show token",
+      "serviceTokenHide": "Hide token",
+      "copyToken": "Copy token",
+      "tokenCopied": "Copied",
+      "connectionUrlLabel": "Connection URL",
+      "connectionUrlCaption": "⚠ Token in URL — prefer the Authorization header for scripts.",
+      "copyUrl": "Copy URL",
+      "urlCopied": "Copied",
+      "noTokenYet": "Start the service to load the token"
     },
     "sessions": {
       "groupTitle": "סשנים פתוחים",
-      "caption": "השירות מדווח רק על הסשן המחזיק בחכירה של ההסקה; רשימת סשנים מלאה אינה חלק מהפרוטוקול.",
+      "caption": "Live WebSocket sessions holding the inference lease. Batch transcriptions do not appear here.",
       "openSessions": "סשנים פתוחים",
       "leaseHolder": "מחזיק החכירה",
       "noLease": "אין חכירה מוחזקת",
-      "worstRealtimeFactor": "גורם זמן-אמיתי גרוע ביותר"
+      "worstRealtimeFactor": "גורם זמן-אמיתי גרוע ביותר",
+      "realtimeFactor": "Realtime factor"
     },
     "errors": {
       "noToken": "אין אסימון בזיכרון — הדביקו אסימון למעלה כדי לבצע שאילתות על הנתיבים המאומתים.",
@@ -75,10 +89,28 @@
       "unknown": "שגיאה בלתי צפויה"
     },
     "examples": {
-      "embedTitle": "Embed token in examples",
-      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
       "repoLinkLabel": "Transcribe examples",
-      "repoLinkAction": "Open on GitHub"
+      "repoLinkAction": "Open on GitHub",
+      "groupTitle": "Use this service",
+      "repoLinkCaption": "Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
+    },
+    "engine": {
+      "groupTitle": "Engine",
+      "activeModel": "Active model",
+      "backend": "Backend",
+      "capabilities": "Capabilities",
+      "noModel": "No model loaded"
+    },
+    "connection": {
+      "groupTitle": "Connection",
+      "baseUrl": "Base URL",
+      "baseUrlCaption": "Reachable from this machine. Every /v1 route needs the bearer token.",
+      "withToken": "URL with token",
+      "withTokenCaption": "Handy for scripts and mobile clients. Tokens in URLs can appear in logs — prefer the Authorization header.",
+      "showUrl": "Show URL",
+      "hideUrl": "Hide URL",
+      "copyBaseUrl": "Copy base URL",
+      "copyUrlWithToken": "Copy URL with token"
     }
   },
   "tray": {

@@ -338,8 +338,22 @@ impl VoxixKeysState {
         }
 
         // Create a new keyboard listener for recording
-        let listener = KeyboardListener::new()
-            .map_err(|e| format!("Failed to create keyboard listener: {}", e))?;
+        let listener = match KeyboardListener::new() {
+            Ok(listener) => {
+                log::info!(
+                    target: "voxix_app_lib::shortcut::voxix_keys",
+                    "capture listener created for binding '{binding_id}'"
+                );
+                listener
+            }
+            Err(e) => {
+                log::warn!(
+                    target: "voxix_app_lib::shortcut::voxix_keys",
+                    "capture listener failed for binding '{binding_id}': {e}"
+                );
+                return Err(format!("Failed to create keyboard listener: {e}"));
+            }
+        };
 
         {
             let mut recording = self
@@ -597,6 +611,10 @@ pub fn unregister_shortcut(app: &AppHandle, binding: ShortcutBinding) -> Result<
 #[tauri::command]
 #[specta::specta]
 pub fn start_voxix_keys_recording(app: AppHandle, binding_id: String) -> Result<(), String> {
+    log::info!(
+        target: "voxix_app_lib::shortcut::voxix_keys",
+        "start_voxix_keys_recording requested for binding '{binding_id}'"
+    );
     // While Secure Input is active the tap receives no KeyDown/KeyUp, so the
     // recorder would silently capture just the modifier and overwrite the
     // binding with it (issue #1578). Refuse instead; the frontend maps this
@@ -627,6 +645,16 @@ pub fn start_voxix_keys_recording(app: AppHandle, binding_id: String) -> Result<
     let result = state.start_recording(&app, binding_id);
     if result.is_err() {
         super::resume_all_shortcuts(&app);
+    }
+    match &result {
+        Ok(()) => log::info!(
+            target: "voxix_app_lib::shortcut::voxix_keys",
+            "voxix-keys recording active"
+        ),
+        Err(e) => log::warn!(
+            target: "voxix_app_lib::shortcut::voxix_keys",
+            "voxix-keys recording refused: {e}"
+        ),
     }
     result
 }

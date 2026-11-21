@@ -121,6 +121,10 @@ async fn transcribe_via(
         .post(format!("{base}/v1/transcriptions"))
         .bearer_auth(&plaintext)
         .header(reqwest::header::CONTENT_TYPE, "application/octet-stream")
+        .header(
+            "x-client-label",
+            format!("voxix-gui ({})", std::env::consts::OS),
+        )
         .body(wav.to_vec())
         .send()
         .await

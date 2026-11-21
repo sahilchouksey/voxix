@@ -4,15 +4,31 @@ export const Group = ({
   title,
   caption,
   footer,
+  icon,
   children,
 }: {
   title?: string;
   caption?: string;
   footer?: string;
+  icon?: ReactNode;
   children: ReactNode;
 }) => (
   <div style={{ width: "100%" }}>
-    {title && <div className="voxix-section-title">{title}</div>}
+    {title && (
+      <div
+        className="voxix-section-title"
+        style={{ display: "flex", alignItems: "center", gap: 6 }}
+      >
+        {icon && (
+          <span
+            style={{ display: "inline-flex", color: "var(--text-dim)" }}
+          >
+            {icon}
+          </span>
+        )}
+        {title}
+      </div>
+    )}
     {caption && (
       <div className="voxix-cap" style={{ margin: "2px 0 10px" }}>
         {caption}
@@ -32,31 +48,77 @@ export const Row = ({
   title,
   caption,
   control,
+  stack,
 }: {
   icon?: ReactNode;
   title: ReactNode;
   caption?: string;
   control?: ReactNode;
-}) => (
-  <div className="voxix-row">
-    {icon && <div className="voxix-icon-col">{icon}</div>}
-    <div style={{ flex: 1, minWidth: 0 }}>
-      <div
-        style={{
-          fontSize: "var(--text-base)",
-          lineHeight: "var(--leading-base)",
-        }}
-      >
-        {title}
-      </div>
-      {caption && (
-        <div className="voxix-cap" style={{ marginTop: 2 }}>
-          {caption}
+  stack?: boolean;
+}) =>
+  stack ? (
+    <div className="voxix-row" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+      {icon && <div className="voxix-icon-col">{icon}</div>}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            fontSize: "var(--text-base)",
+            lineHeight: "var(--leading-base)",
+          }}
+        >
+          {title}
         </div>
+        {caption && (
+          <div className="voxix-cap" style={{ marginTop: 2 }}>
+            {caption}
+          </div>
+        )}
+      </div>
+      {control && (
+        <div style={{ width: "100%", marginTop: 6 }}>{control}</div>
       )}
     </div>
-    {control}
+  ) : (
+    <div className="voxix-row">
+      {icon && <div className="voxix-icon-col">{icon}</div>}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            fontSize: "var(--text-base)",
+            lineHeight: "var(--leading-base)",
+          }}
+        >
+          {title}
+        </div>
+        {caption && (
+          <div className="voxix-cap" style={{ marginTop: 2 }}>
+            {caption}
+          </div>
+        )}
+      </div>
+      {control}
+    </div>
+  );
+
+export const StatGrid = ({ children }: { children: ReactNode }) => (
+  <div className="voxix-stat-grid">{children}</div>
+);
+
+export const Stat = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: ReactNode;
+}) => (
+  <div className="voxix-stat">
+    <div className="voxix-stat-value">{value}</div>
+    <div className="voxix-stat-label">{label}</div>
   </div>
+);
+
+export const Chip = ({ children }: { children: ReactNode }) => (
+  <span className="voxix-chip">{children}</span>
 );
 
 export const Screen = ({

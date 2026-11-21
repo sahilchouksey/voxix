@@ -6,10 +6,11 @@ import {
   type ServiceRotateResult,
 } from "@/bindings";
 
-// The service bearer token is never persisted: it lives in the Rust-side
-// in-memory holder. The one-time post-rotate token lives in React state only
-// (rotatedToken) and is cleared on dismiss. This store is intentionally NOT
-// wrapped in persist.
+// The GUI's service token is loaded from disk via service_get_gui_token.
+// It is never persisted in this store — it's always re-read from disk.
+// rotatedToken holds the newly-generated primary token (external SDK clients)
+// after a rotation, displayed once then cleared. This store is intentionally
+// NOT wrapped in persist.
 interface ServiceStore {
   discovery: ServiceDiscoveryInfo | null;
   probe: ServiceProbeReport | null;
@@ -19,12 +20,11 @@ interface ServiceStore {
   rotating: boolean;
   error: string | null;
   rotatedToken: ServiceRotateResult | null;
-  sessionToken: string | null;
+  serviceToken: string | null;
+  connectionUrl: string | null;
   refresh: () => Promise<void>;
   start: () => Promise<{ ok: boolean; started: boolean }>;
   stop: () => Promise<boolean>;
-  keepToken: (token: string) => Promise<void>;
-  forgetToken: () => Promise<void>;
   rotateToken: () => Promise<boolean>;
   dismissRotatedToken: () => void;
   clearError: () => void;
@@ -42,19 +42,31 @@ export const useServiceStore = create<ServiceStore>()((set, get) => ({
   rotating: false,
   error: null,
   rotatedToken: null,
-  sessionToken: null,
+  serviceToken: null,
+  connectionUrl: null,
 
   refresh: async () => {
     set({ loading: true });
     try {
-      const [discoverRes, probeRes] = await Promise.all([
+      const [discoverRes, probeRes, tokenRes] = await Promise.all([
         commands.serviceDiscover(),
         commands.serviceProbe(),
+        commands.serviceGetGuiToken(),
       ]);
+      const discovery =
+        discoverRes.status === "ok" ? discoverRes.data : null;
+      const serviceToken =
+        tokenRes.status === "ok" ? tokenRes.data : null;
+      const connectionUrl =
+        discovery?.port != null && serviceToken
+          ? `http://127.0.0.1:${discovery.port}?api_key=${serviceToken}`
+          : null;
       set({
-        discovery: discoverRes.status === "ok" ? discoverRes.data : null,
+        discovery,
         probe: probeRes.status === "ok" ? probeRes.data : null,
         error: discoverRes.status === "error" ? discoverRes.error : null,
+        serviceToken,
+        connectionUrl,
         loading: false,
       });
     } catch (e) {
@@ -96,34 +108,6 @@ export const useServiceStore = create<ServiceStore>()((set, get) => ({
     }
   },
 
-  keepToken: async (token: string) => {
-    try {
-      const res = await commands.serviceSetToken(token);
-      if (res.status === "error") {
-        set({ error: res.error });
-        return;
-      }
-      await get().refresh();
-      set({ sessionToken: token });
-    } catch (e) {
-      set({ error: e instanceof Error ? e.message : String(e) });
-    }
-  },
-
-  forgetToken: async () => {
-    try {
-      const res = await commands.serviceSetToken(null);
-      if (res.status === "error") {
-        set({ error: res.error });
-        return;
-      }
-      set({ sessionToken: null });
-      await get().refresh();
-    } catch (e) {
-      set({ error: e instanceof Error ? e.message : String(e) });
-    }
-  },
-
   rotateToken: async () => {
     set({ rotating: true, error: null });
     try {
@@ -132,10 +116,11 @@ export const useServiceStore = create<ServiceStore>()((set, get) => ({
         set({ rotating: false, error: res.error });
         return false;
       }
+      // The rotated token is the new primary daemon token for external clients.
+      // The GUI's own serviceToken (gui-client token) is unaffected by rotation.
       set({
         rotatedToken: res.data,
         rotating: false,
-        sessionToken: res.data.token,
       });
       await get().refresh();
       return true;
@@ -145,6 +130,6 @@ export const useServiceStore = create<ServiceStore>()((set, get) => ({
     }
   },
 
-  dismissRotatedToken: () => set({ rotatedToken: null, sessionToken: null }),
+  dismissRotatedToken: () => set({ rotatedToken: null }),
   clearError: () => set({ error: null }),
 }));

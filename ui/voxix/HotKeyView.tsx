@@ -4,7 +4,13 @@ import { listen } from "@tauri-apps/api/event";
 import { useTranslation } from "react-i18next";
 import { commands } from "@/bindings";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { cap, MOD_TOKENS, parseBinding } from "./hotkeyTokens";
+import {
+  cap,
+  composeTokens,
+  MOD_TOKENS,
+  parseBinding,
+  tokenFor,
+} from "./hotkeyTokens";
 
 /**
  * voxix-keys names modifiers per-platform: macOS emits "option"/"command",
@@ -56,13 +62,16 @@ export const HotKeyView = ({ id, hint }: { id: string; hint?: string }) => {
       unlisten.current();
       unlisten.current = null;
     }
+    // The Tauri backend captures in the webview; there is no Rust-side
+    // recording session to stop.
+    if (keyboardImpl !== "voxix_keys") return;
     const result = await commands
       .stopVoxixKeysRecording()
       .catch((e) => ({ status: "error" as const, error: String(e) }));
     if (result.status === "error") {
       console.error("Failed to stop voxix-keys recording:", result.error);
     }
-  }, []);
+  }, [keyboardImpl]);
 
   const commit = useCallback(
     async (tokens: string[]) => {
@@ -102,6 +111,41 @@ export const HotKeyView = ({ id, hint }: { id: string; hint?: string }) => {
     finishing.current = false;
     setPending([]);
     setHintText(null);
+
+    // Tauri backend: the user clicked this field, so the webview has focus.
+    // Capture with a DOM keydown listener — no Accessibility permission and
+    // no global keyboard hook required.
+    if (keyboardImpl === "tauri") {
+      const held = new Set<string>();
+      const onKeyDown = (event: KeyboardEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.repeat) return;
+
+        const token = tokenFor(event);
+        if (token === "escape") {
+          void stopCapture();
+          return;
+        }
+        if (MOD_TOKENS.has(token)) {
+          held.add(token);
+          setPending(composeTokens(held));
+          setHintText("Add a non-modifier key (e.g. Alt+Space)");
+          return;
+        }
+        void commit(composeTokens(new Set([...held, token])));
+      };
+      const onKeyUp = (event: KeyboardEvent) => {
+        const token = tokenFor(event);
+        if (MOD_TOKENS.has(token)) held.delete(token);
+      };
+      window.addEventListener("keydown", onKeyDown, true);
+      window.addEventListener("keyup", onKeyUp, true);
+      return () => {
+        window.removeEventListener("keydown", onKeyDown, true);
+        window.removeEventListener("keyup", onKeyUp, true);
+      };
+    }
 
     let cancelled = false;
     (async () => {

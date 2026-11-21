@@ -31,7 +31,8 @@
       "cancel": "Cancelar",
       "startedToast": "Serviço iniciado",
       "alreadyRunningToast": "O serviço já está em execução",
-      "stoppedToast": "Serviço parado"
+      "stoppedToast": "Serviço parado",
+      "stoppedHint": "Start the service to accept clients."
     },
     "fingerprint": {
       "label": "Impressão digital do token",
@@ -40,7 +41,7 @@
     },
     "token": {
       "groupTitle": "Token de acesso",
-      "memoryNote": "Mantido apenas na memória — nunca gravado em disco ou logs.",
+      "memoryNote": "Stored locally in gui-client.json (owner-only). Never logged.",
       "inMemory": "Token na memória",
       "pasteLabel": "Token do serviço",
       "pastePlaceholder": "vx_…",
@@ -57,15 +58,28 @@
       "copied": "Copiado",
       "copyFailed": "Não foi possível copiar",
       "dismiss": "Concluir",
-      "rotatedToast": "Token rotacionado — clientes conectados foram fechados"
+      "rotatedToast": "Token rotacionado — clientes conectados foram fechados",
+      "serviceTokenLabel": "Service token",
+      "serviceTokenCaption": "Use as: Authorization: Bearer <token>",
+      "serviceTokenHidden": "Token hidden",
+      "serviceTokenShow": "Show token",
+      "serviceTokenHide": "Hide token",
+      "copyToken": "Copy token",
+      "tokenCopied": "Copied",
+      "connectionUrlLabel": "Connection URL",
+      "connectionUrlCaption": "⚠ Token in URL — prefer the Authorization header for scripts.",
+      "copyUrl": "Copy URL",
+      "urlCopied": "Copied",
+      "noTokenYet": "Start the service to load the token"
     },
     "sessions": {
       "groupTitle": "Sessões abertas",
-      "caption": "O serviço informa apenas a sessão que detém o lease de inferência; uma lista completa de sessões não faz parte do protocolo.",
+      "caption": "Live WebSocket sessions holding the inference lease. Batch transcriptions do not appear here.",
       "openSessions": "Sessões abertas",
       "leaseHolder": "Detentor do lease",
       "noLease": "Nenhum lease em uso",
-      "worstRealtimeFactor": "Pior fator de tempo real"
+      "worstRealtimeFactor": "Pior fator de tempo real",
+      "realtimeFactor": "Realtime factor"
     },
     "errors": {
       "noToken": "Sem token na memória — cole um acima para consultar as rotas autenticadas.",
@@ -75,10 +89,28 @@
       "unknown": "Erro inesperado"
     },
     "examples": {
-      "embedTitle": "Embed token in examples",
-      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
       "repoLinkLabel": "Transcribe examples",
-      "repoLinkAction": "Open on GitHub"
+      "repoLinkAction": "Open on GitHub",
+      "groupTitle": "Use this service",
+      "repoLinkCaption": "Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
+    },
+    "engine": {
+      "groupTitle": "Engine",
+      "activeModel": "Active model",
+      "backend": "Backend",
+      "capabilities": "Capabilities",
+      "noModel": "No model loaded"
+    },
+    "connection": {
+      "groupTitle": "Connection",
+      "baseUrl": "Base URL",
+      "baseUrlCaption": "Reachable from this machine. Every /v1 route needs the bearer token.",
+      "withToken": "URL with token",
+      "withTokenCaption": "Handy for scripts and mobile clients. Tokens in URLs can appear in logs — prefer the Authorization header.",
+      "showUrl": "Show URL",
+      "hideUrl": "Hide URL",
+      "copyBaseUrl": "Copy base URL",
+      "copyUrlWithToken": "Copy URL with token"
     }
   },
   "tray": {

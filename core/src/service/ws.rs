@@ -1947,6 +1947,8 @@ async fn run_finalize(task: &Arc<StreamTaskState>, pipeline: &mut Pipeline, sour
                         language: (!pipeline.language.is_empty())
                             .then(|| pipeline.language.clone()),
                         source: "stream",
+                        client_label: None,
+                        client_icon: None,
                     }) {
                         Ok(id) => history_id = Some(id),
                         Err(e) => log::warn!(

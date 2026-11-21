@@ -324,6 +324,19 @@ pub async fn post_transcriptions(
         }
     }
 
+    // 2.5 Extract client identification headers before consuming the body.
+    // Truncate to reasonable limits to prevent DB bloat.
+    let client_label = request
+        .headers()
+        .get("x-client-label")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.chars().take(128).collect::<String>());
+    let client_icon = request
+        .headers()
+        .get("x-client-icon")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.chars().take(2048).collect::<String>());
+
     // 3. Collect the body (bounded by axum DefaultBodyLimit already at 64 MiB).
     let body_bytes = match axum::body::to_bytes(request.into_body(), BATCH_BODY_CAP).await {
         Ok(b) => b,
@@ -467,6 +480,8 @@ pub async fn post_transcriptions(
                 &task_state.config.data_dir,
                 &recorded_file_name,
                 &text,
+                client_label.as_deref(),
+                client_icon.as_deref(),
             ) {
                 log::error!(target: "service::batch", "job {task_jid} gui history write failed: {e}");
             }
@@ -488,6 +503,8 @@ pub async fn post_transcriptions(
                             model_id: None,
                             language: None,
                             source: "batch",
+                            client_label: client_label.clone(),
+                            client_icon: client_icon.clone(),
                         }) {
                             log::warn!(
                                 target: "service::batch",

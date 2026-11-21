@@ -31,7 +31,8 @@
       "cancel": "रद्द करें",
       "startedToast": "सेवा शुरू हुई",
       "alreadyRunningToast": "सेवा पहले से चल रही है",
-      "stoppedToast": "सेवा रुक गई"
+      "stoppedToast": "सेवा रुक गई",
+      "stoppedHint": "Start the service to accept clients."
     },
     "fingerprint": {
       "label": "टोकन फ़िंगरप्रिंट",
@@ -40,7 +41,7 @@
     },
     "token": {
       "groupTitle": "एक्सेस टोकन",
-      "memoryNote": "केवल मेमोरी में रखा जाता है — कभी डिस्क या लॉग में नहीं लिखा जाता।",
+      "memoryNote": "Stored locally in gui-client.json (owner-only). Never logged.",
       "inMemory": "टोकन मेमोरी में है",
       "pasteLabel": "सेवा टोकन",
       "pastePlaceholder": "vx_…",
@@ -57,15 +58,28 @@
       "copied": "कॉपी हो गया",
       "copyFailed": "कॉपी नहीं हो सका",
       "dismiss": "हो गया",
-      "rotatedToast": "टोकन बदल गया — जुड़े हुए क्लाइंट बंद कर दिए गए"
+      "rotatedToast": "टोकन बदल गया — जुड़े हुए क्लाइंट बंद कर दिए गए",
+      "serviceTokenLabel": "Service token",
+      "serviceTokenCaption": "Use as: Authorization: Bearer <token>",
+      "serviceTokenHidden": "Token hidden",
+      "serviceTokenShow": "Show token",
+      "serviceTokenHide": "Hide token",
+      "copyToken": "Copy token",
+      "tokenCopied": "Copied",
+      "connectionUrlLabel": "Connection URL",
+      "connectionUrlCaption": "⚠ Token in URL — prefer the Authorization header for scripts.",
+      "copyUrl": "Copy URL",
+      "urlCopied": "Copied",
+      "noTokenYet": "Start the service to load the token"
     },
     "sessions": {
       "groupTitle": "खुले सत्र",
-      "caption": "सेवा केवल उस सत्र की जानकारी देती है जो इन्फ़रेंस लीज़ धारण करता है; पूर्ण सत्र सूची प्रोटोकॉल का हिस्सा नहीं है।",
+      "caption": "Live WebSocket sessions holding the inference lease. Batch transcriptions do not appear here.",
       "openSessions": "खुले सत्र",
       "leaseHolder": "लीज़ धारक",
       "noLease": "कोई लीज़ धारण नहीं",
-      "worstRealtimeFactor": "सबसे खराब रीयलटाइम फैक्टर"
+      "worstRealtimeFactor": "सबसे खराब रीयलटाइम फैक्टर",
+      "realtimeFactor": "Realtime factor"
     },
     "errors": {
       "noToken": "मेमोरी में टोकन नहीं है — प्रमाणित रूट क्वेरी करने के लिए ऊपर पेस्ट करें।",
@@ -75,10 +89,28 @@
       "unknown": "अप्रत्याशित त्रुटि"
     },
     "examples": {
-      "embedTitle": "Embed token in examples",
-      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
       "repoLinkLabel": "Transcribe examples",
-      "repoLinkAction": "Open on GitHub"
+      "repoLinkAction": "Open on GitHub",
+      "groupTitle": "Use this service",
+      "repoLinkCaption": "Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
+    },
+    "engine": {
+      "groupTitle": "Engine",
+      "activeModel": "Active model",
+      "backend": "Backend",
+      "capabilities": "Capabilities",
+      "noModel": "No model loaded"
+    },
+    "connection": {
+      "groupTitle": "Connection",
+      "baseUrl": "Base URL",
+      "baseUrlCaption": "Reachable from this machine. Every /v1 route needs the bearer token.",
+      "withToken": "URL with token",
+      "withTokenCaption": "Handy for scripts and mobile clients. Tokens in URLs can appear in logs — prefer the Authorization header.",
+      "showUrl": "Show URL",
+      "hideUrl": "Hide URL",
+      "copyBaseUrl": "Copy base URL",
+      "copyUrlWithToken": "Copy URL with token"
     }
   },
   "tray": {

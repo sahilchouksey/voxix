@@ -31,7 +31,8 @@
       "cancel": "Скасувати",
       "startedToast": "Сервіс запущено",
       "alreadyRunningToast": "Сервіс уже працює",
-      "stoppedToast": "Сервіс зупинено"
+      "stoppedToast": "Сервіс зупинено",
+      "stoppedHint": "Start the service to accept clients."
     },
     "fingerprint": {
       "label": "Відбиток токена",
@@ -40,7 +41,7 @@
     },
     "token": {
       "groupTitle": "Токен доступу",
-      "memoryNote": "Зберігається лише в пам'яті — ніколи не записується на диск чи в журнали.",
+      "memoryNote": "Stored locally in gui-client.json (owner-only). Never logged.",
       "inMemory": "Токен у пам'яті",
       "pasteLabel": "Токен сервісу",
       "pastePlaceholder": "vx_…",
@@ -57,15 +58,28 @@
       "copied": "Скопійовано",
       "copyFailed": "Не вдалося скопіювати",
       "dismiss": "Готово",
-      "rotatedToast": "Токен змінено — підключені клієнти були відключені"
+      "rotatedToast": "Токен змінено — підключені клієнти були відключені",
+      "serviceTokenLabel": "Service token",
+      "serviceTokenCaption": "Use as: Authorization: Bearer <token>",
+      "serviceTokenHidden": "Token hidden",
+      "serviceTokenShow": "Show token",
+      "serviceTokenHide": "Hide token",
+      "copyToken": "Copy token",
+      "tokenCopied": "Copied",
+      "connectionUrlLabel": "Connection URL",
+      "connectionUrlCaption": "⚠ Token in URL — prefer the Authorization header for scripts.",
+      "copyUrl": "Copy URL",
+      "urlCopied": "Copied",
+      "noTokenYet": "Start the service to load the token"
     },
     "sessions": {
       "groupTitle": "Відкриті сесії",
-      "caption": "Сервіс повідомляє лише про сесію, що утримує оренду інференсу; повного списку сесій у протоколі немає.",
+      "caption": "Live WebSocket sessions holding the inference lease. Batch transcriptions do not appear here.",
       "openSessions": "Відкриті сесії",
       "leaseHolder": "Утримувач оренди",
       "noLease": "Оренда не утримується",
-      "worstRealtimeFactor": "Найгірший фактор реального часу"
+      "worstRealtimeFactor": "Найгірший фактор реального часу",
+      "realtimeFactor": "Realtime factor"
     },
     "errors": {
       "noToken": "У пам'яті немає токена — вставте його вище, щоб опитувати автентифіковані маршрути.",
@@ -75,10 +89,28 @@
       "unknown": "Неочікувана помилка"
     },
     "examples": {
-      "embedTitle": "Embed token in examples",
-      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
       "repoLinkLabel": "Transcribe examples",
-      "repoLinkAction": "Open on GitHub"
+      "repoLinkAction": "Open on GitHub",
+      "groupTitle": "Use this service",
+      "repoLinkCaption": "Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
+    },
+    "engine": {
+      "groupTitle": "Engine",
+      "activeModel": "Active model",
+      "backend": "Backend",
+      "capabilities": "Capabilities",
+      "noModel": "No model loaded"
+    },
+    "connection": {
+      "groupTitle": "Connection",
+      "baseUrl": "Base URL",
+      "baseUrlCaption": "Reachable from this machine. Every /v1 route needs the bearer token.",
+      "withToken": "URL with token",
+      "withTokenCaption": "Handy for scripts and mobile clients. Tokens in URLs can appear in logs — prefer the Authorization header.",
+      "showUrl": "Show URL",
+      "hideUrl": "Hide URL",
+      "copyBaseUrl": "Copy base URL",
+      "copyUrlWithToken": "Copy URL with token"
     }
   },
   "tray": {

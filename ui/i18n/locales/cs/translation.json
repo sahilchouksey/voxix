@@ -31,7 +31,8 @@
       "cancel": "Zrušit",
       "startedToast": "Služba byla spuštěna",
       "alreadyRunningToast": "Služba už běží",
-      "stoppedToast": "Služba byla zastavena"
+      "stoppedToast": "Služba byla zastavena",
+      "stoppedHint": "Start the service to accept clients."
     },
     "fingerprint": {
       "label": "Otisk tokenu",
@@ -40,7 +41,7 @@
     },
     "token": {
       "groupTitle": "Přístupový token",
-      "memoryNote": "Uchováván pouze v paměti — nikdy se nezapisuje na disk ani do logů.",
+      "memoryNote": "Stored locally in gui-client.json (owner-only). Never logged.",
       "inMemory": "Token v paměti",
       "pasteLabel": "Token služby",
       "pastePlaceholder": "vx_…",
@@ -57,15 +58,28 @@
       "copied": "Zkopírováno",
       "copyFailed": "Kopírování se nezdařilo",
       "dismiss": "Hotovo",
-      "rotatedToast": "Token byl rotován — připojení klienti byli odpojeni"
+      "rotatedToast": "Token byl rotován — připojení klienti byli odpojeni",
+      "serviceTokenLabel": "Service token",
+      "serviceTokenCaption": "Use as: Authorization: Bearer <token>",
+      "serviceTokenHidden": "Token hidden",
+      "serviceTokenShow": "Show token",
+      "serviceTokenHide": "Hide token",
+      "copyToken": "Copy token",
+      "tokenCopied": "Copied",
+      "connectionUrlLabel": "Connection URL",
+      "connectionUrlCaption": "⚠ Token in URL — prefer the Authorization header for scripts.",
+      "copyUrl": "Copy URL",
+      "urlCopied": "Copied",
+      "noTokenYet": "Start the service to load the token"
     },
     "sessions": {
       "groupTitle": "Otevřené relace",
-      "caption": "Služba hlásí pouze relaci držící inference lease; kompletní seznam relací protokol nenabízí.",
+      "caption": "Live WebSocket sessions holding the inference lease. Batch transcriptions do not appear here.",
       "openSessions": "Otevřené relace",
       "leaseHolder": "Držitel lease",
       "noLease": "Žádný lease se nedrží",
-      "worstRealtimeFactor": "Nejhorší realtime faktor"
+      "worstRealtimeFactor": "Nejhorší realtime faktor",
+      "realtimeFactor": "Realtime factor"
     },
     "errors": {
       "noToken": "V paměti není žádný token — vložte ho výše pro dotaz na ověřené routy.",
@@ -75,10 +89,28 @@
       "unknown": "Neočekávaná chyba"
     },
     "examples": {
-      "embedTitle": "Embed token in examples",
-      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
       "repoLinkLabel": "Transcribe examples",
-      "repoLinkAction": "Open on GitHub"
+      "repoLinkAction": "Open on GitHub",
+      "groupTitle": "Use this service",
+      "repoLinkCaption": "Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
+    },
+    "engine": {
+      "groupTitle": "Engine",
+      "activeModel": "Active model",
+      "backend": "Backend",
+      "capabilities": "Capabilities",
+      "noModel": "No model loaded"
+    },
+    "connection": {
+      "groupTitle": "Connection",
+      "baseUrl": "Base URL",
+      "baseUrlCaption": "Reachable from this machine. Every /v1 route needs the bearer token.",
+      "withToken": "URL with token",
+      "withTokenCaption": "Handy for scripts and mobile clients. Tokens in URLs can appear in logs — prefer the Authorization header.",
+      "showUrl": "Show URL",
+      "hideUrl": "Hide URL",
+      "copyBaseUrl": "Copy base URL",
+      "copyUrlWithToken": "Copy URL with token"
     }
   },
   "tray": {

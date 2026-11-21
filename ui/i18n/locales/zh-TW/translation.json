@@ -31,7 +31,8 @@
       "cancel": "取消",
       "startedToast": "服務已啟動",
       "alreadyRunningToast": "服務已在執行",
-      "stoppedToast": "服務已停止"
+      "stoppedToast": "服務已停止",
+      "stoppedHint": "Start the service to accept clients."
     },
     "fingerprint": {
       "label": "權杖指紋",
@@ -40,7 +41,7 @@
     },
     "token": {
       "groupTitle": "存取權杖",
-      "memoryNote": "僅保存在記憶體中——絕不寫入磁碟或紀錄。",
+      "memoryNote": "Stored locally in gui-client.json (owner-only). Never logged.",
       "inMemory": "記憶體中有權杖",
       "pasteLabel": "服務權杖",
       "pastePlaceholder": "vx_…",
@@ -57,15 +58,28 @@
       "copied": "已複製",
       "copyFailed": "無法複製",
       "dismiss": "完成",
-      "rotatedToast": "權杖已輪替——已連線的用戶端已關閉"
+      "rotatedToast": "權杖已輪替——已連線的用戶端已關閉",
+      "serviceTokenLabel": "Service token",
+      "serviceTokenCaption": "Use as: Authorization: Bearer <token>",
+      "serviceTokenHidden": "Token hidden",
+      "serviceTokenShow": "Show token",
+      "serviceTokenHide": "Hide token",
+      "copyToken": "Copy token",
+      "tokenCopied": "Copied",
+      "connectionUrlLabel": "Connection URL",
+      "connectionUrlCaption": "⚠ Token in URL — prefer the Authorization header for scripts.",
+      "copyUrl": "Copy URL",
+      "urlCopied": "Copied",
+      "noTokenYet": "Start the service to load the token"
     },
     "sessions": {
       "groupTitle": "開啟的工作階段",
-      "caption": "服務僅回報持有推論租約的工作階段；完整的工作階段清單不是協定的一部分。",
+      "caption": "Live WebSocket sessions holding the inference lease. Batch transcriptions do not appear here.",
       "openSessions": "開啟的工作階段",
       "leaseHolder": "租約持有者",
       "noLease": "未持有租約",
-      "worstRealtimeFactor": "最差即時係數"
+      "worstRealtimeFactor": "最差即時係數",
+      "realtimeFactor": "Realtime factor"
     },
     "errors": {
       "noToken": "記憶體中沒有權杖——請在上方貼上一個以查詢需驗證的路由。",
@@ -75,10 +89,28 @@
       "unknown": "非預期錯誤"
     },
     "examples": {
-      "embedTitle": "Embed token in examples",
-      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
       "repoLinkLabel": "Transcribe examples",
-      "repoLinkAction": "Open on GitHub"
+      "repoLinkAction": "Open on GitHub",
+      "groupTitle": "Use this service",
+      "repoLinkCaption": "Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
+    },
+    "engine": {
+      "groupTitle": "Engine",
+      "activeModel": "Active model",
+      "backend": "Backend",
+      "capabilities": "Capabilities",
+      "noModel": "No model loaded"
+    },
+    "connection": {
+      "groupTitle": "Connection",
+      "baseUrl": "Base URL",
+      "baseUrlCaption": "Reachable from this machine. Every /v1 route needs the bearer token.",
+      "withToken": "URL with token",
+      "withTokenCaption": "Handy for scripts and mobile clients. Tokens in URLs can appear in logs — prefer the Authorization header.",
+      "showUrl": "Show URL",
+      "hideUrl": "Hide URL",
+      "copyBaseUrl": "Copy base URL",
+      "copyUrlWithToken": "Copy URL with token"
     }
   },
   "tray": {

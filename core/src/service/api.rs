@@ -525,6 +525,12 @@ pub struct ServiceHistoryEntry {
     pub language: Option<String>,
     /// "batch" | "stream"
     pub source: String,
+    /// Display name of the client that submitted this transcription.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub client_label: Option<String>,
+    /// Emoji, unicode character, or image URL for the client's icon.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub client_icon: Option<String>,
 }
 
 /// `GET /v1/history` paginated response.

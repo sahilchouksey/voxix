@@ -31,7 +31,8 @@
       "cancel": "キャンセル",
       "startedToast": "サービスを起動しました",
       "alreadyRunningToast": "サービスはすでに実行中です",
-      "stoppedToast": "サービスを停止しました"
+      "stoppedToast": "サービスを停止しました",
+      "stoppedHint": "Start the service to accept clients."
     },
     "fingerprint": {
       "label": "トークンフィンガープリント",
@@ -40,7 +41,7 @@
     },
     "token": {
       "groupTitle": "アクセストークン",
-      "memoryNote": "メモリ内のみで保持され — ディスクやログには書き込まれません。",
+      "memoryNote": "Stored locally in gui-client.json (owner-only). Never logged.",
       "inMemory": "トークンはメモリ内にあります",
       "pasteLabel": "サービストークン",
       "pastePlaceholder": "vx_…",
@@ -57,15 +58,28 @@
       "copied": "コピーしました",
       "copyFailed": "コピーできませんでした",
       "dismiss": "完了",
-      "rotatedToast": "トークンをローテーションしました — 接続中のクライアントは切断されました"
+      "rotatedToast": "トークンをローテーションしました — 接続中のクライアントは切断されました",
+      "serviceTokenLabel": "Service token",
+      "serviceTokenCaption": "Use as: Authorization: Bearer <token>",
+      "serviceTokenHidden": "Token hidden",
+      "serviceTokenShow": "Show token",
+      "serviceTokenHide": "Hide token",
+      "copyToken": "Copy token",
+      "tokenCopied": "Copied",
+      "connectionUrlLabel": "Connection URL",
+      "connectionUrlCaption": "⚠ Token in URL — prefer the Authorization header for scripts.",
+      "copyUrl": "Copy URL",
+      "urlCopied": "Copied",
+      "noTokenYet": "Start the service to load the token"
     },
     "sessions": {
       "groupTitle": "オープンセッション",
-      "caption": "サービスは推論リースを保持するセッションのみを報告します。完全なセッション一覧はプロトコルに含まれません。",
+      "caption": "Live WebSocket sessions holding the inference lease. Batch transcriptions do not appear here.",
       "openSessions": "オープンセッション",
       "leaseHolder": "リース保持者",
       "noLease": "リースは保持されていません",
-      "worstRealtimeFactor": "最悪リアルタイム係数"
+      "worstRealtimeFactor": "最悪リアルタイム係数",
+      "realtimeFactor": "Realtime factor"
     },
     "errors": {
       "noToken": "メモリにトークンがありません — 上記に貼り付けて認証ルートを照会してください。",
@@ -75,10 +89,28 @@
       "unknown": "予期しないエラー"
     },
     "examples": {
-      "embedTitle": "Embed token in examples",
-      "needsToken": "Rotate or paste a token first to embed it here. The token never leaves this window's memory.",
       "repoLinkLabel": "Transcribe examples",
-      "repoLinkAction": "Open on GitHub"
+      "repoLinkAction": "Open on GitHub",
+      "groupTitle": "Use this service",
+      "repoLinkCaption": "Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
+    },
+    "engine": {
+      "groupTitle": "Engine",
+      "activeModel": "Active model",
+      "backend": "Backend",
+      "capabilities": "Capabilities",
+      "noModel": "No model loaded"
+    },
+    "connection": {
+      "groupTitle": "Connection",
+      "baseUrl": "Base URL",
+      "baseUrlCaption": "Reachable from this machine. Every /v1 route needs the bearer token.",
+      "withToken": "URL with token",
+      "withTokenCaption": "Handy for scripts and mobile clients. Tokens in URLs can appear in logs — prefer the Authorization header.",
+      "showUrl": "Show URL",
+      "hideUrl": "Hide URL",
+      "copyBaseUrl": "Copy base URL",
+      "copyUrlWithToken": "Copy URL with token"
     }
   },
   "tray": {

@@ -131,6 +131,9 @@ const MiniPlayer = ({
   </div>
 );
 
+const isImageUrl = (s: string): boolean =>
+  s.startsWith("http") || s.startsWith("data:image");
+
 export const HistoryTab = () => {
   const { t } = useTranslation();
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
@@ -164,7 +167,17 @@ export const HistoryTab = () => {
   useEffect(() => {
     load();
     const un = events.historyUpdatePayload.listen(() => load());
+    // The transcription service writes its own history row straight into
+    // history.db (mirroring save_entry) when the batch path runs in the
+    // daemon process — it cannot emit the Tauri `history-update-payload`
+    // event, so the list would stay stale until the tab remounts. Poll the
+    // local SQLite store while the tab is mounted so a finished recording
+    // shows up immediately.
+    const poll = window.setInterval(() => {
+      void load();
+    }, 1000);
     return () => {
+      window.clearInterval(poll);
       un.then((f) => f());
     };
   }, [load]);
@@ -501,6 +514,44 @@ const Card = ({
       >
         <span className="voxix-cap">{relDate(entry.timestamp)}</span>
         <span className="voxix-cap">{time(entry.timestamp)}</span>
+        {entry.client_label && (
+          <span
+            className="voxix-cap"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+              padding: "1px 6px",
+              borderRadius: 4,
+              background: "var(--surface-raised)",
+              border: "1px solid var(--border)",
+              fontSize: "var(--text-xs)",
+              maxWidth: 120,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+            title={entry.client_label}
+          >
+            {entry.client_icon ? (
+              isImageUrl(entry.client_icon) ? (
+                <img
+                  src={entry.client_icon}
+                  alt=""
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: 2,
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <span aria-hidden="true">{entry.client_icon}</span>
+              )
+            ) : null}
+            {entry.client_label}
+          </span>
+        )}
         <div style={{ flex: 1 }} />
         {blank ? (
           <button

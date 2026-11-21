@@ -4,14 +4,30 @@ import { toast } from "sonner";
 import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useServiceStore } from "@/stores/serviceStore";
-import { Badge, Btn, Group, Row, Screen, Toggle, useEscape } from "./ui";
+import {
+  Badge,
+  Btn,
+  Chip,
+  Group,
+  Row,
+  Screen,
+  Stat,
+  StatGrid,
+  useEscape,
+} from "./ui";
 import {
   CheckIcon,
+  CodeIcon,
   CopyIcon,
+  CpuIcon,
+  EyeIcon,
+  EyeOffIcon,
   ExclamationTriangle,
+  LinkIcon,
   LockShield,
   RefreshIcon,
   ServerIcon,
+  Waveform,
   XmarkCircle,
 } from "./icons";
 
@@ -22,6 +38,35 @@ const MONO = { fontFamily: "var(--font-mono)" } as const;
 
 const truncateId = (id: string) =>
   id.length > 16 ? `${id.slice(0, 8)}…${id.slice(-4)}` : id;
+
+/**
+ * Compact human duration using the two largest non-zero units, e.g.
+ * `21133` → `5h 52m`, `90061` → `1d 1h`, `40000000` → `1y 3mo`.
+ */
+const formatUptime = (totalSeconds: number): string => {
+  if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return "—";
+  const s = Math.floor(totalSeconds);
+  if (s < 60) return `${s}s`;
+  const units: Array<[string, number]> = [
+    ["y", 365 * 86400],
+    ["mo", 30 * 86400],
+    ["d", 86400],
+    ["h", 3600],
+    ["m", 60],
+    ["s", 1],
+  ];
+  const parts: string[] = [];
+  let rest = s;
+  for (const [label, size] of units) {
+    const n = Math.floor(rest / size);
+    if (n > 0) {
+      parts.push(`${n}${label}`);
+      rest -= n * size;
+      if (parts.length === 2) break;
+    }
+  }
+  return parts.join(" ");
+};
 
 const probeErrorKey = (code: string | null | undefined): string | null => {
   if (!code) return null;
@@ -50,12 +95,11 @@ export const ServiceTab = () => {
     rotating,
     error,
     rotatedToken,
-    sessionToken,
+    serviceToken,
+    connectionUrl,
     refresh,
     start,
     stop,
-    keepToken,
-    forgetToken,
     rotateToken,
     dismissRotatedToken,
     clearError,
@@ -64,9 +108,11 @@ export const ServiceTab = () => {
   const [confirmStop, setConfirmStop] = useState(false);
   const [confirmRotate, setConfirmRotate] = useState(false);
   const [showFingerprint, setShowFingerprint] = useState(false);
-  const [tokenDraft, setTokenDraft] = useState("");
-  const [embed, setEmbed] = useState(false);
-  const [urlCopied, setUrlCopied] = useState(false);
+  const [showServiceToken, setShowServiceToken] = useState(false);
+  const [showConnectionUrl, setShowConnectionUrl] = useState(false);
+  const [baseCopied, setBaseCopied] = useState(false);
+  const [connectionCopied, setConnectionCopied] = useState(false);
+  const [tokenCopied, setTokenCopied] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEscape(confirmStop, () => setConfirmStop(false));
@@ -79,12 +125,6 @@ export const ServiceTab = () => {
   useEffect(() => {
     setCopied(false);
   }, [rotatedToken]);
-
-  useEffect(() => {
-    if (!sessionToken) setEmbed(false);
-  }, [sessionToken]);
-
-  const embedToken = embed && !!sessionToken;
 
   const baseUrl =
     discovery?.port != null ? "http://127.0.0.1:" + discovery.port : null;
@@ -110,10 +150,8 @@ export const ServiceTab = () => {
   const healthError = probe?.health_error ?? null;
   const status = probe?.status ?? null;
   const statusError = probe?.status_error ?? null;
-  const tokenPresent = probe?.token_present ?? false;
 
   const errorKey = probeErrorKey(healthError ?? statusError);
-  const errorText = errorKey ? t(errorKey) : null;
 
   const uptimeSeconds = health ? Math.round(health.uptime_ms / 1000) : null;
 
@@ -122,6 +160,39 @@ export const ServiceTab = () => {
     try {
       await writeText(rotatedToken.token);
       setCopied(true);
+    } catch {
+      toast.error(t("serviceTab.token.copyFailed"));
+    }
+  };
+
+  const copyServiceToken = async () => {
+    if (!serviceToken) return;
+    try {
+      await writeText(serviceToken);
+      setTokenCopied(true);
+      setTimeout(() => setTokenCopied(false), 1500);
+    } catch {
+      toast.error(t("serviceTab.token.copyFailed"));
+    }
+  };
+
+  const copyBaseUrl = async () => {
+    if (!baseUrl) return;
+    try {
+      await writeText(baseUrl);
+      setBaseCopied(true);
+      setTimeout(() => setBaseCopied(false), 1500);
+    } catch {
+      toast.error(t("serviceTab.token.copyFailed"));
+    }
+  };
+
+  const copyConnectionUrlFn = async () => {
+    if (!connectionUrl) return;
+    try {
+      await writeText(connectionUrl);
+      setConnectionCopied(true);
+      setTimeout(() => setConnectionCopied(false), 1500);
     } catch {
       toast.error(t("serviceTab.token.copyFailed"));
     }
@@ -180,197 +251,43 @@ export const ServiceTab = () => {
         </div>
       )}
 
+      {/* ── Daemon ── */}
       <Group
         title={t("serviceTab.daemon.groupTitle")}
-        caption={
-          discovery?.present
-            ? undefined
-            : t("serviceTab.daemon.discoveryMissing")
-        }
+        icon={<ServerIcon size={14} />}
       >
-        <Row
-          icon={<ServerIcon size={16} />}
-          title={t("serviceTab.daemon.status")}
-          caption={
-            discovery?.present && stale
-              ? t("serviceTab.daemon.discoveryStale")
-              : undefined
-          }
-          control={
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span
-                aria-hidden="true"
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: statusColor,
-                  display: "inline-block",
-                }}
-              />
-              <Badge>{statusLabel}</Badge>
-              <button
-                type="button"
-                className="voxix-icon-btn"
-                aria-label={t("serviceTab.daemon.refresh")}
-                onClick={() => void refresh()}
-                disabled={loading}
-              >
-                <RefreshIcon size={16} />
-              </button>
+        {/* Hero status row */}
+        <div className="voxix-row" style={{ gap: 8 }}>
+          <span
+            aria-hidden="true"
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              background: statusColor,
+              display: "inline-block",
+              flexShrink: 0,
+            }}
+          />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontSize: "var(--text-base)",
+                fontWeight: "var(--weight-semibold)",
+              }}
+            >
+              {statusLabel}
             </div>
-          }
-        />
-        {discovery?.present && discovery.port != null && (
-          <Row
-            title={t("serviceTab.daemon.port")}
-            control={
-              <span className="voxix-cap" style={MONO}>
-                {discovery.port}
-              </span>
-            }
-          />
-        )}
-        {discovery?.present && discovery.pid != null && (
-          <Row
-            title={t("serviceTab.daemon.processId")}
-            control={
-              <span className="voxix-cap" style={MONO}>
-                {discovery.pid}
-              </span>
-            }
-          />
-        )}
-        {discovery?.present && discovery.protocol_version != null && (
-          <Row
-            title={t("serviceTab.daemon.protocolVersion")}
-            control={
-              <span className="voxix-cap" style={MONO}>
-                {discovery.protocol_version}
-              </span>
-            }
-          />
-        )}
-        {health && (
-          <>
-            <Row
-              title={t("serviceTab.daemon.engineVersion")}
-              control={
-                <span className="voxix-cap" style={MONO}>
-                  {health.engine_version}
-                </span>
-              }
-            />
-            <Row
-              title={t("serviceTab.daemon.ready")}
-              control={
-                <Badge>
-                  {health.ready
-                    ? t("serviceTab.daemon.ready")
-                    : t("serviceTab.daemon.notReady")}
-                </Badge>
-              }
-            />
-            {uptimeSeconds != null && (
-              <Row
-                title={t("serviceTab.daemon.uptime")}
-                control={
-                  <span className="voxix-cap" style={MONO}>
-                    {`${uptimeSeconds} s`}
-                  </span>
-                }
-              />
-            )}
-          </>
-        )}
-        {discovery?.token_fingerprint && (
-          <Row
-            title={t("serviceTab.fingerprint.label")}
-            control={
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span className="voxix-cap" style={MONO}>
-                  {showFingerprint
-                    ? discovery.token_fingerprint
-                    : "••••••••••••••••"}
-                </span>
-                <Btn onClick={() => setShowFingerprint((v) => !v)}>
-                  {showFingerprint
-                    ? t("serviceTab.fingerprint.hide")
-                    : t("serviceTab.fingerprint.reveal")}
-                </Btn>
-              </div>
-            }
-          />
-        )}
-        {discovery?.present && baseUrl && (
-          <Row
-            title="Connect"
-            caption="Any client on this machine can reach the daemon here. Every /v1 route needs the bearer token."
-            control={
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <code style={{ ...MONO, fontSize: "var(--text-sm)" }}>
-                  {baseUrl}
-                </code>
-                <button
-                  type="button"
-                  className="voxix-icon-btn"
-                  aria-label="Copy service base URL"
-                  onClick={async () => {
-                    await writeText(baseUrl);
-                    setUrlCopied(true);
-                    setTimeout(() => setUrlCopied(false), 1500);
-                  }}
-                >
-                  {urlCopied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
-                </button>
-              </div>
-            }
-          />
-        )}
-        {status?.active_model_id && (
-          <Row
-            title="Active model"
-            control={
-              <span className="voxix-cap" style={MONO}>
-                {status.active_model_id} ({status.model_state})
-              </span>
-            }
-          />
-        )}
-        {status?.backend && (
-          <Row
-            title="Backend"
-            control={
-              <span className="voxix-cap" style={MONO}>
-                {status.backend}
-              </span>
-            }
-          />
-        )}
-        {status?.capabilities && (
-          <Row
-            title="Capabilities"
-            caption="Server-side VAD, auto gain, denoise and the one-stream limit reported by the service."
-            control={
-              <span className="voxix-cap" style={MONO}>
-                {"streams:" +
-                  status.capabilities.max_concurrent_streams +
-                  " vad:" +
-                  (status.capabilities.requires_server_vad
-                    ? "server"
-                    : "client") +
-                  " gain:" +
-                  (status.capabilities.prefers_auto_gain ? "auto" : "off") +
-                  " denoise:" +
-                  (status.capabilities.prefers_noise_reduction ? "on" : "off")}
-              </span>
-            }
-          />
-        )}
-        <div
-          className="voxix-row"
-          style={{ justifyContent: "flex-end", gap: 8 }}
-        >
+          </div>
+          <button
+            type="button"
+            className="voxix-icon-btn"
+            aria-label={t("serviceTab.daemon.refresh")}
+            onClick={() => void refresh()}
+            disabled={loading}
+          >
+            <RefreshIcon size={16} />
+          </button>
           <Btn
             onClick={async () => {
               const result = await start();
@@ -398,6 +315,62 @@ export const ServiceTab = () => {
               : t("serviceTab.daemon.stop")}
           </Btn>
         </div>
+
+        {/* Stat strip: Port / PID / Uptime */}
+        <StatGrid>
+          <Stat
+            label={t("serviceTab.daemon.port")}
+            value={discovery?.port ?? "—"}
+          />
+          <Stat
+            label={t("serviceTab.daemon.processId")}
+            value={discovery?.pid ?? "—"}
+          />
+          <Stat
+            label={t("serviceTab.daemon.uptime")}
+            value={uptimeSeconds != null ? formatUptime(uptimeSeconds) : "—"}
+          />
+        </StatGrid>
+
+        {/* Engine version */}
+        {health && (
+          <Row
+            title={t("serviceTab.daemon.engineVersion")}
+            control={
+              <span className="voxix-cap" style={MONO}>
+                {health.engine_version}
+              </span>
+            }
+          />
+        )}
+
+        {/* Protocol version */}
+        {discovery?.present && discovery.protocol_version != null && (
+          <Row
+            title={t("serviceTab.daemon.protocolVersion")}
+            control={
+              <span className="voxix-cap" style={MONO}>
+                {discovery.protocol_version}
+              </span>
+            }
+          />
+        )}
+
+        {/* Ready badge */}
+        {health && (
+          <Row
+            title={t("serviceTab.daemon.ready")}
+            control={
+              <Badge>
+                {health.ready
+                  ? t("serviceTab.daemon.ready")
+                  : t("serviceTab.daemon.notReady")}
+              </Badge>
+            }
+          />
+        )}
+
+        {/* Probe errors */}
         {(healthError || statusError) && (
           <Row
             title={t("serviceTab.errors.unknown")}
@@ -410,60 +383,275 @@ export const ServiceTab = () => {
         )}
       </Group>
 
+      {/* ── Engine ── */}
+      {(status?.active_model_id ||
+        status?.backend ||
+        status?.capabilities) && (
+        <Group
+          title={t("serviceTab.engine.groupTitle")}
+          icon={<CpuIcon size={14} />}
+        >
+          {/* Active model */}
+          <Row
+            title={t("serviceTab.engine.activeModel")}
+            stack
+            control={
+              status?.active_model_id ? (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <span className="voxix-cap" style={MONO}>
+                    {status.active_model_id}
+                  </span>
+                  <Badge>{status.model_state}</Badge>
+                </div>
+              ) : (
+                <span className="voxix-cap">
+                  {t("serviceTab.engine.noModel")}
+                </span>
+              )
+            }
+          />
+
+          {/* Backend */}
+          {status?.backend && (
+            <Row
+              title={t("serviceTab.engine.backend")}
+              control={
+                <span className="voxix-cap" style={MONO}>
+                  {status.backend}
+                </span>
+              }
+            />
+          )}
+
+          {/* Capabilities */}
+          {status?.capabilities && (
+            <Row
+              title={t("serviceTab.engine.capabilities")}
+              stack
+              control={
+                <div className="voxix-chip-row">
+                  {(() => {
+                    const caps = status.capabilities;
+                    const n = caps.max_concurrent_streams;
+                    return (
+                      <>
+                        <Chip>{`${n} stream${n === 1 ? "" : "s"}`}</Chip>
+                        <Chip>{`VAD ${caps.requires_server_vad ? "server" : "client"}`}</Chip>
+                        <Chip>{`Gain ${caps.prefers_auto_gain ? "auto" : "off"}`}</Chip>
+                        <Chip>{`Denoise ${caps.prefers_noise_reduction ? "on" : "off"}`}</Chip>
+                      </>
+                    );
+                  })()}
+                </div>
+              }
+            />
+          )}
+        </Group>
+      )}
+
+      {/* ── Connection ── */}
+      {(baseUrl || connectionUrl || discovery?.token_fingerprint) && (
+        <Group
+          title={t("serviceTab.connection.groupTitle")}
+          icon={<LinkIcon size={14} />}
+        >
+          {/* Base URL */}
+          {baseUrl && (
+            <Row
+              title={t("serviceTab.connection.baseUrl")}
+              stack
+              control={
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: 8 }}
+                >
+                  <code
+                    style={{
+                      ...MONO,
+                      fontSize: "var(--text-sm)",
+                      flex: 1,
+                      minWidth: 0,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {baseUrl}
+                  </code>
+                  <button
+                    type="button"
+                    className="voxix-icon-btn"
+                    aria-label={t("serviceTab.connection.copyBaseUrl")}
+                    onClick={() => void copyBaseUrl()}
+                  >
+                    {baseCopied ? (
+                      <CheckIcon size={14} />
+                    ) : (
+                      <CopyIcon size={14} />
+                    )}
+                  </button>
+                </div>
+              }
+            />
+          )}
+
+          {/* URL with token */}
+          {connectionUrl && (
+            <Row
+              title={t("serviceTab.connection.withToken")}
+              stack
+              control={
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: 8 }}
+                >
+                  <code
+                    style={{
+                      ...MONO,
+                      fontSize: "var(--text-sm)",
+                      flex: 1,
+                      minWidth: 0,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {showConnectionUrl
+                      ? connectionUrl
+                      : connectionUrl.replace(/api_key=.*/, "api_key=••••••••")}
+                  </code>
+                  <button
+                    type="button"
+                    className="voxix-icon-btn"
+                    aria-label={
+                      showConnectionUrl
+                        ? t("serviceTab.connection.hideUrl")
+                        : t("serviceTab.connection.showUrl")
+                    }
+                    onClick={() => setShowConnectionUrl((v) => !v)}
+                  >
+                    {showConnectionUrl ? (
+                      <EyeOffIcon size={14} />
+                    ) : (
+                      <EyeIcon size={14} />
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    className="voxix-icon-btn"
+                    aria-label={t("serviceTab.connection.copyUrlWithToken")}
+                    onClick={() => void copyConnectionUrlFn()}
+                  >
+                    {connectionCopied ? (
+                      <CheckIcon size={14} />
+                    ) : (
+                      <CopyIcon size={14} />
+                    )}
+                  </button>
+                </div>
+              }
+            />
+          )}
+
+          {/* Token fingerprint */}
+          {discovery?.token_fingerprint && (
+            <Row
+              title={t("serviceTab.fingerprint.label")}
+              control={
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: 8 }}
+                >
+                  <span className="voxix-cap" style={MONO}>
+                    {showFingerprint
+                      ? discovery.token_fingerprint
+                      : "••••••••••••••••"}
+                  </span>
+                  <button
+                    type="button"
+                    className="voxix-icon-btn"
+                    aria-label={
+                      showFingerprint
+                        ? t("serviceTab.fingerprint.hide")
+                        : t("serviceTab.fingerprint.reveal")
+                    }
+                    onClick={() => setShowFingerprint((v) => !v)}
+                  >
+                    {showFingerprint ? (
+                      <EyeOffIcon size={14} />
+                    ) : (
+                      <EyeIcon size={14} />
+                    )}
+                  </button>
+                </div>
+              }
+            />
+          )}
+        </Group>
+      )}
+
+      {/* ── Access token ── */}
       <Group
         title={t("serviceTab.token.groupTitle")}
-        caption={t("serviceTab.token.memoryNote")}
-        footer={discovery?.state_dir}
+        icon={<LockShield size={14} />}
       >
         <Row
           icon={<LockShield size={16} />}
-          title={t("serviceTab.token.inMemory")}
+          title={t("serviceTab.token.serviceTokenLabel")}
           control={
-            tokenPresent ? (
-              <Btn onClick={() => void forgetToken()}>
-                {t("serviceTab.token.forget")}
-              </Btn>
+            serviceToken ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span className="voxix-cap" style={MONO}>
+                  {showServiceToken
+                    ? serviceToken
+                    : "••••••••••••••••••••"}
+                </span>
+                <button
+                  type="button"
+                  className="voxix-icon-btn"
+                  aria-label={
+                    showServiceToken
+                      ? t("serviceTab.token.serviceTokenHide")
+                      : t("serviceTab.token.serviceTokenShow")
+                  }
+                  onClick={() => setShowServiceToken((v) => !v)}
+                >
+                  {showServiceToken ? (
+                    <EyeOffIcon size={14} />
+                  ) : (
+                    <EyeIcon size={14} />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  className="voxix-icon-btn"
+                  aria-label={t("serviceTab.token.copyToken")}
+                  onClick={() => void copyServiceToken()}
+                >
+                  {tokenCopied ? (
+                    <CheckIcon size={14} />
+                  ) : (
+                    <CopyIcon size={14} />
+                  )}
+                </button>
+              </div>
             ) : (
-              <Badge>{t("serviceTab.token.pasteLabel")}</Badge>
+              <span className="voxix-cap">
+                {t("serviceTab.token.noTokenYet")}
+              </span>
             )
           }
         />
-        {!tokenPresent && (
-          <Row
-            title={t("serviceTab.token.pasteLabel")}
-            control={
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <input
-                  type="password"
-                  className="voxix-input"
-                  style={{ width: 180, ...MONO }}
-                  placeholder={t("serviceTab.token.pastePlaceholder")}
-                  value={tokenDraft}
-                  autoComplete="off"
-                  spellCheck={false}
-                  onChange={(e) => setTokenDraft(e.target.value)}
-                />
-                <Btn
-                  variant="primary"
-                  disabled={tokenDraft.trim().length === 0}
-                  onClick={() => {
-                    const value = tokenDraft.trim();
-                    setTokenDraft("");
-                    void keepToken(value);
-                  }}
-                >
-                  {t("serviceTab.token.keep")}
-                </Btn>
-              </div>
-            }
-          />
-        )}
         <Row
           title={t("serviceTab.token.rotate")}
           control={
             <Btn
               onClick={() => setConfirmRotate(true)}
-              disabled={rotating || !tokenPresent}
+              disabled={rotating || !serviceToken}
             >
               {rotating
                 ? t("serviceTab.token.rotating")
@@ -512,56 +700,42 @@ export const ServiceTab = () => {
         )}
       </Group>
 
+      {/* ── Open sessions ── */}
       <Group
         title={t("serviceTab.sessions.groupTitle")}
-        caption={t("serviceTab.sessions.caption")}
+        icon={<Waveform size={14} />}
       >
-        <Row
-          title={t("serviceTab.sessions.openSessions")}
-          control={<Badge>{status?.active_sessions ?? 0}</Badge>}
-        />
-        <Row
-          title={t("serviceTab.sessions.leaseHolder")}
-          control={
-            <span className="voxix-cap" style={MONO}>
-              {status?.lease_held && status.active_session_id
+        <StatGrid>
+          <Stat
+            label={t("serviceTab.sessions.openSessions")}
+            value={status?.active_sessions ?? 0}
+          />
+          <Stat
+            label={t("serviceTab.sessions.leaseHolder")}
+            value={
+              status?.lease_held && status.active_session_id
                 ? truncateId(status.active_session_id)
-                : t("serviceTab.sessions.noLease")}
-            </span>
-          }
-        />
-        <Row
-          title={t("serviceTab.sessions.worstRealtimeFactor")}
-          control={
-            <span className="voxix-cap" style={MONO}>
-              {status?.max_realtime_factor != null
+                : "—"
+            }
+          />
+          <Stat
+            label={t("serviceTab.sessions.realtimeFactor")}
+            value={
+              status?.max_realtime_factor != null
                 ? status.max_realtime_factor.toFixed(2)
-                : "—"}
-            </span>
-          }
-        />
+                : "—"
+            }
+          />
+        </StatGrid>
       </Group>
 
+      {/* ── Use this service ── */}
       <Group
-        title="Use this service"
-        caption="POST raw 16 kHz mono WAV bytes, then poll until the job completes. Authorization: Bearer <token>."
+        title={t("serviceTab.examples.groupTitle")}
+        icon={<CodeIcon size={14} />}
       >
         <Row
-          title={t("serviceTab.examples.embedTitle")}
-          caption={
-            sessionToken ? undefined : t("serviceTab.examples.needsToken")
-          }
-          control={
-            <Toggle
-              on={embedToken}
-              onChange={setEmbed}
-              disabled={!sessionToken}
-            />
-          }
-        />
-        <Row
           title={t("serviceTab.examples.repoLinkLabel")}
-          caption="Ready-to-run SDK and raw-HTTP (curl, Node, Python) scripts live in the repo's examples/ directory."
           control={
             <Btn onClick={() => void openUrl(EXAMPLES_URL)}>
               {t("serviceTab.examples.repoLinkAction")}

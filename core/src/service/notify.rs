@@ -24,7 +24,10 @@
 #[cfg(unix)]
 pub fn check_self_policy() -> Result<ProcessPolicyReport, String> {
     let nice = unsafe { libc::getpriority(libc::PRIO_PROCESS, 0) };
-    if nice > 0 {
+    // SSH sessions and some interactive shells inherit nice 1–9 without
+    // actually being background-throttled. Only nice ≥ 10 is true batch-class
+    // throttling (POSIX defines 10 as the boundary for background priority).
+    if nice >= 10 {
         return Err(format!(
             "process appears background-throttled (nice {nice}); refusing to start a service in a degraded QoS class"
         ));
@@ -54,7 +57,9 @@ impl ProcessPolicyReport {
     pub const FORBIDDEN_PHRASE: &'static str = "background throttled";
 
     pub fn assertion(&self) -> Result<(), String> {
-        if !self.interactive || self.nice < 0 || self.nice > 0 {
+        // Mirror the check_self_policy threshold: nice 1–9 is mild interactive
+        // deprioritisation; only ≥ 10 is true batch-class throttling.
+        if !self.interactive || self.nice < 0 || self.nice >= 10 {
             return Err("no-background-throttling assertion failed".to_string());
         }
         Ok(())

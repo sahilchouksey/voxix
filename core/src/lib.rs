@@ -924,12 +924,18 @@ pub fn run(cli_args: CliArgs) {
         let manifest_dir = std::env::var("CARGO_MANIFEST_DIR")
             .map(|dir| PathBuf::from(dir).join("../ui/bindings.ts"))
             .unwrap_or_else(|_| PathBuf::from("../ui/bindings.ts"));
-        specta_builder
-            .export(
-                Typescript::default().bigint(BigIntExportBehavior::Number),
-                &manifest_dir,
-            )
-            .expect("Failed to export typescript bindings");
+        // Regenerating bindings is a developer convenience. An installed debug
+        // build runs from an arbitrary working directory where this relative
+        // path may not exist or be writable, so never abort the app over it.
+        if let Err(err) = specta_builder.export(
+            Typescript::default().bigint(BigIntExportBehavior::Number),
+            &manifest_dir,
+        ) {
+            log::warn!(
+                "failed to export typescript bindings to {}: {err}",
+                manifest_dir.display()
+            );
+        }
     }
 
     let invoke_handler = specta_builder.invoke_handler();

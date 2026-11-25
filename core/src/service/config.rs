@@ -7,7 +7,7 @@ use std::net::SocketAddr;
 use std::path::PathBuf;
 
 /// Default loopback bind (SDK plan §3.1).
-pub const DEFAULT_BIND: &str = "127.0.0.1:47832";
+pub const DEFAULT_BIND: &str = "0.0.0.0:47832";
 /// Protocol version advertised by this build.
 pub const PROTOCOL_VERSION: u32 = 1;
 
@@ -36,6 +36,11 @@ pub enum ServiceMode {
 pub struct ServiceConfig {
     pub mode: ServiceMode,
     pub bind: String,
+    /// True when `bind` was not supplied via `--bind` and therefore equals
+    /// `DEFAULT_BIND`. Allows `bind_listener` to fall back to an ephemeral
+    /// loopback port on EADDRINUSE instead of failing hard.
+    /// Explicit `--bind` keeps the original fatal behaviour.
+    pub bind_is_default: bool,
     pub data_dir: PathBuf,
     pub token_stdout: TokenStdoutMode,
     pub max_sessions: u32,
@@ -101,6 +106,7 @@ pub fn from_options(options: ServeOptions) -> Result<ServiceConfig, String> {
         let cfg = ServiceConfig {
             mode,
             bind,
+            bind_is_default: false,
             data_dir,
             token_stdout: TokenStdoutMode::Never,
             max_sessions: 1,
@@ -114,6 +120,7 @@ pub fn from_options(options: ServeOptions) -> Result<ServiceConfig, String> {
     Ok(ServiceConfig {
         mode,
         bind,
+        bind_is_default: options.bind.is_none(),
         data_dir,
         token_stdout: options.token_stdout,
         max_sessions: 8,

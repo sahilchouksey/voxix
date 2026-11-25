@@ -11,6 +11,7 @@ import {
   Group,
   Row,
   Screen,
+  Segmented,
   Stat,
   StatGrid,
   useEscape,
@@ -89,6 +90,7 @@ export const ServiceTab = () => {
   const {
     discovery,
     probe,
+    tailscale,
     loading,
     starting,
     stopping,
@@ -96,7 +98,6 @@ export const ServiceTab = () => {
     error,
     rotatedToken,
     serviceToken,
-    connectionUrl,
     refresh,
     start,
     stop,
@@ -104,6 +105,9 @@ export const ServiceTab = () => {
     dismissRotatedToken,
     clearError,
   } = useServiceStore();
+
+  type HostMode = "local" | "ip" | "dns";
+  const [hostMode, setHostMode] = useState<HostMode>("local");
 
   const [confirmStop, setConfirmStop] = useState(false);
   const [confirmRotate, setConfirmRotate] = useState(false);
@@ -126,8 +130,19 @@ export const ServiceTab = () => {
     setCopied(false);
   }, [rotatedToken]);
 
+  const selectedHost =
+    tailscale?.available && hostMode === "ip" && tailscale.ip
+      ? tailscale.ip
+      : tailscale?.available && hostMode === "dns" && tailscale.dns
+        ? tailscale.dns
+        : "127.0.0.1";
+
   const baseUrl =
-    discovery?.port != null ? "http://127.0.0.1:" + discovery.port : null;
+    discovery?.port != null ? `http://${selectedHost}:${discovery.port}` : null;
+  const connectionUrl =
+    discovery?.port != null && serviceToken
+      ? `http://${selectedHost}:${discovery.port}?api_key=${serviceToken}`
+      : null;
   const running =
     !!discovery?.present && discovery.pid_alive && discovery.port_open;
   const stale = !!discovery?.present && !running;
@@ -504,7 +519,32 @@ export const ServiceTab = () => {
           {/* URL with token */}
           {connectionUrl && (
             <Row
-              title={t("serviceTab.connection.withToken")}
+              title={
+                tailscale?.available && (tailscale.ip || tailscale.dns) ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 8,
+                      width: "100%",
+                    }}
+                  >
+                    <span>{t("serviceTab.connection.withToken")}</span>
+                    <Segmented
+                      options={[
+                        { value: "local", label: "Local" },
+                        ...(tailscale.ip ? [{ value: "ip", label: "Tailscale IP" }] : []),
+                        ...(tailscale.dns ? [{ value: "dns", label: "MagicDNS" }] : []),
+                      ]}
+                      value={hostMode}
+                      onChange={(v) => setHostMode(v as HostMode)}
+                    />
+                  </div>
+                ) : (
+                  t("serviceTab.connection.withToken")
+                )
+              }
               stack
               control={
                 <div

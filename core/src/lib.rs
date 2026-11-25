@@ -897,6 +897,7 @@ pub fn run(cli_args: CliArgs) {
             commands::service::service_set_token,
             commands::service::service_get_gui_token,
             commands::service::service_rotate_token,
+            commands::service::service_get_tailscale_info,
             commands::audio::update_microphone_mode,
             commands::audio::get_available_microphones,
             commands::audio::set_selected_microphone,

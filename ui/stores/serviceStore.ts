@@ -4,6 +4,7 @@ import {
   type ServiceDiscoveryInfo,
   type ServiceProbeReport,
   type ServiceRotateResult,
+  type TailscaleInfo,
 } from "@/bindings";
 
 // The GUI's service token is loaded from disk via service_get_gui_token.
@@ -14,6 +15,7 @@ import {
 interface ServiceStore {
   discovery: ServiceDiscoveryInfo | null;
   probe: ServiceProbeReport | null;
+  tailscale: TailscaleInfo | null;
   loading: boolean;
   starting: boolean;
   stopping: boolean;
@@ -36,6 +38,7 @@ const errText = (e: unknown): string =>
 export const useServiceStore = create<ServiceStore>()((set, get) => ({
   discovery: null,
   probe: null,
+  tailscale: null,
   loading: false,
   starting: false,
   stopping: false,
@@ -48,10 +51,11 @@ export const useServiceStore = create<ServiceStore>()((set, get) => ({
   refresh: async () => {
     set({ loading: true });
     try {
-      const [discoverRes, probeRes, tokenRes] = await Promise.all([
+      const [discoverRes, probeRes, tokenRes, tailscaleRes] = await Promise.all([
         commands.serviceDiscover(),
         commands.serviceProbe(),
         commands.serviceGetGuiToken(),
+        commands.serviceGetTailscaleInfo().catch(() => ({ ip: null, dns: null, available: false })),
       ]);
       const discovery =
         discoverRes.status === "ok" ? discoverRes.data : null;
@@ -64,6 +68,7 @@ export const useServiceStore = create<ServiceStore>()((set, get) => ({
       set({
         discovery,
         probe: probeRes.status === "ok" ? probeRes.data : null,
+        tailscale: tailscaleRes,
         error: discoverRes.status === "error" ? discoverRes.error : null,
         serviceToken,
         connectionUrl,

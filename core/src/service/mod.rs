@@ -138,14 +138,30 @@ pub fn build_engine(
 }
 
 /// Bind the configured address; port `0` resolves to the ephemeral port.
+/// When `cfg.bind_is_default` is true and the port is already in use,
+/// falls back to an OS-assigned loopback port so the daemon stays alive
+/// while something else (e.g. a local SOCKS proxy) holds the default port.
+/// The actual port is published in `discovery.json` so the GUI always finds it.
+/// Explicit `--bind` is never silently changed.
 pub async fn bind_listener(cfg: &ServiceConfig) -> Result<tokio::net::TcpListener, String> {
     let addr: std::net::SocketAddr = cfg
         .bind
         .parse()
         .map_err(|e| format!("invalid --bind '{}': {e}", cfg.bind))?;
-    tokio::net::TcpListener::bind(addr)
-        .await
-        .map_err(|e| format!("failed to bind {addr}: {e}"))
+    match tokio::net::TcpListener::bind(addr).await {
+        Ok(l) => Ok(l),
+        Err(e) if cfg.bind_is_default && e.kind() == std::io::ErrorKind::AddrInUse => {
+            let fallback = std::net::SocketAddr::new(addr.ip(), 0);
+            eprintln!(
+                "warning: {addr} is already in use ({e}); \
+falling back to an ephemeral loopback port — discovery.json will carry the actual port"
+            );
+            tokio::net::TcpListener::bind(fallback)
+                .await
+                .map_err(|e2| format!("failed to bind fallback {fallback}: {e2}"))
+        }
+        Err(e) => Err(format!("failed to bind {addr}: {e}")),
+    }
 }
 
 /// SIGINT/SIGTERM shutdown trigger (Unix).
@@ -269,7 +285,7 @@ pub async fn serve_standalone(
     }
     eprintln!(
         "voxix serve listening on {} (pid {})",
-        cfg.bind,
+        listener.local_addr().map(|a| a.to_string()).unwrap_or_else(|_| cfg.bind.clone()),
         std::process::id()
     );
 

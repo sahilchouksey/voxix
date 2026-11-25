@@ -33,9 +33,22 @@ pub fn service_state_dir() -> Result<std::path::PathBuf, String> {
 pub fn ensure_client_for_gui() -> Result<(String, String), String> {
     let state_dir = service_state_dir()?;
     let token = crate::service::auth::ensure_gui_client_token(&state_dir)?;
-    // IPv6 loopback first: nothing else on this machine listens there by
-    // default, unlike 127.0.0.1 which local proxies frequently take over.
-    Ok(("http://[::1]:47832".to_string(), token))
+    // Prefer the port the daemon actually bound (may be ephemeral when
+    // DEFAULT_BIND was squatted). Falls back to hardcoded 47832 when no
+    // valid discovery document exists (e.g. daemon not yet started).
+    let port = resolve_daemon_port(&state_dir).unwrap_or(47832);
+    Ok((format!("http://[::1]:{port}"), token))
+}
+
+/// Read `discovery.json` and alive-probe the reported port.
+/// Returns `None` if the doc is absent, stale, or the daemon is not responding.
+fn resolve_daemon_port(state_dir: &std::path::Path) -> Option<u16> {
+    let doc = crate::service::discovery::read_document(state_dir)?;
+    if crate::service::discovery::alive_probe(doc.port) {
+        Some(doc.port)
+    } else {
+        None
+    }
 }
 
 /// Loopback client for the dictation hot path. Submits the captured audio to
@@ -47,9 +60,14 @@ pub fn ensure_client_for_gui() -> Result<(String, String), String> {
 /// historical IPv4 loopback endpoint as fallback.
 fn service_base_candidates(primary: &str) -> Vec<String> {
     if primary.starts_with("http://[::1]") {
+        // Extract the port from the primary URL so the IPv4 fallback
+        // also uses the daemon's actual (possibly ephemeral) port.
+        let port = primary
+            .rsplit(':').next()
+            .unwrap_or("47832");
         vec![
-            "http://[::1]:47832".to_string(),
-            "http://127.0.0.1:47832".to_string(),
+            primary.to_string(),
+            format!("http://127.0.0.1:{port}"),
         ]
     } else {
         vec![primary.to_string()]

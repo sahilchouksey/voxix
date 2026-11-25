@@ -616,6 +616,14 @@ async serviceRotateToken() : Promise<Result<ServiceRotateResult, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+/**
+ * Probe Tailscale for the device's IP and MagicDNS hostname.
+ * Runs `tailscale status --json`; never fails — missing/off returns
+ * `available: false` with null fields.
+ */
+async serviceGetTailscaleInfo() : Promise<TailscaleInfo> {
+    return await TAURI_INVOKE("service_get_tailscale_info");
+},
 async updateMicrophoneMode(alwaysOn: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("update_microphone_mode", { alwaysOn }) };
@@ -919,6 +927,22 @@ export type StreamTextEvent = { committed: string; tentative: string }
  * Semantic kind of "working" phase, used to localize the spinner label.
  */
 export type StreamWorkKind = "transcribing" | "polishing"
+/**
+ * Tailscale network information for this device.
+ */
+export type TailscaleInfo = { 
+/**
+ * IPv4 Tailscale address (100.x.x.x), if available.
+ */
+ip: string | null; 
+/**
+ * MagicDNS hostname (e.g. `my-mac.tailxxxxx.ts.net`), if available.
+ */
+dns: string | null; 
+/**
+ * True when Tailscale appears to be installed and running.
+ */
+available: boolean }
 /**
  * UI appearance mode. `System` follows the OS `prefers-color-scheme`; `Light`
  * and `Dark` force one of the two palettes voxix already ships.

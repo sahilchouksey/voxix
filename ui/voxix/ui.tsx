@@ -59,7 +59,7 @@ export const Row = ({
   stack ? (
     <div className="voxix-row" style={{ flexDirection: "column", alignItems: "flex-start" }}>
       {icon && <div className="voxix-icon-col">{icon}</div>}
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ flex: 1, minWidth: 0, width: "100%" }}>
         <div
           style={{
             fontSize: "var(--text-base)",

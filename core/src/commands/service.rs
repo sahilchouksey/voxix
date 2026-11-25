@@ -651,3 +651,135 @@ pub async fn service_rotate_token(
     }
     Ok(rotated)
 }
+
+/// Tailscale network information for this device.
+#[derive(Debug, Clone, Serialize, Deserialize, specta::Type)]
+pub struct TailscaleInfo {
+    /// IPv4 Tailscale address (100.x.x.x), if available.
+    pub ip: Option<String>,
+    /// MagicDNS hostname (e.g. `my-mac.tailxxxxx.ts.net`), if available.
+    pub dns: Option<String>,
+    /// True when Tailscale appears to be installed and running.
+    pub available: bool,
+}
+
+fn find_tailscale_bin() -> Option<PathBuf> {
+    // 1. Try PATH first (works on any platform when tailscale is in PATH)
+    #[cfg(windows)]
+    let path_cmd = "tailscale.exe";
+    #[cfg(not(windows))]
+    let path_cmd = "tailscale";
+
+    let mut test_cmd = std::process::Command::new(path_cmd);
+    test_cmd.arg("--version");
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        test_cmd.creation_flags(0x08000000);
+    }
+    if let Ok(out) = test_cmd.output() {
+        if out.status.success() {
+            return Some(PathBuf::from(path_cmd));
+        }
+    }
+
+    // 2. Platform-specific known candidate locations
+    let mut candidates: Vec<PathBuf> = Vec::new();
+
+    #[cfg(target_os = "macos")]
+    {
+        candidates.push(PathBuf::from("/Applications/Tailscale.app/Contents/MacOS/Tailscale"));
+        candidates.push(PathBuf::from("/opt/homebrew/bin/tailscale"));
+        candidates.push(PathBuf::from("/usr/local/bin/tailscale"));
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        candidates.push(PathBuf::from("/usr/bin/tailscale"));
+        candidates.push(PathBuf::from("/usr/local/bin/tailscale"));
+        candidates.push(PathBuf::from("/bin/tailscale"));
+        candidates.push(PathBuf::from("/snap/bin/tailscale"));
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(pf) = std::env::var("ProgramFiles") {
+            candidates.push(PathBuf::from(pf).join("Tailscale").join("tailscale.exe"));
+        }
+        if let Ok(pfx86) = std::env::var("ProgramFiles(x86)") {
+            candidates.push(PathBuf::from(pfx86).join("Tailscale").join("tailscale.exe"));
+        }
+        if let Ok(la) = std::env::var("LOCALAPPDATA") {
+            candidates.push(PathBuf::from(la).join("Tailscale").join("tailscale.exe"));
+        }
+        candidates.push(PathBuf::from("C:\\Program Files\\Tailscale\\tailscale.exe"));
+    }
+
+    candidates.into_iter().find(|p| p.exists())
+}
+
+/// Probe Tailscale for the device's IP and MagicDNS hostname.
+/// Runs `tailscale status --json`; never fails — missing/off returns
+/// `available: false` with null fields.
+#[tauri::command]
+#[specta::specta]
+pub fn service_get_tailscale_info() -> TailscaleInfo {
+    let empty = TailscaleInfo {
+        ip: None,
+        dns: None,
+        available: false,
+    };
+
+    let Some(bin) = find_tailscale_bin() else {
+        return empty;
+    };
+
+    let mut cmd = std::process::Command::new(bin);
+    cmd.args(["status", "--json"]);
+
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
+    }
+
+    let Ok(out) = cmd.output() else {
+        return empty;
+    };
+    if !out.status.success() {
+        return empty;
+    }
+
+    let Ok(json): Result<serde_json::Value, _> = serde_json::from_slice(&out.stdout) else {
+        return empty;
+    };
+
+    // If backend state is not Running, Tailscale is disconnected or inactive
+    if let Some(state) = json.get("BackendState").and_then(|s| s.as_str()) {
+        if state != "Running" {
+            return empty;
+        }
+    }
+
+    let me = &json["Self"];
+    // First IPv4 address from TailscaleIPs array (CGNAT 100.x.y.z)
+    let ip = me["TailscaleIPs"]
+        .as_array()
+        .and_then(|arr| {
+            arr.iter()
+                .find_map(|v| v.as_str().filter(|s| s.starts_with("100.") || s.contains('.')).map(|s| s.to_string()))
+        });
+    // MagicDNS hostname — trim trailing dot
+    let dns = me["DNSName"]
+        .as_str()
+        .map(|s| s.trim_end_matches('.').to_string())
+        .filter(|s| !s.is_empty());
+
+    let available = ip.is_some() || dns.is_some();
+
+    TailscaleInfo {
+        available,
+        ip,
+        dns,
+    }
+}

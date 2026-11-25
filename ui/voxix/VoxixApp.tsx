@@ -14,12 +14,14 @@ import {
   ClockIcon,
   GearIcon,
   InfoIcon,
+  MenuIcon,
+  ServerIcon,
   TransformsIcon,
   XIcon,
-  ServerIcon,
 } from "./icons";
 import { VxLogo } from "./VxLogo";
 import { ModelStatusChip } from "./ModelStatusChip";
+import { useEscape } from "./ui";
 import "@fontsource-variable/inter";
 import "./theme.css";
 
@@ -65,7 +67,14 @@ export const VoxixApp = () => {
   const [tab, setTab] = useState<Tab>("settings");
   const tabLabel = (entry: (typeof TABS)[number]) =>
     entry.labelKey ? translate(entry.labelKey) : (entry.label ?? entry.id);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const [isSmallScreen, setIsSmallScreen] = useState(
+    typeof window !== "undefined" ? window.innerWidth <= 700 : false,
+  );
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+
+  useEscape(isSmallScreen && sidebarExpanded, () => setSidebarExpanded(false));
+
   const initSettings = useSettingsStore((s) => s.initialize);
   const refreshAudio = useSettingsStore((s) => s.refreshAudioDevices);
   const refreshOutput = useSettingsStore((s) => s.refreshOutputDevices);
@@ -166,13 +175,16 @@ export const VoxixApp = () => {
   }, []);
 
   useEffect(() => {
-    const mql = window.matchMedia("(min-width: 701px)");
+    const mql = window.matchMedia("(max-width: 700px)");
     const handler = (e: MediaQueryListEvent) => {
-      if (e.matches) setSidebarOpen(false);
+      setIsSmallScreen(e.matches);
+      if (!e.matches) setSidebarExpanded(false);
     };
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);
   }, []);
+
+  const collapsed = isSmallScreen && !sidebarExpanded;
 
   return (
     <div
@@ -198,23 +210,24 @@ export const VoxixApp = () => {
           },
         }}
       />
-      {sidebarOpen && (
+      {isSmallScreen && sidebarExpanded && (
         <div
           className="voxix-sidebar-backdrop"
-          onClick={() => setSidebarOpen(false)}
+          onClick={() => setSidebarExpanded(false)}
           aria-hidden="true"
         />
       )}
       <nav
         className="voxix-sidebar"
-        data-open={sidebarOpen ? "true" : undefined}
+        data-collapsed={collapsed ? "true" : undefined}
+        data-drawer={isSmallScreen && sidebarExpanded ? "true" : undefined}
         style={{
-          width: "var(--sidebar-width)",
-          minWidth: "var(--sidebar-width)",
+          width: collapsed ? "56px" : "var(--sidebar-width)",
+          minWidth: collapsed ? "56px" : "var(--sidebar-width)",
           flexShrink: 0,
           display: "flex",
           flexDirection: "column",
-          padding: "12px 8px 8px",
+          padding: collapsed ? "12px 6px 8px" : "12px 8px 8px",
           gap: 2,
           borderRight: "1px solid var(--border)",
           background: "var(--bg-elev)",
@@ -224,29 +237,51 @@ export const VoxixApp = () => {
           style={{
             display: "flex",
             alignItems: "center",
+            justifyContent: collapsed ? "center" : "flex-start",
             gap: 8,
-            padding: "8px 8px 12px",
+            padding: collapsed ? "8px 0 12px" : "8px 8px 12px",
+            width: "100%",
           }}
         >
-          <VxLogo size={20} />
-          <span
-            style={{
-              fontSize: "var(--text-md)",
-              fontWeight: 600,
-              letterSpacing: "var(--tracking-tight)",
-              flex: 1,
-            }}
-          >
-            {translate("voxix.voxixApp.voxix")}
-          </span>
-          <button
-            type="button"
-            className="voxix-icon-btn voxix-sidebar-close"
-            onClick={() => setSidebarOpen(false)}
-            aria-label="Close sidebar"
-          >
-            <XIcon size={16} />
-          </button>
+          {collapsed ? (
+            <button
+              type="button"
+              className="voxix-icon-btn"
+              onClick={() => setSidebarExpanded(true)}
+              aria-label="Expand sidebar"
+              title="Expand sidebar"
+              style={{ padding: 6 }}
+            >
+              <MenuIcon size={18} />
+            </button>
+          ) : (
+            <>
+              <VxLogo size={20} />
+              <span
+                className="voxix-sidebar-title"
+                style={{
+                  fontSize: "var(--text-md)",
+                  fontWeight: 600,
+                  letterSpacing: "var(--tracking-tight)",
+                  flex: 1,
+                }}
+              >
+                {translate("voxix.voxixApp.voxix")}
+              </span>
+              {isSmallScreen && sidebarExpanded && (
+                <button
+                  type="button"
+                  className="voxix-icon-btn"
+                  onClick={() => setSidebarExpanded(false)}
+                  aria-label="Collapse sidebar"
+                  title="Collapse sidebar"
+                  style={{ padding: 6 }}
+                >
+                  <XIcon size={16} />
+                </button>
+              )}
+            </>
+          )}
         </div>
         {TABS.map((t) => (
           <button
@@ -254,13 +289,16 @@ export const VoxixApp = () => {
             type="button"
             className="voxix-sidebar-item"
             data-active={tab === t.id}
+            title={tabLabel(t)}
             onClick={() => {
               setTab(t.id);
-              if (window.innerWidth <= 700) setSidebarOpen(false);
+              if (isSmallScreen && sidebarExpanded) setSidebarExpanded(false);
             }}
           >
             <t.icon size={16} />
-            {tabLabel(t)}
+            {!collapsed && (
+              <span className="voxix-sidebar-label">{tabLabel(t)}</span>
+            )}
           </button>
         ))}
         <ModelStatusChip />

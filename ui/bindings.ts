@@ -678,6 +678,12 @@ async getHistoryEntries(cursor: number | null, limit: number | null) : Promise<R
     else return { status: "error", error: e  as any };
 }
 },
+/**
+ * Assign (or clear) the icon shown for every history entry from `label`.
+ * 
+ * `label` is the client identifier attached to the entry (e.g. a phone or
+ * SDK name); `icon` is an emoji, short text, image URL or `data:image` URI.
+ */
 async setClientIcon(label: string, icon: string | null) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("set_client_icon", { label, icon }) };

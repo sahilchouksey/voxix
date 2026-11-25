@@ -913,7 +913,7 @@ impl ShortcutAction for TranscribeAction {
                                     post_process,
                                     processed.post_processed_text.clone(),
                                     processed.post_process_prompt.clone(),
-                                    Some(format!("voxix-gui ({})", std::env::consts::OS)),
+                                    None,
                                     None,
                                 ) {
                                     error!("Failed to save history entry: {}", err);
@@ -998,7 +998,7 @@ impl ShortcutAction for TranscribeAction {
                                     post_process,
                                     None,
                                     None,
-                                    Some(format!("voxix-gui ({})", std::env::consts::OS)),
+                                    None,
                                     None,
                                 ) {
                                     failed_entry_id = Some(entry.id);

@@ -906,6 +906,7 @@ pub fn run(cli_args: CliArgs) {
             commands::audio::check_custom_sounds,
             commands::audio::set_clamshell_microphone,
             commands::history::get_history_entries,
+            commands::history::set_client_icon,
             commands::history::get_audio_file_path,
             commands::history::delete_history_entry,
             commands::history::delete_all_history,

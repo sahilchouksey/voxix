@@ -678,6 +678,14 @@ async getHistoryEntries(cursor: number | null, limit: number | null) : Promise<R
     else return { status: "error", error: e  as any };
 }
 },
+async setClientIcon(label: string, icon: string | null) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_client_icon", { label, icon }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async getAudioFilePath(fileName: string) : Promise<Result<string, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_audio_file_path", { fileName }) };

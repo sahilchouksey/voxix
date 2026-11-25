@@ -5,7 +5,7 @@ import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { toast } from "sonner";
 import { commands, events, type HistoryEntry } from "@/bindings";
 import { useSettingsStore } from "@/stores/settingsStore";
-import { Btn, Screen, useEscape } from "./ui";
+import { Btn, Screen, Segmented, useEscape } from "./ui";
 import {
   ClockIcon,
   CopyIcon,
@@ -134,10 +134,190 @@ const MiniPlayer = ({
 const isImageUrl = (s: string): boolean =>
   s.startsWith("http") || s.startsWith("data:image");
 
+type ClientIconEditorState = { label: string; initial: string | null };
+
+const ClientIconEditor = ({
+  label,
+  initial,
+  onClose,
+  onSaved,
+}: ClientIconEditorState & {
+  onClose: () => void;
+  onSaved: () => void;
+}) => {
+  const initialIsImage = initial ? isImageUrl(initial) : false;
+  const [mode, setMode] = useState<"text" | "image">(
+    initialIsImage ? "image" : "text",
+  );
+  const [value, setValue] = useState(initial ?? "");
+  const [saving, setSaving] = useState(false);
+
+  useEscape(true, onClose);
+
+  const trimmed = value.trim();
+  const canSave = mode === "text" ? trimmed.length > 0 : isImageUrl(trimmed);
+
+  const changeMode = (next: "text" | "image") => {
+    if (next === mode) return;
+    setMode(next);
+    setValue((current) => {
+      const image = isImageUrl(current.trim());
+      if (next === "image" && !image) return "";
+      if (next === "text" && image) return "";
+      return current;
+    });
+  };
+
+  const save = async (icon: string | null) => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      const res = await commands.setClientIcon(label, icon);
+      if (res.status === "ok") {
+        toast.success(icon ? "Icon assigned" : "Icon reset", {
+          id: `client-icon-${label}`,
+          description: label,
+        });
+        onSaved();
+        onClose();
+      } else {
+        toast.error("Failed to save icon", {
+          id: `client-icon-${label}`,
+          description: String(res.error),
+        });
+      }
+    } catch (e) {
+      toast.error("Failed to save icon", {
+        id: `client-icon-${label}`,
+        description: e instanceof Error ? e.message : String(e),
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div
+      className="voxix-sheet-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Icon for ${label}`}
+      onClick={onClose}
+    >
+      <div
+        className="voxix-card"
+        style={{
+          padding: 16,
+          width: 380,
+          display: "flex",
+          flexDirection: "column",
+          gap: 10,
+          boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+        }}
+        onClick={(ev) => ev.stopPropagation()}
+      >
+        <div style={{ fontSize: "var(--text-base)", fontWeight: 600 }}>
+          Client icon
+        </div>
+        <div className="voxix-cap">
+          Shown next to every entry from <strong>{label}</strong>.
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span
+            style={{
+              width: 36,
+              height: 36,
+              flexShrink: 0,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+              borderRadius: 6,
+              border: "1px dashed var(--border)",
+              background: "var(--surface-raised)",
+              fontSize: 18,
+            }}
+            aria-hidden="true"
+          >
+            {trimmed ? (
+              isImageUrl(trimmed) ? (
+                <img
+                  src={trimmed}
+                  alt=""
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <span>{trimmed}</span>
+              )
+            ) : (
+              <span style={{ color: "var(--text-muted)", fontSize: 12 }}>
+                none
+              </span>
+            )}
+          </span>
+          <Segmented
+            options={[
+              { value: "text", label: "Emoji / text" },
+              { value: "image", label: "Image" },
+            ]}
+            value={mode}
+            onChange={changeMode}
+          />
+        </div>
+        <input
+          className="voxix-input"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={
+            mode === "text" ? "🖥 or PC" : "https://… or data:image/…"
+          }
+          maxLength={mode === "text" ? 64 : 262144}
+          autoFocus
+          aria-label={
+            mode === "text" ? "Emoji or short text" : "Image URL or data URI"
+          }
+        />
+        <div className="voxix-cap">
+          {mode === "text"
+            ? "Use an emoji or a few characters."
+            : "Paste an image URL or a data:image URI."}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: 8,
+            marginTop: 2,
+          }}
+        >
+          <Btn onClick={onClose}>Cancel</Btn>
+          <Btn onClick={() => void save(null)} disabled={saving || !initial}>
+            Reset
+          </Btn>
+          <Btn
+            variant="primary"
+            onClick={() => void save(trimmed)}
+            disabled={saving || !canSave}
+          >
+            Save
+          </Btn>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const HistoryTab = () => {
   const { t } = useTranslation();
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [confirming, setConfirming] = useState(false);
+  const [iconEditor, setIconEditor] = useState<ClientIconEditorState | null>(
+    null,
+  );
   const saveHistory = useSettingsStore((s) => s.settings?.save_history ?? true);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -315,6 +495,13 @@ export const HistoryTab = () => {
             playing={playerEntry?.id === e.id && playerPlaying}
             onTogglePlay={togglePlayer}
             onDeleted={stopPlayerIfCurrent}
+            onEditClientIcon={(entry) => {
+              if (!entry.client_label) return;
+              setIconEditor({
+                label: entry.client_label,
+                initial: entry.client_icon,
+              });
+            }}
           />
         ))}
       </div>
@@ -393,6 +580,14 @@ export const HistoryTab = () => {
           </div>
         </div>
       )}
+      {iconEditor && (
+        <ClientIconEditor
+          label={iconEditor.label}
+          initial={iconEditor.initial}
+          onClose={() => setIconEditor(null)}
+          onSaved={() => void load()}
+        />
+      )}
     </Screen>
   );
 };
@@ -421,11 +616,13 @@ const Card = ({
   playing,
   onTogglePlay,
   onDeleted,
+  onEditClientIcon,
 }: {
   entry: HistoryEntry;
   playing: boolean;
   onTogglePlay: (entry: HistoryEntry) => void;
   onDeleted: (entry: HistoryEntry) => void;
+  onEditClientIcon: (entry: HistoryEntry) => void;
 }) => {
   const { t } = useTranslation();
   const [copyState, setCopyState] = useState<"idle" | "success" | "error">(
@@ -515,23 +712,30 @@ const Card = ({
         <span className="voxix-cap">{relDate(entry.timestamp)}</span>
         <span className="voxix-cap">{time(entry.timestamp)}</span>
         {entry.client_label && (
-          <span
+          <button
+            type="button"
             className="voxix-cap"
+            onClick={() => onEditClientIcon(entry)}
+            title={`Set icon for ${entry.client_label}`}
+            aria-label={`Set icon for ${entry.client_label}`}
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 4,
               padding: "1px 6px",
+              margin: 0,
               borderRadius: 4,
               background: "var(--surface-raised)",
               border: "1px solid var(--border)",
+              color: "inherit",
+              cursor: "pointer",
+              fontFamily: "inherit",
               fontSize: "var(--text-xs)",
               maxWidth: 120,
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
             }}
-            title={entry.client_label}
           >
             {entry.client_icon ? (
               isImageUrl(entry.client_icon) ? (
@@ -550,7 +754,7 @@ const Card = ({
               )
             ) : null}
             {entry.client_label}
-          </span>
+          </button>
         )}
         <div style={{ flex: 1 }} />
         {blank ? (

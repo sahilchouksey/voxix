@@ -121,10 +121,9 @@ async fn transcribe_via(
         .post(format!("{base}/v1/transcriptions"))
         .bearer_auth(&plaintext)
         .header(reqwest::header::CONTENT_TYPE, "application/octet-stream")
-        .header(
-            "x-client-label",
-            format!("voxix-gui ({})", std::env::consts::OS),
-        )
+        // Deliberately no X-Client-Label/X-Client-Icon: transcripts recorded
+        // in this GUI belong to this GUI, so its own History page shows no
+        // client chip for them. Only external clients are labelled.
         .body(wav.to_vec())
         .send()
         .await

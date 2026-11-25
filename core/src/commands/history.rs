@@ -17,6 +17,23 @@ pub async fn get_history_entries(
         .map_err(|e| e.to_string())
 }
 
+/// Assign (or clear) the icon shown for every history entry from `label`.
+///
+/// `label` is the client identifier attached to the entry (e.g. a phone or
+/// SDK name); `icon` is an emoji, short text, image URL or `data:image` URI.
+#[tauri::command]
+#[specta::specta]
+pub async fn set_client_icon(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    label: String,
+    icon: Option<String>,
+) -> Result<(), String> {
+    history_manager
+        .set_client_icon(&label, icon.as_deref())
+        .map_err(|e| e.to_string())
+}
+
 #[tauri::command]
 #[specta::specta]
 pub async fn get_audio_file_path(

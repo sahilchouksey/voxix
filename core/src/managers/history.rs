@@ -33,7 +33,34 @@ static MIGRATIONS: &[M] = &[
     M::up("ALTER TABLE transcription_history ADD COLUMN post_process_requested BOOLEAN NOT NULL DEFAULT 0;"),
     M::up("ALTER TABLE transcription_history ADD COLUMN client_label TEXT;"),
     M::up("ALTER TABLE transcription_history ADD COLUMN client_icon TEXT;"),
+    M::up(
+        "CREATE TABLE IF NOT EXISTS client_icons (
+            label TEXT PRIMARY KEY,
+            icon TEXT NOT NULL,
+            updated_at INTEGER NOT NULL
+        );",
+    ),
+    // GUI recordings are not "another client": drop the old self-label so the
+    // History page shows no chip for them (same rule applies to new entries).
+    M::up(
+        "UPDATE transcription_history
+         SET client_label = NULL, client_icon = NULL
+         WHERE client_label LIKE 'voxix-gui%';",
+    ),
 ];
+
+/// History columns with the user-assigned client icon override applied.
+///
+/// A label-level override lives in `client_icons` and wins over the icon the
+/// sending client attached to an individual entry. This lets the History UI
+/// assign one icon (emoji, text, image URL or data URI) to every entry coming
+/// from the same platform/device label.
+const HISTORY_COLUMNS: &str = "id, file_name, timestamp, saved, title, transcription_text, \
+    post_processed_text, post_process_prompt, post_process_requested, client_label, \
+    COALESCE((SELECT icon FROM client_icons WHERE label = transcription_history.client_label), client_icon) AS client_icon";
+
+/// Upper bound for a user-assigned client icon (text, emoji, URL or data URI).
+const MAX_CLIENT_ICON_CHARS: usize = 262_144;
 
 #[derive(Clone, Debug, Serialize, Deserialize, Type)]
 pub struct PaginatedHistory {
@@ -293,6 +320,47 @@ impl HistoryManager {
         Ok(entry)
     }
 
+    /// Assign (or clear) the icon shown for every history entry that comes
+    /// from the given client label.
+    ///
+    /// The mapping is stored separately from the entries so it also applies to
+    /// future recordings from the same platform or device. Passing `None` (or
+    /// an empty string) removes the override, falling back to whatever icon the
+    /// client attached to each entry.
+    pub fn set_client_icon(&self, label: &str, icon: Option<&str>) -> Result<()> {
+        let label = label.trim();
+        if label.is_empty() {
+            return Err(anyhow!("client label is empty"));
+        }
+        if label.chars().count() > 128 {
+            return Err(anyhow!("client label is too long"));
+        }
+
+        let conn = self.get_connection()?;
+        let icon = icon.map(str::trim).filter(|value| !value.is_empty());
+
+        match icon {
+            Some(icon) => {
+                let icon: String = icon.chars().take(MAX_CLIENT_ICON_CHARS).collect();
+                conn.execute(
+                    "INSERT INTO client_icons (label, icon, updated_at)
+                     VALUES (?1, ?2, ?3)
+                     ON CONFLICT(label) DO UPDATE SET
+                         icon = excluded.icon,
+                         updated_at = excluded.updated_at",
+                    params![label, &icon, Utc::now().timestamp()],
+                )?;
+                debug!("Assigned client icon for label '{label}'");
+            }
+            None => {
+                conn.execute("DELETE FROM client_icons WHERE label = ?1", params![label])?;
+                debug!("Cleared client icon for label '{label}'");
+            }
+        }
+
+        Ok(())
+    }
+
     /// Update an existing history entry with new transcription results (used by retry).
     pub fn update_transcription(
         &self,
@@ -320,13 +388,8 @@ impl HistoryManager {
             return Err(anyhow!("History entry {} not found", id));
         }
 
-        let entry = conn
-            .query_row(
-                "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, client_label, client_icon
-                 FROM transcription_history WHERE id = ?1",
-                params![id],
-                Self::map_history_entry,
-            )?;
+        let sql = format!("SELECT {HISTORY_COLUMNS} FROM transcription_history WHERE id = ?1");
+        let entry = conn.query_row(&sql, params![id], Self::map_history_entry)?;
 
         debug!("Updated transcription for history entry {}", id);
 
@@ -476,13 +539,11 @@ impl HistoryManager {
         let mut entries: Vec<HistoryEntry> = match (cursor, limit) {
             (Some(cursor_id), Some(lim)) => {
                 let fetch_count = (lim + 1) as i64;
-                let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, client_label, client_icon
-                     FROM transcription_history
-                     WHERE id < ?1
-                     ORDER BY id DESC
-                     LIMIT ?2",
-                )?;
+                let sql = format!(
+                    "SELECT {HISTORY_COLUMNS} FROM transcription_history \
+                     WHERE id < ?1 ORDER BY id DESC LIMIT ?2"
+                );
+                let mut stmt = conn.prepare(&sql)?;
                 let result = stmt
                     .query_map(params![cursor_id, fetch_count], Self::map_history_entry)?
                     .collect::<std::result::Result<Vec<_>, _>>()?;
@@ -490,23 +551,21 @@ impl HistoryManager {
             }
             (None, Some(lim)) => {
                 let fetch_count = (lim + 1) as i64;
-                let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, client_label, client_icon
-                     FROM transcription_history
-                     ORDER BY id DESC
-                     LIMIT ?1",
-                )?;
+                let sql = format!(
+                    "SELECT {HISTORY_COLUMNS} FROM transcription_history \
+                     ORDER BY id DESC LIMIT ?1"
+                );
+                let mut stmt = conn.prepare(&sql)?;
                 let result = stmt
                     .query_map(params![fetch_count], Self::map_history_entry)?
                     .collect::<std::result::Result<Vec<_>, _>>()?;
                 result
             }
             (_, None) => {
-                let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, client_label, client_icon
-                     FROM transcription_history
-                     ORDER BY id DESC",
-                )?;
+                let sql = format!(
+                    "SELECT {HISTORY_COLUMNS} FROM transcription_history ORDER BY id DESC"
+                );
+                let mut stmt = conn.prepare(&sql)?;
                 let result = stmt
                     .query_map([], Self::map_history_entry)?
                     .collect::<std::result::Result<Vec<_>, _>>()?;
@@ -524,23 +583,11 @@ impl HistoryManager {
 
     #[cfg(test)]
     fn get_latest_entry_with_conn(conn: &Connection) -> Result<Option<HistoryEntry>> {
-        let mut stmt = conn.prepare(
-            "SELECT
-                id,
-                file_name,
-                timestamp,
-                saved,
-                title,
-                transcription_text,
-                post_processed_text,
-                post_process_prompt,
-                post_process_requested,
-                client_label,
-                client_icon
-             FROM transcription_history
-             ORDER BY timestamp DESC
-             LIMIT 1",
-        )?;
+        let sql = format!(
+            "SELECT {HISTORY_COLUMNS} FROM transcription_history \
+             ORDER BY timestamp DESC LIMIT 1"
+        );
+        let mut stmt = conn.prepare(&sql)?;
 
         let entry = stmt.query_row([], Self::map_history_entry).optional()?;
         Ok(entry)
@@ -553,24 +600,11 @@ impl HistoryManager {
     }
 
     fn get_latest_completed_entry_with_conn(conn: &Connection) -> Result<Option<HistoryEntry>> {
-        let mut stmt = conn.prepare(
-            "SELECT
-                id,
-                file_name,
-                timestamp,
-                saved,
-                title,
-                transcription_text,
-                post_processed_text,
-                post_process_prompt,
-                post_process_requested,
-                client_label,
-                client_icon
-             FROM transcription_history
-             WHERE transcription_text != ''
-             ORDER BY timestamp DESC
-             LIMIT 1",
-        )?;
+        let sql = format!(
+            "SELECT {HISTORY_COLUMNS} FROM transcription_history \
+             WHERE transcription_text != '' ORDER BY timestamp DESC LIMIT 1"
+        );
+        let mut stmt = conn.prepare(&sql)?;
 
         let entry = stmt.query_row([], Self::map_history_entry).optional()?;
         Ok(entry)
@@ -609,22 +643,8 @@ impl HistoryManager {
 
     pub async fn get_entry_by_id(&self, id: i64) -> Result<Option<HistoryEntry>> {
         let conn = self.get_connection()?;
-        let mut stmt = conn.prepare(
-            "SELECT
-                id,
-                file_name,
-                timestamp,
-                saved,
-                title,
-                transcription_text,
-                post_processed_text,
-                post_process_prompt,
-                post_process_requested,
-                client_label,
-                client_icon
-             FROM transcription_history
-             WHERE id = ?1",
-        )?;
+        let sql = format!("SELECT {HISTORY_COLUMNS} FROM transcription_history WHERE id = ?1");
+        let mut stmt = conn.prepare(&sql)?;
 
         let entry = stmt.query_row([id], Self::map_history_entry).optional()?;
 
@@ -705,13 +725,29 @@ mod tests {
                 post_process_requested BOOLEAN NOT NULL DEFAULT 0,
                 client_label TEXT,
                 client_icon TEXT
+            );
+            CREATE TABLE client_icons (
+                label TEXT PRIMARY KEY,
+                icon TEXT NOT NULL,
+                updated_at INTEGER NOT NULL
             );",
         )
-        .expect("create transcription_history table");
+        .expect("create history tables");
         conn
     }
 
     fn insert_entry(conn: &Connection, timestamp: i64, text: &str, post_processed: Option<&str>) {
+        insert_entry_with_client(conn, timestamp, text, post_processed, None, None);
+    }
+
+    fn insert_entry_with_client(
+        conn: &Connection,
+        timestamp: i64,
+        text: &str,
+        post_processed: Option<&str>,
+        client_label: Option<&str>,
+        client_icon: Option<&str>,
+    ) {
         conn.execute(
             "INSERT INTO transcription_history (
                 file_name,
@@ -734,11 +770,54 @@ mod tests {
                 post_processed,
                 Option::<String>::None,
                 false,
-                Option::<String>::None,
-                Option::<String>::None,
+                client_label,
+                client_icon,
             ],
         )
         .expect("insert history entry");
+    }
+
+    #[test]
+    fn client_icon_override_wins_over_entry_icon() {
+        let conn = setup_conn();
+        conn.execute(
+            "INSERT INTO client_icons (label, icon, updated_at) VALUES (?1, ?2, ?3)",
+            params!["voxix-gui (linux)", "🖥", 0],
+        )
+        .expect("insert client icon override");
+        insert_entry_with_client(
+            &conn,
+            100,
+            "hello",
+            None,
+            Some("voxix-gui (linux)"),
+            Some("🎙"),
+        );
+
+        let entry = HistoryManager::get_latest_entry_with_conn(&conn)
+            .expect("fetch latest entry")
+            .expect("entry exists");
+
+        assert_eq!(entry.client_icon.as_deref(), Some("🖥"));
+    }
+
+    #[test]
+    fn client_icon_falls_back_to_entry_icon_without_override() {
+        let conn = setup_conn();
+        insert_entry_with_client(
+            &conn,
+            100,
+            "hello",
+            None,
+            Some("voxix-gui (linux)"),
+            Some("🎙"),
+        );
+
+        let entry = HistoryManager::get_latest_entry_with_conn(&conn)
+            .expect("fetch latest entry")
+            .expect("entry exists");
+
+        assert_eq!(entry.client_icon.as_deref(), Some("🎙"));
     }
 
     #[test]
